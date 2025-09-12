@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/screens/splash_page.dart';
 
 import '../feature/dashboard/dashboard_screen.dart';
 import '../feature/login/login_screen.dart';
@@ -15,9 +16,10 @@ class RouteGenerate {
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case RouteName.dashboardScreen:
         return MaterialPageRoute(builder: (_) => const DashboardScreen());
-
+      case RouteName.splashPage:
+        return MaterialPageRoute(builder: (_) => const SplashPage());
       default:
-        return MaterialPageRoute(builder: (_) => SplashScreen());
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
   }
 }
