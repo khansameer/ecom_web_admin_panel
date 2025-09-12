@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:neeknots/provider/login_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:neeknots/routes/route_generator.dart';
@@ -6,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 import 'core/string/string_utils.dart';
+import 'provider/dashboard_provider.dart';
 import 'provider/theme_provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -14,9 +17,14 @@ final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
 List<SingleChildWidget> providers = [
   ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
   ChangeNotifierProvider<LoginProvider>(create: (_) => LoginProvider()),
+  ChangeNotifierProvider<DashboardProvider>(create: (_) => DashboardProvider()),
 ];
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Hive init
+  await Hive.initFlutter();
   runApp(
     MultiProvider(
       providers: providers,
@@ -34,14 +42,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
+
     return MaterialApp(
       scaffoldMessengerKey: rootScaffoldMessengerKey,
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: appName,
-      themeMode: themeProvider.themeMode,
-      theme: ThemeData.light(useMaterial3: true),
-      darkTheme: ThemeData.dark(useMaterial3: true),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
       initialRoute: RouteName.splashScreen,
       onGenerateRoute: RouteGenerate.onGenerateRoute,
     );

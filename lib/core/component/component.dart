@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:neeknots/core/color/color_utils.dart';
+import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/main.dart';
+import 'package:neeknots/provider/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 String generateUniqueId() {
   final random = Random();
@@ -26,6 +29,7 @@ AppBar commonAppBar({
   final IconThemeData? iconTheme,
   final List<Color>? gradientColors,
 }) {
+
   return AppBar(
     surfaceTintColor: Colors.transparent,
     iconTheme: iconTheme,
@@ -33,12 +37,12 @@ AppBar commonAppBar({
       title.toUpperCase(),
       style: commonTextStyle(
         fontSize: 18,
-        fontWeight: FontWeight.w800,
+        fontWeight: FontWeight.w600,
         color: Colors.white,
       ),
     ),
     centerTitle: centerTitle,
-    backgroundColor: Colors.transparent,
+    backgroundColor:backgroundColor,
     // important
     elevation: 0,
     actions: actions,
@@ -133,21 +137,26 @@ Widget commonText({
   TextStyle? style,
   TextDecoration? decoration,
 }) {
-  return Text(
-    text,
-    textAlign: textAlign,
 
-    maxLines: maxLines,
-    overflow: overflow,
-    style:
-        style ??
-        commonTextStyle(
-          fontFamily: fontFamily,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
-          color: color,
-          decoration: decoration,
-        ),
+  return Consumer<ThemeProvider>(
+    builder: (context,themeProvider,child) {
+      return Text(
+        text,
+        textAlign: textAlign,
+
+        maxLines: maxLines,
+        overflow: overflow,
+        style:
+            style ??
+            commonTextStyle(
+              fontFamily: fontFamily,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: color ?? (themeProvider.isDark ? Colors.white : Colors.black),
+              decoration: decoration,
+            ),
+      );
+    }
   );
 }
 
@@ -201,7 +210,7 @@ BoxDecoration commonBoxDecoration({
   );
 }
 
-SizedBox commonButton({
+Widget commonButton({
   required final String text,
   required final VoidCallback onPressed,
   final Color? color,
@@ -216,53 +225,58 @@ SizedBox commonButton({
   final List<Color>? gradientColors,
   final EdgeInsetsGeometry? padding,
 }) {
-  return SizedBox(
-    height: height ?? 56,
-    width: width ?? MediaQuery.sizeOf(navigatorKey.currentContext!).width,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: colorLogo,
+  return Consumer<ThemeProvider>(
+    builder: (context,provider,child) {
+      return SizedBox(
+        height: height ?? 56,
+        width: width ?? MediaQuery.sizeOf(navigatorKey.currentContext!).width,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: provider.isDark?Colors.white:colorLogo,
 
-        borderRadius: BorderRadius.circular(radius ?? 15),
-      ),
-      child: ElevatedButton(
-        style:
-            ElevatedButton.styleFrom(
-              elevation: 0,
-              disabledIconColor: Colors.transparent,
-              disabledBackgroundColor: Colors.transparent,
-              disabledForegroundColor: Colors.transparent,
-              backgroundColor: color ?? Colors.transparent,
-              foregroundColor: Colors.transparent,
-              overlayColor: Colors.transparent,
-              // 👈 click effect hide
-              shadowColor: Colors.transparent,
-              // 👈 shadow bhi hide
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: colorBorder ?? Colors.transparent),
-                borderRadius: BorderRadius.circular(radius ?? 15),
-              ),
-              padding: padding,
-            ).copyWith(
-              overlayColor: WidgetStateProperty.all(
-                Colors.transparent,
-              ), // 👈 pressed color hide
+            borderRadius: BorderRadius.circular(radius ?? 15),
+          ),
+          child: ElevatedButton(
+            style:
+                ElevatedButton.styleFrom(
+                  elevation: 0,
+                  disabledIconColor: Colors.transparent,
+                  disabledBackgroundColor: Colors.transparent,
+                  disabledForegroundColor: Colors.transparent,
+                  backgroundColor: color ?? Colors.transparent,
+                  foregroundColor: Colors.transparent,
+                  overlayColor: Colors.transparent,
+                  // 👈 click effect hide
+                  shadowColor: Colors.transparent,
+                  // 👈 shadow bhi hide
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: colorBorder ?? Colors.transparent),
+                    borderRadius: BorderRadius.circular(radius ?? 15),
+                  ),
+                  padding: padding,
+                ).copyWith(
+                  overlayColor: WidgetStateProperty.all(
+                    Colors.transparent,
+                  ), // 👈 pressed color hide
+                ),
+            onPressed: onPressed,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                commonText(
+
+                  text: text.toUpperCase(),
+                  fontSize: fontSize,
+                 color: provider.isDark?colorDarkBgColor:Colors.white,
+                  fontWeight: fontWeight ?? FontWeight.w600,
+                ),
+                icon ?? const SizedBox.shrink(),
+              ],
             ),
-        onPressed: onPressed,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            commonText(
-              text: text.toUpperCase(),
-              fontSize: fontSize,
-              color: textColor ?? Colors.white,
-              fontWeight: fontWeight ?? FontWeight.w600,
-            ),
-            icon ?? const SizedBox.shrink(),
-          ],
+          ),
         ),
-      ),
-    ),
+      );
+    }
   );
 }
 
@@ -292,39 +306,44 @@ Widget commonTextField({
   List<TextInputFormatter>? inputFormatters,
   TextStyle? textStyle,
 }) {
-  return TextFormField(
-    controller: controller,
-    keyboardType: keyboardType,
-    obscureText: obscureText,
-    validator: validator,
-    initialValue: controller != null ? null : initialValue ?? '',
-    // initialValue: initialValue,-
-    maxLines: maxLines,
-    readOnly: readOnly,
-    onTap: onTap,
 
-    onChanged: onChanged,
-    inputFormatters: inputFormatters,
-    style: textStyle ?? commonTextStyle(fontSize: 14),
-    decoration: InputDecoration(
-      hintText: hintText,
+  return Consumer<ThemeProvider>(
+    builder: (context,provider,child) {
+      return TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        obscureText: obscureText,
+        validator: validator,
+        initialValue: controller != null ? null : initialValue ?? '',
+        // initialValue: initialValue,-
+        maxLines: maxLines,
+        readOnly: readOnly,
+        onTap: onTap,
 
-      hintStyle:
-          hintStyle ??
-          commonTextStyle(color: Colors.black.withValues(alpha: 0.5)),
-      contentPadding: contentPadding,
+        onChanged: onChanged,
+        inputFormatters: inputFormatters,
+        style: textStyle ?? commonTextStyle(fontSize: 14,color: provider.isDark?Colors.white:Colors.black),
+        decoration: InputDecoration(
+          hintText: hintText,
 
-      prefixIcon: prefixIcon,
-      suffixIcon: suffixIcon,
-      border:
-          enabledBorder ?? commonTextFiledBorder(borderRadius: borderRadius),
-      enabledBorder:
-          enabledBorder ?? commonTextFiledBorder(borderRadius: borderRadius),
-      focusedBorder:
-          enabledBorder ?? commonTextFiledBorder(borderRadius: borderRadius),
-      filled: filled,
-      fillColor: fillColor,
-    ),
+          hintStyle:
+              hintStyle ??
+              commonTextStyle(color: provider.isDark?Colors.grey:Colors.black.withValues(alpha: 0.5)),
+          contentPadding: contentPadding,
+
+          prefixIcon: prefixIcon,
+          suffixIcon: suffixIcon,
+          border:
+              enabledBorder ?? commonTextFiledBorder(borderRadius: borderRadius),
+          enabledBorder:
+              enabledBorder ?? commonTextFiledBorder(borderRadius: borderRadius),
+          focusedBorder:
+              enabledBorder ?? commonTextFiledBorder(borderRadius: borderRadius),
+          filled: filled,
+          fillColor: fillColor,
+        ),
+      );
+    }
   );
 }
 
@@ -450,7 +469,7 @@ Widget commonScaffold({
             ? AppBar(title: commonText(text: title), centerTitle: true)
             : null),
     body: body,
-    backgroundColor: backgroundColor,
+     backgroundColor: backgroundColor,
     floatingActionButton: floatingActionButton,
     drawer: drawer,
     bottomNavigationBar: bottomNavigationBar,
@@ -709,13 +728,13 @@ String cleanFirebaseError(String message) {
   return message.replaceAll(RegExp(r"\[.*?\]\s*"), "");
 }
 
-Container commonAppBackground({/*required Size size,*/ required Widget child}) {
+Container commonAppBackground({/*required Size size,*/ required Widget child,Color? colorBG}) {
   var size = MediaQuery.of(navigatorKey.currentContext!).size;
   return Container(
     width: size.width,
     height: size.height,
     decoration: commonBoxDecoration(
-      color: Colors.white,
+      color: colorBG??Colors.white,
       //image: DecorationImage(fit: BoxFit.fill, image: AssetImage(icSa)),
     ),
     child: child,
@@ -738,12 +757,17 @@ commonSvgWidget({
   );
 }
 
-commonHeadingText({String? text, Color? color, FontWeight? fontWeight}) {
+commonHeadingText({
+  String? text,
+  Color? color,
+  FontWeight? fontWeight,
+  double? fontSize,
+}) {
   return commonText(
     text: text ?? '',
     color: color,
     fontWeight: fontWeight ?? FontWeight.w800,
-    fontSize: 18,
+    fontSize: fontSize ?? 18,
   );
 }
 
@@ -771,12 +795,33 @@ commonDescriptionText({String? text}) {
   );
 }
 
-commonPrefixIcon({required String image}) {
+commonPrefixIcon({required String image,double ?width,double? height,Color ?colorIcon }) {
   return SizedBox(
-    width: 24,
-    height: 24,
+    width: width??24,
+    height: height??24,
     child: Center(
-      child: commonAssetImage(image, width: 24, height: 24, color: Colors.grey),
+      child: commonAssetImage(image, width: 24, height: 24, color: colorIcon??Colors.grey),
     ),
   );
+}
+class BottomNavItems {
+  static const List<BottomNavigationBarItem> items = [
+    BottomNavigationBarItem(
+      icon: ImageIcon(AssetImage(icHomeMenu)),
+      label: 'Home',
+    ),
+    BottomNavigationBarItem(
+      icon: ImageIcon(AssetImage(icProductMenu)),
+      label: 'Product',
+    ),
+    BottomNavigationBarItem(
+      icon: ImageIcon(AssetImage(icOrderMenu)),
+      label: 'Order',
+    ),
+
+    BottomNavigationBarItem(
+      icon: ImageIcon(AssetImage(icProfileMenu)),
+      label: 'Profile',
+    ),
+  ];
 }
