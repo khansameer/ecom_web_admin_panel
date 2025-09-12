@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/main.dart';
 import 'package:neeknots/routes/app_routes.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,7 +23,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   redirectToIntro() {
     Timer(const Duration(seconds: 3), () async {
-      Navigator.pushNamed(context, RouteName.loginScreen);
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        RouteName.loginScreen,
+            (Route<dynamic> route) => false,
+      );
     });
   }
 

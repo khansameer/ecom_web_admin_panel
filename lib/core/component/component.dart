@@ -1,11 +1,12 @@
 import 'dart:async';
-
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:neeknots/core/color/color_utils.dart';
+import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/main.dart';
 
 String generateUniqueId() {
@@ -168,7 +169,7 @@ TextStyle commonTextStyle({
     wordSpacing: wordSpacing,
     decoration: decoration,
     overflow: overflow,
-    fontFamily: fontFamily ?? "fontNunito",
+    fontFamily: fontFamily ?? fontPoppins,
     decorationColor: decorationColor,
     letterSpacing: letterSpacing,
     fontStyle: fontStyle ?? FontStyle.normal,
@@ -208,6 +209,7 @@ SizedBox commonButton({
   final Color? colorBorder,
   final double? radius,
   final double? height,
+  final double? width,
   final double? fontSize,
   final FontWeight? fontWeight,
   final Widget? icon,
@@ -216,20 +218,12 @@ SizedBox commonButton({
 }) {
   return SizedBox(
     height: height ?? 56,
+    width: width ?? MediaQuery.sizeOf(navigatorKey.currentContext!).width,
     child: DecoratedBox(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors:
-              gradientColors ??
-              const [
-                Color.fromRGBO(100, 141, 219, 1), // base color
-                Color.fromRGBO(70, 110, 210, 1), // medium shade
-                Color.fromRGBO(40, 80, 180, 1), // darker shade
-              ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(radius ?? 24),
+        color: colorLogo,
+
+        borderRadius: BorderRadius.circular(radius ?? 15),
       ),
       child: ElevatedButton(
         style:
@@ -246,7 +240,7 @@ SizedBox commonButton({
               // 👈 shadow bhi hide
               shape: RoundedRectangleBorder(
                 side: BorderSide(color: colorBorder ?? Colors.transparent),
-                borderRadius: BorderRadius.circular(radius ?? 24),
+                borderRadius: BorderRadius.circular(radius ?? 15),
               ),
               padding: padding,
             ).copyWith(
@@ -262,7 +256,7 @@ SizedBox commonButton({
               text: text.toUpperCase(),
               fontSize: fontSize,
               color: textColor ?? Colors.white,
-              fontWeight: fontWeight ?? FontWeight.w900,
+              fontWeight: fontWeight ?? FontWeight.w600,
             ),
             icon ?? const SizedBox.shrink(),
           ],
@@ -285,7 +279,7 @@ Widget commonTextField({
     vertical: 16,
   ),
   Color? borderColor,
-  double borderRadius = 5.0,
+  double borderRadius = 12.0,
   Color? fillColor,
   int? maxLines,
   bool filled = false,
@@ -339,9 +333,9 @@ OutlineInputBorder commonTextFiledBorder({
   Color? borderColor,
 }) {
   return OutlineInputBorder(
-    borderRadius: BorderRadius.circular(15),
+    borderRadius: BorderRadius.circular(borderRadius ?? 15),
     borderSide: BorderSide(
-      color: borderColor ?? Colors.red.withValues(alpha: 0.9),
+      color: borderColor ?? Colors.grey.withValues(alpha: 0.5),
     ),
   );
 }
@@ -716,7 +710,7 @@ String cleanFirebaseError(String message) {
 }
 
 Container commonAppBackground({/*required Size size,*/ required Widget child}) {
-  var size= MediaQuery.of(navigatorKey.currentContext!).size;
+  var size = MediaQuery.of(navigatorKey.currentContext!).size;
   return Container(
     width: size.width,
     height: size.height,
@@ -728,7 +722,12 @@ Container commonAppBackground({/*required Size size,*/ required Widget child}) {
   );
 }
 
-commonSvgWidget({required String path,double? width,double? height,Color ?color}){
+commonSvgWidget({
+  required String path,
+  double? width,
+  double? height,
+  Color? color,
+}) {
   return SvgPicture.asset(
     path,
     width: width,
@@ -736,5 +735,48 @@ commonSvgWidget({required String path,double? width,double? height,Color ?color}
     colorFilter: color != null
         ? ColorFilter.mode(color, BlendMode.srcIn)
         : null,
+  );
+}
+
+commonHeadingText({String? text, Color? color, FontWeight? fontWeight}) {
+  return commonText(
+    text: text ?? '',
+    color: color,
+    fontWeight: fontWeight ?? FontWeight.w800,
+    fontSize: 18,
+  );
+}
+
+commonTitleText({String? text}) {
+  return commonText(
+    text: text ?? '',
+    fontWeight: FontWeight.w600,
+    fontSize: 16,
+  );
+}
+
+commonSubTitleText({String? text}) {
+  return commonText(
+    text: text ?? '',
+    fontWeight: FontWeight.w500,
+    fontSize: 14,
+  );
+}
+
+commonDescriptionText({String? text}) {
+  return commonText(
+    text: text ?? '',
+    fontWeight: FontWeight.w400,
+    fontSize: 12,
+  );
+}
+
+commonPrefixIcon({required String image}) {
+  return SizedBox(
+    width: 24,
+    height: 24,
+    child: Center(
+      child: commonAssetImage(image, width: 24, height: 24, color: Colors.grey),
+    ),
   );
 }

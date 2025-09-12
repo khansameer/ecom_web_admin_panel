@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/provider/login_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:neeknots/routes/route_generator.dart';
 import 'package:provider/provider.dart';
@@ -12,38 +13,30 @@ final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 List<SingleChildWidget> providers = [
   ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
+  ChangeNotifierProvider<LoginProvider>(create: (_) => LoginProvider()),
 ];
+
 void main() {
   runApp(
     MultiProvider(
-      providers: [
-        ChangeNotifierProvider<ThemeProvider>(
-          create: (_) => ThemeProvider(),
-        ),
-      ],
+      providers: providers,
       child: MyApp(navigatorKey: navigatorKey),
     ),
   );
 }
 
-
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key, required this.navigatorKey});
 
   final GlobalKey<NavigatorState> navigatorKey;
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     return MaterialApp(
       scaffoldMessengerKey: rootScaffoldMessengerKey,
-      navigatorKey: widget.navigatorKey,
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: appName,
       themeMode: themeProvider.themeMode,
