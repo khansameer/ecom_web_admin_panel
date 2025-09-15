@@ -4,16 +4,18 @@ import 'package:neeknots/core/image/image_utils.dart';
 
 notificationWidget() {
   return Stack(
+    clipBehavior: Clip.none,
     children: [
       commonPrefixIcon(
         image: icNotification,
-        width: 35,
-        height: 35,
+        width: 24,
+        height: 24,
         colorIcon: Colors.white,
       ),
 
       Positioned(
-        right: 0,
+        right: -4,
+        top: -9,
         child: Container(
           width: 20,
           height: 20,

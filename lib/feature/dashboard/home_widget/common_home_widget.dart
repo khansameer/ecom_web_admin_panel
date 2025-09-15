@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
+import 'package:neeknots/core/component/CommonDropdown.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/provider/dashboard_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 homeTopView() {
   return Column(
@@ -126,5 +130,77 @@ _commonDashboardView({
         ),
       ],
     ),
+  );
+}
+
+homeGraphView() {
+  return Column(
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: commonText(
+              text: "Summary Sales",
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+
+          Spacer(),
+          Flexible(
+            child: Consumer<DashboardProvider>(
+              builder: (context, provider, child) {
+                return SizedBox(
+                  height: 45,
+
+                  child: CommonDropdown(
+                    initialValue: provider.filter,
+                    items: ["Today", "Week", "Month"],
+                    onChanged: (value) {
+                      provider.setFilter(value!);
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      Expanded(
+        child: Consumer<DashboardProvider>(
+          builder: (context, provider, child) {
+            return SfCartesianChart(
+              plotAreaBorderWidth: 0,
+              // hide border
+              primaryXAxis: CategoryAxis(
+                majorGridLines: const MajorGridLines(width: 0),
+              ),
+              primaryYAxis: NumericAxis(
+                minimum: 0,
+                maximum: 35,
+                interval: 10,
+                majorGridLines: const MajorGridLines(dashArray: <double>[5, 5]),
+              ),
+              tooltipBehavior: TooltipBehavior(
+                enable: true,
+                header: '',
+                format: 'point.y k',
+              ),
+              series: <CartesianSeries>[
+                SplineAreaSeries<SalesData, String>(
+                  dataSource: provider.salesData,
+                  xValueMapper: (SalesData sales, _) => sales.x,
+                  yValueMapper: (SalesData sales, _) => sales.y,
+                  color: Colors.orange.withValues(alpha: 0.2),
+                  borderColor: Colors.orange,
+                  borderWidth: 2,
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    ],
   );
 }

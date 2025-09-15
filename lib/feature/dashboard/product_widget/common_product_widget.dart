@@ -77,95 +77,248 @@ commonProductListView({required String image,String ?textInventory1,String ?text
     ),
   );
 }
-
-voidShowFilterDialog({required BuildContext context}){
-  return showModalBottomSheet(
+void voidShowFilterDialog({required BuildContext context}) {
+  showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(16),
-      ),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
     builder: (context) {
       return Consumer<ProductProvider>(
         builder: (context, provider, _) {
-          return Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-                  children: [
-                    commonText(
-                      text: "Filter Products",
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: colorLogo,
-                    ),
+          // Temporary variables initialized from provider or default "All"
+          String tempCategory = provider.selectedCategory;
+          String tempStatus = provider.selectedStatus;
 
-                    commonInkWell(
-                      onTap: (){
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: commonBoxDecoration(
-                          color: Colors.black,
-                          shape: BoxShape.circle,
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        commonText(
+                          text: "Filter Products",
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: colorLogo,
                         ),
-                        child: Center(
-                          child: Icon(
-                            size: 15,
-                            Icons.close,
-                            color: Colors.white,
+                        commonInkWell(
+                          onTap: () {
+                            setState(() {
+
+                              provider.setCategory("All");
+                              provider.setStatus("All");
+                              tempCategory = "All";
+                              tempStatus = "All";
+                              Navigator.pop(context);
+                            });
+                          },
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: commonBoxDecoration(
+                              color: Colors.black,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                size: 15,
+                                Icons.close,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
+                    const SizedBox(height: 20),
+
+                    // Category Dropdown
+
+                    commonText(text: "Category", color: colorText,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,),
+                    SizedBox(height: 5,),
+                    CommonDropdown(
+
+                      initialValue: tempCategory,
+                      items: ["All", "Dresses", "Tops", "Shirts"],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            tempCategory = value;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 15),
+
+                    // Status Dropdown
+                    commonText(text: "Status", color: colorText,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,),
+                    SizedBox(height: 5,),
+                    CommonDropdown(
+
+                      initialValue: tempStatus,
+                      items: ["All", "Active", "Draft"],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            tempStatus = value;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 25),
+
+                    // Row with Reset and Apply buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: commonButton(
+                            text: "Reset",
+                            color: Colors.grey, // Optional: gray color for Reset
+                            onPressed: () {
+                              setState(() {
+
+                                provider.setCategory("All");
+                                provider.setStatus("All");
+                                tempCategory = "All";
+                                tempStatus = "All";
+                                Navigator.pop(context);
+                              });
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: commonButton(
+                            text: "Apply",
+                            onPressed: () {
+                              // Apply filters to provider
+                              provider.setCategory(tempCategory);
+                              provider.setStatus(tempStatus);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
                   ],
                 ),
-                const SizedBox(height: 20),
+              );
+            },
+          );
+        },
+      );
+    },
+  );
+}
 
-                CommonDropdown(
-                  label: "Category",
-                  initialValue: "All",
-                  items: ["All", "Dresses", "Tops", "Shirts"],
-                  onChanged: (value) {
-                    if (value != null) {
-                      provider.setCategory(value);
-                    }
-                  },
+void voidShowFilterDialog1({required BuildContext context}) {
+  String selectedCategory = "All";
+  String selectedStatus = "All";
+
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) {
+      return Consumer<ProductProvider>(
+        builder: (context, provider, _) {
+          return StatefulBuilder( // <-- Needed to update local state
+            builder: (context, setState) {
+              return Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        commonText(
+                          text: "Filter Products",
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: colorLogo,
+                        ),
+                        commonInkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+
+                          },
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: commonBoxDecoration(
+                              color: Colors.black,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                size: 15,
+                                Icons.close,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    CommonDropdown(
+
+                      initialValue: selectedCategory,
+                      items: ["All", "Dresses", "Tops", "Shirts"],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedCategory = value;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 25),
+                    CommonDropdown(
+
+                      initialValue: selectedStatus,
+                      items: ["All", "Active", "Draft"],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedStatus = value;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 25),
+                    commonButton(
+                      text: "Apply",
+                      onPressed: () {
+                        // Apply filters to provider here
+                        provider.setCategory(selectedCategory);
+                        provider.setStatus(selectedStatus);
+                        Navigator.pop(context);
+                      },
+                    ),
+
+                    const SizedBox(height: 50),
+                  ],
                 ),
-                const SizedBox(height: 25),
-
-                CommonDropdown(
-                  label: "Status",
-                  initialValue: "All",
-                  items: ["All", "Active", "Draft"],
-                  onChanged: (value) {
-                    if (value != null) {
-                      provider.setStatus(value);
-                    }
-                  },
-                ),
-                const SizedBox(height: 25),
-
-                commonButton(
-                  text: "Apply",
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                const SizedBox(height: 50),
-
-                // Apply button
-              ],
-            ),
+              );
+            },
           );
         },
       );
