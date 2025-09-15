@@ -13,6 +13,7 @@ class HomePage extends StatelessWidget {
 
     return ListView(
       shrinkWrap: true,
+        physics: BouncingScrollPhysics(),
         padding: EdgeInsets.all(12),
         children: [
 

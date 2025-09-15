@@ -152,7 +152,7 @@ Widget commonText({
               fontFamily: fontFamily,
               fontSize: fontSize,
               fontWeight: fontWeight,
-              color: color ?? (themeProvider.isDark ? Colors.white : Colors.black),
+              color: color ?? (themeProvider.isDark ? Colors.white :colorText),
               decoration: decoration,
             ),
       );
@@ -800,7 +800,7 @@ commonPrefixIcon({required String image,double ?width,double? height,Color ?colo
     width: width??24,
     height: height??24,
     child: Center(
-      child: commonAssetImage(image, width: 24, height: 24, color: colorIcon??Colors.grey),
+      child: commonAssetImage(image, width: width??24, height:height?? 24, color: colorIcon??Colors.grey),
     ),
   );
 }

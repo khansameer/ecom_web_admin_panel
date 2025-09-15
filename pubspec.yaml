@@ -38,6 +38,7 @@ dependencies:
   flutter_svg: ^2.2.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  dropdown_button2: ^2.3.9
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
     - assets/icons/
     - assets/icons/login/
     - assets/icons/dashboard/
+    - assets/icons/product/
   fonts:
     - family: Poppins
       fonts:

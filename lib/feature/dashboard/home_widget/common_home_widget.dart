@@ -13,7 +13,7 @@ homeTopView() {
         children: [
           Expanded(
             child: _commonDashboardView(
-              startColor: colorSale,
+              color: colorSale,
 
               icon: icTotalSale,
               title: "Total Sales",
@@ -23,7 +23,7 @@ homeTopView() {
           ),
           Expanded(
             child: _commonDashboardView(
-              startColor: colorProduct,
+              color: colorProduct,
 
               icon: icProductMenu,
               title: "Total Product",
@@ -37,8 +37,8 @@ homeTopView() {
         children: [
           Expanded(
             child: _commonDashboardView(
-              startColor: Colors.blue.shade400,
-              icon: icTotalProduct,
+              color: Colors.blue.shade400,
+              icon: icOrderMenu,
               title: "Total  Order",
               subtitle: "+25 New Order",
               value: "845",
@@ -46,7 +46,7 @@ homeTopView() {
           ),
           Expanded(
             child: _commonDashboardView(
-              startColor: colorUser,
+              color: colorUser,
 
               icon: icTotalUser,
               title: "Total Customer",
@@ -61,7 +61,7 @@ homeTopView() {
 }
 
 _commonDashboardView({
-  Color? startColor,
+  Color? color,
 
   required String icon,
   required String title,
@@ -73,13 +73,10 @@ _commonDashboardView({
     margin: EdgeInsets.all(5),
     padding: const EdgeInsets.all(16),
     decoration: commonBoxDecoration(
-      color:
-          startColor?.withValues(alpha: 0.05) ??
-          colorLogo.withValues(alpha: 0.1),
+      color: color?.withValues(alpha: 0.05) ?? colorLogo.withValues(alpha: 0.1),
 
       borderColor:
-          startColor?.withValues(alpha: 0.3) ??
-          colorLogo.withValues(alpha: 0.3),
+          color?.withValues(alpha: 0.3) ?? colorLogo.withValues(alpha: 0.3),
       borderRadius: 10,
     ),
     child: Column(
@@ -90,20 +87,20 @@ _commonDashboardView({
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(
-              color: startColor ?? Colors.transparent, // border color
-              width: 2, // border width
+              color: color ?? Colors.transparent, // border color
+              width: 1.5, // border width
             ),
           ),
           child: CircleAvatar(
             radius: 28,
-            //   backgroundColor: startColor?.withValues(alpha: 0.8),
+
             backgroundColor: Colors.white,
             child: Center(
               child: commonAssetImage(
                 icon,
                 width: 24,
                 height: 24,
-                color: startColor ?? Colors.transparent,
+                color: color ?? Colors.transparent,
               ),
             ) /*Icon(
               icon,

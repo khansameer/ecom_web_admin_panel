@@ -20,3 +20,9 @@ const String icSetting="$iconDashboardPath/setting.png";
 const String icTotalProduct="$iconDashboardPath/ic_total_product.png";
 const String icTotalSale="$iconDashboardPath/trend.png";
 const String icTotalUser="$iconDashboardPath/ic_total_user.png";
+
+
+//==============================Product=============================
+const String iconProductPath="$basePath/product";
+const String icProductFilter="$iconProductPath/ic_filter.png";
+const String icProductSearch="$iconProductPath/ic_search.png";
