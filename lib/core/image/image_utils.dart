@@ -16,3 +16,7 @@ const String icOrderMenu="$iconDashboardPath/shopping-bag.png";
 const String icProfileMenu="$iconDashboardPath/user.png";
 const String icNotification="$iconDashboardPath/notification.png";
 const String icDummyUser="$iconDashboardPath/ic_dummy_user.jpg";
+const String icSetting="$iconDashboardPath/setting.png";
+const String icTotalProduct="$iconDashboardPath/ic_total_product.png";
+const String icTotalSale="$iconDashboardPath/trend.png";
+const String icTotalUser="$iconDashboardPath/ic_total_user.png";

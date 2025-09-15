@@ -806,10 +806,7 @@ commonPrefixIcon({required String image,double ?width,double? height,Color ?colo
 }
 class BottomNavItems {
   static const List<BottomNavigationBarItem> items = [
-    BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage(icHomeMenu)),
-      label: 'Home',
-    ),
+
     BottomNavigationBarItem(
       icon: ImageIcon(AssetImage(icProductMenu)),
       label: 'Product',
@@ -820,8 +817,17 @@ class BottomNavItems {
     ),
 
     BottomNavigationBarItem(
+      icon: ImageIcon(AssetImage(icHomeMenu)),
+      label: 'Home',
+    ),
+
+    BottomNavigationBarItem(
       icon: ImageIcon(AssetImage(icProfileMenu)),
       label: 'Profile',
+    ),
+    BottomNavigationBarItem(
+      icon: ImageIcon(AssetImage(icSetting)),
+      label: 'Setting',
     ),
   ];
 }

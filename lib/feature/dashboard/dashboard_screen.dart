@@ -7,6 +7,7 @@ import 'package:neeknots/feature/dashboard/page/home_page.dart';
 import 'package:neeknots/feature/dashboard/page/order_page.dart';
 import 'package:neeknots/feature/dashboard/page/product_page.dart';
 import 'package:neeknots/feature/dashboard/page/profile_page.dart';
+import 'package:neeknots/feature/dashboard/page/setting_page.dart';
 import 'package:neeknots/provider/dashboard_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,14 +25,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget getPage(int index) {
     switch (index) {
       case 0:
-        return HomePage();
-      case 1:
         return ProductPage();
-      case 2:
+      case 1:
         return OrderPage();
+      case 2:
+        return HomePage();
       case 3:
         return ProfilePage();
-
+      case 4:
+        return SettingPage();
       default:
         return HomePage();
     }
@@ -66,10 +68,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             currentIndex: provider.currentIndex,
             onTap: (index) {
               provider.setIndex(index);
-              if (index == 0) provider.setAppBarTitle("Home");
-              if (index == 1) provider.setAppBarTitle("Product");
-              if (index == 2) provider.setAppBarTitle("Order");
+              if (index == 0) provider.setAppBarTitle("Product");
+              if (index == 1) provider.setAppBarTitle("Order");
+              if (index == 2) provider.setAppBarTitle("Home");
               if (index == 3) provider.setAppBarTitle("Profile");
+              if (index == 4) provider.setAppBarTitle("Setting");
             },
             items: BottomNavItems.items,
           ),
