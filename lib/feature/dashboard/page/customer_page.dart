@@ -35,7 +35,7 @@ class CustomersPage extends StatelessWidget {
               onPressed: () {
                 final filters = [
                   FilterItem(
-                    label: "Category",
+                    label: "Status",
                     options: ["All", "Active", "Inactive"],
                     selectedValue: "All",
                   ),
@@ -54,7 +54,7 @@ class CustomersPage extends StatelessWidget {
                   },
                   onApply: () {
                     final selectedStatus = filters
-                        .firstWhere((f) => f.label == "Category")
+                        .firstWhere((f) => f.label == "Status")
                         .selectedValue;
                     provider.setStatusFilter(selectedStatus);
 
