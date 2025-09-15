@@ -101,44 +101,18 @@ class OrdersProvider with ChangeNotifier {
   ];
 
   List<Order> _orders = [];
-
-  List<Order> get orders => _orders;
+  List<Order> _filteredOrders = [];
+  List<Order> get orders => _filteredOrders;
+  //List<Order> get orders => _orders;
 
   OrdersProvider() {
     _loadOrders();
   }
 
   String _searchQuery = "";
-  String _selectedCategory = "All";
-  String _selectedStatus = "All";
-  String get selectedCategory => _selectedCategory;
-  String get selectedStatus => _selectedStatus;
-  List<Order> get filteredProducts {
-    return orders.where((p) {
-      final matchesSearch = p.orderId.toLowerCase().contains(_searchQuery.toLowerCase());
+  String _statusFilter = "All";
 
-      final matchesCategory =
-          _selectedCategory == "All" || p.customerName == _selectedCategory;
 
-      final matchesStatus =
-          _selectedStatus == "All" || p.status == _selectedStatus;
-
-      return matchesSearch && matchesCategory && matchesStatus;
-    }).toList();
-  }
-  void setCategory(String category) {
-    _selectedCategory = category;
-    notifyListeners();
-  }
-
-  void setStatus(String status) {
-    _selectedStatus = status;
-    notifyListeners();
-  }
-  void setSearchQuery(String query) {
-    _searchQuery = query;
-    notifyListeners();
-  }
   Color getStatusColor(String status) {
     switch (status) {
       case "Pending":
@@ -249,7 +223,37 @@ class OrdersProvider with ChangeNotifier {
         status: "Delivered",
         date: DateTime.now().subtract(Duration(days: 5)),
       ),
+
+
     ];
+    _applyFilters();
     notifyListeners();
   }
+  void searchOrders(String query) {
+    _searchQuery = query.toLowerCase();
+    _applyFilters();
+  }
+
+  /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
+  void filterByStatus(String status) {
+    _statusFilter = status;
+    _applyFilters();
+  }
+
+  void _applyFilters() {
+    _filteredOrders = _orders.where((order) {
+      bool matchesSearch = _searchQuery.isEmpty ||
+          order.orderId.toLowerCase().contains(_searchQuery) ||
+          order.customerName.toLowerCase().contains(_searchQuery) ||
+          order.date.toString().toLowerCase().contains(_searchQuery);
+
+      bool matchesStatus =
+          _statusFilter == "All" || order.status == _statusFilter;
+
+      return matchesSearch && matchesStatus;
+    }).toList();
+
+    notifyListeners();
+  }
+
 }

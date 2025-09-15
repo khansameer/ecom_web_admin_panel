@@ -5,6 +5,7 @@ import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/feature/dashboard/product_widget/common_product_widget.dart';
 import 'package:neeknots/provider/dashboard_provider.dart';
+import 'package:neeknots/provider/order_provider.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -229,7 +230,7 @@ commonTopProductListView(){
           ),
 
           Spacer(),
-          commonText(text: "See All",color: colorTextDesc)
+          commonText(text: "See All",color: colorTextDesc,fontSize: 12)
         ],
       ),
 
@@ -254,7 +255,7 @@ commonTopProductListView(){
                           borderColor: colorBorder
                       ),
                       margin: EdgeInsets.only(right: 8),
-                      padding: EdgeInsets.all(5),
+                      padding: EdgeInsets.all(2 ),
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -272,46 +273,61 @@ commonTopProductListView(){
                                 child: Image.network(fit: BoxFit.cover, data.icon),
                               ),
                               Positioned(
-                                  bottom: 3,
-                                  right: 3,
+                                  bottom: 5,
+                                  right: 6,
                                   child: Container(
                                     padding: EdgeInsets.symmetric(horizontal: 10,vertical: 2),
                                     decoration: commonBoxDecoration(
                                       borderRadius: 5,
-                                      color: provider
+
+                                      color: Colors.white.withValues(alpha: 0.9),
+                                      borderColor: provider
                                           .getStatusColor(data.status)
                                           .withValues(alpha: 1),
                                     ),
                                    height: 30,
                                     child: Center(
-                                      child: commonText(text: data.status,   fontSize: 10,
-                                        fontWeight: FontWeight.w600,),
+                                      child: commonText(
+                                        color: provider
+                                            .getStatusColor(data.status),
+                                        text: data.status,   fontSize: 10,
+                                        fontWeight: FontWeight.w500,),
                                     ),))
                             ],
                           ),
                           SizedBox(height: 8,),
-                          commonText(text: data.name,fontWeight: FontWeight.w600),
-                          SizedBox(height: 5,),
-                          RichText(
-                            text: TextSpan(
+                          Container(
+                            margin: EdgeInsets.only(left: 5),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                TextSpan(
-                                  text: "$left ", // first part
-                                  style: commonTextStyle(
-                                    fontSize: 12,
-                                    color: colorSale,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: right, // second part
-                                  style: commonTextStyle(
-                                    fontSize: 12,
-                                    color: colorText,
+
+                                commonText(text: data.name,fontWeight: FontWeight.w600),
+                                SizedBox(height: 3,),
+                                RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: "$left ", // first part
+                                        style: commonTextStyle(
+                                          fontSize: 12,
+                                          color: colorSale,
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text: right, // second part
+                                        style: commonTextStyle(
+                                          fontSize: 12,
+                                          color: colorText,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
+                          )
                         ],
                       ),
                     ),
@@ -335,31 +351,29 @@ commonTopOrderListView(){
         children: [
           Expanded(
             child: commonText(
-              text: "Top Orders",
+              text: "Top Products",
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
           ),
 
           Spacer(),
-          commonText(text: "See All",color: colorTextDesc)
+          commonText(text: "See All",color: colorTextDesc,fontSize: 12)
         ],
       ),
 
       SizedBox(
 
         height: 210,
-        child: Consumer<ProductProvider>(
+        child: Consumer<OrdersProvider>(
             builder: (context,provider,child) {
               return commonListViewBuilder(
                 padding: EdgeInsetsGeometry.zero,
                 shrinkWrap: true,
-                items: provider.filteredProducts,
+                items: provider.orders,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index, data) {
-                  final parts = data.inventory.split("for");
-                  final left = "${parts[0]}for";
-                  final right = parts.length > 1 ? parts[1].trim() : "";
+
 
                   return Center(
                     child: Container(
@@ -367,7 +381,7 @@ commonTopOrderListView(){
                           borderColor: colorBorder
                       ),
                       margin: EdgeInsets.only(right: 8),
-                      padding: EdgeInsets.all(5),
+                      padding: EdgeInsets.all(2 ),
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -382,49 +396,53 @@ commonTopOrderListView(){
                                 height: 140,
                                 clipBehavior: Clip.antiAlias,
                                 decoration: commonBoxDecoration(borderRadius: 10),
-                                child: Image.network(fit: BoxFit.cover, data.icon),
+                                child: Image.network(fit: BoxFit.cover, data.products.first.icon),
                               ),
                               Positioned(
-                                  bottom: 3,
-                                  right: 3,
+                                  bottom: 5,
+                                  right: 6,
                                   child: Container(
                                     padding: EdgeInsets.symmetric(horizontal: 10,vertical: 2),
                                     decoration: commonBoxDecoration(
                                       borderRadius: 5,
-                                      color: provider
+
+                                      color: Colors.white.withValues(alpha: 0.9),
+                                      borderColor: provider
                                           .getStatusColor(data.status)
                                           .withValues(alpha: 1),
                                     ),
                                     height: 30,
                                     child: Center(
-                                      child: commonText(text: data.status,   fontSize: 10,
-                                        fontWeight: FontWeight.w600,),
+                                      child: commonText(
+                                        color: provider
+                                            .getStatusColor(data.status),
+                                        text: data.status,   fontSize: 10,
+                                        fontWeight: FontWeight.w500,),
                                     ),))
                             ],
                           ),
                           SizedBox(height: 8,),
-                          commonText(text: data.name,fontWeight: FontWeight.w600),
-                          SizedBox(height: 5,),
-                          RichText(
-                            text: TextSpan(
+                          Container(
+                            margin: EdgeInsets.only(left: 5),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                TextSpan(
-                                  text: "$left ", // first part
-                                  style: commonTextStyle(
-                                    fontSize: 12,
-                                    color: colorSale,
-                                  ),
+
+                                commonText(text: '#${data.orderId}',fontWeight: FontWeight.w600,color: colorLogo),
+                                Row(
+                                  children: [
+                                    Expanded(child: commonText(text: data.customerName,fontWeight: FontWeight.w600,fontSize: 12)),
+                                    commonText(text:data.date.toLocal().toString().split(' ')[0],fontWeight: FontWeight.w600,fontSize: 10,color: colorTextDesc),
+                                    SizedBox(width: 5,)
+                                  ],
                                 ),
-                                TextSpan(
-                                  text: right, // second part
-                                  style: commonTextStyle(
-                                    fontSize: 12,
-                                    color: colorText,
-                                  ),
-                                ),
+
+
+
                               ],
                             ),
-                          ),
+                          )
                         ],
                       ),
                     ),

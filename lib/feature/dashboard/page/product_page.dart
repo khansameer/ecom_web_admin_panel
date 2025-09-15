@@ -18,12 +18,56 @@ class ProductPage extends StatelessWidget {
               padding: const EdgeInsets.only(top: 18.0, left: 18, right: 18),
               child: commonTextField(
                 hintText: "Search products by name...",
-                prefixIcon: commonPrefixIcon(image: icProductSearch,width: 16,height: 16),
+                prefixIcon: commonPrefixIcon(
+                  image: icProductSearch,
+                  width: 16,
+                  height: 16,
+                ),
 
                 suffixIcon: IconButton(
-                  icon: commonPrefixIcon(image: icProductFilter,width: 20,height: 20),
+                  icon: commonPrefixIcon(
+                    image: icProductFilter,
+                    width: 20,
+                    height: 20,
+                  ),
                   onPressed: () {
-                    voidShowFilterDialog(context: context);
+                    final filters = [
+                      FilterItem(
+                        label: "Category",
+                        options: ["All", "Dresses", "Tops", "Shirts"],
+                        selectedValue: "All",
+                      ),
+                      FilterItem(
+                        label: "Status",
+                        options: ["All", "Active", "Draft"],
+                        selectedValue: "All",
+                      ),
+                    ];
+                    showCommonFilterDialog(
+                      context: context,
+                      title: "Filter Orders",
+                      filters: filters,
+                      onReset: () {
+                        // reset all filters
+                        for (var filter in filters) {
+                          filter.selectedValue = "All";
+                        }
+                        provider.setCategory("All");
+                        provider.setStatus("All");
+                      },
+                      onApply: () {
+                        final selectedStatus = filters
+                            .firstWhere((f) => f.label == "Category")
+                            .selectedValue;
+
+                        final selectedDate = filters
+                            .firstWhere((f) => f.label == "Status")
+                            .selectedValue;
+
+                        provider.setCategory(selectedStatus);
+                        provider.setStatus(selectedDate);
+                      },
+                    );
                   },
                 ),
                 onChanged: (value) => provider.setSearchQuery(value),
@@ -44,8 +88,7 @@ class ProductPage extends StatelessWidget {
                     textInventory2: right,
                     productName: data.name,
                     status: data.status,
-                    colorStatusColor: provider
-                        .getStatusColor(data.status),
+                    colorStatusColor: provider.getStatusColor(data.status),
                     decoration: commonBoxDecoration(
                       borderRadius: 8,
                       borderWidth: 0.5,

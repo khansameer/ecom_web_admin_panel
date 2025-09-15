@@ -18,7 +18,7 @@ commonOrderView({
     decoration: commonBoxDecoration(borderColor: colorBorder),
     margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
     child: Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(2.0),
       child: Row(
         spacing: 10,
         children: [
@@ -60,141 +60,11 @@ commonOrderView({
               color: colorTextStatus,
               fontWeight: FontWeight.w600,
             ),
-          )
+          ),
+          SizedBox(width: 1,)
 
         ],
       ),
     ),
   );
-}
-void showCommonFilterDialog({
-  required BuildContext context,
-  required String title,
-  required List<FilterItem> filters,
-  required VoidCallback onReset,
-  required VoidCallback onApply,
-}) {
-  showModalBottomSheet(
-    context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-    ),
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    commonText(
-                      text: title,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: colorLogo,
-                    ),
-                    commonInkWell(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: commonBoxDecoration(
-                          color: Colors.black,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            size: 15,
-                            Icons.close,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Dynamic Dropdowns
-                ...filters.map((filter) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      commonText(
-                        text: filter.label,
-                        color: colorText,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                      const SizedBox(height: 5),
-                      CommonDropdown(
-                        initialValue: filter.selectedValue,
-                        items: filter.options,
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              filter.selectedValue = value;
-                            });
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 15),
-                    ],
-                  );
-                }),
-
-                const SizedBox(height: 10),
-
-                // Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: commonButton(
-                        text: "Reset",
-                        color: Colors.grey,
-                        onPressed: () {
-                          onReset();
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: commonButton(
-                        text: "Apply",
-                        onPressed: () {
-                          onApply();
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-              ],
-            ),
-          );
-        },
-      );
-    },
-  );
-}
-
-/// Helper model for filter items
-class FilterItem {
-  String label;
-  List<String> options;
-  String selectedValue;
-
-  FilterItem({
-    required this.label,
-    required this.options,
-    required this.selectedValue,
-  });
 }
