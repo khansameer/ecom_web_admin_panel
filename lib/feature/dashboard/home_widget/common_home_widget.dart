@@ -213,7 +213,7 @@ homeGraphView() {
   );
 }
 
-commonTopProductListView(){
+commonTopProductListView({void Function()? onTap}){
   return Column(
     spacing: 10,
     children: [
@@ -230,7 +230,9 @@ commonTopProductListView(){
           ),
 
           Spacer(),
-          commonText(text: "See All",color: colorTextDesc,fontSize: 12)
+          commonInkWell(
+              onTap: onTap,
+              child: commonText(text: "See All",color: colorTextDesc,fontSize: 12))
         ],
       ),
 
@@ -341,7 +343,7 @@ commonTopProductListView(){
     ],
   );
 }
-commonTopOrderListView(){
+commonTopOrderListView({void Function()? onTap}){
   return Column(
     spacing: 10,
     children: [
@@ -358,7 +360,9 @@ commonTopOrderListView(){
           ),
 
           Spacer(),
-          commonText(text: "See All",color: colorTextDesc,fontSize: 12)
+          commonInkWell(
+              onTap: onTap,
+              child: commonText(text: "See All",color: colorTextDesc,fontSize: 12))
         ],
       ),
 
