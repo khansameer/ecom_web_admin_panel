@@ -178,15 +178,27 @@ homeGraphView() {
           child: Consumer<DashboardProvider>(
             builder: (context, provider, child) {
               return SfCartesianChart(
+
                 plotAreaBorderWidth: 0,
                 // hide border
                 primaryXAxis: CategoryAxis(
+                  labelStyle: commonTextStyle(
+
+                    fontSize: 12,
+
+                    fontWeight: FontWeight.w400,
+                  ),
                   majorGridLines: const MajorGridLines(width: 0),
                   axisLine: const AxisLine(width: 0), // hide bottom line
                 ),
                 primaryYAxis: NumericAxis(
                   minimum: 0,
                   maximum: 35,
+                  labelStyle:commonTextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
                   axisLine: const AxisLine(width: 0), // hide right side line
                   interval: 10,
                   majorGridLines: const MajorGridLines(dashArray: <double>[5, 5]),
@@ -194,10 +206,16 @@ homeGraphView() {
                 tooltipBehavior: TooltipBehavior(
                   enable: true,
                   header: '',
+                  textStyle: commonTextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                   format: 'point.y k',
                 ),
                 series: <CartesianSeries>[
                   SplineAreaSeries<SalesData, String>(
+
                     dataSource: provider.salesData,
                     xValueMapper: (SalesData sales, _) => sales.x,
                     yValueMapper: (SalesData sales, _) => sales.y,
