@@ -14,6 +14,7 @@ commonOrderView({
   required String status,
 }) {
   return Container(
+
     decoration: commonBoxDecoration(borderColor: colorBorder),
     margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
     child: Padding(

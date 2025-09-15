@@ -76,6 +76,7 @@ class ProductPage extends StatelessWidget {
 
             Expanded(
               child: commonListViewBuilder(
+                padding: const EdgeInsets.all(12),
                 items: provider.filteredProducts,
                 itemBuilder: (context, index, data) {
                   final parts = data.inventory.split("for");
@@ -84,6 +85,7 @@ class ProductPage extends StatelessWidget {
 
                   return commonProductListView(
                     image: data.icon,
+                    category: data.category,
                     textInventory1: left,
                     textInventory2: right,
                     productName: data.name,
