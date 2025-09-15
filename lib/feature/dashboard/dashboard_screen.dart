@@ -6,7 +6,7 @@ import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/feature/dashboard/page/home_page.dart';
 import 'package:neeknots/feature/dashboard/page/order_page.dart';
 import 'package:neeknots/feature/dashboard/page/product_page.dart';
-import 'package:neeknots/feature/dashboard/page/profile_page.dart';
+import 'package:neeknots/feature/dashboard/page/customer_page.dart';
 import 'package:neeknots/feature/dashboard/page/setting_page.dart';
 import 'package:neeknots/provider/dashboard_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
@@ -31,7 +31,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 2:
         return HomePage();
       case 3:
-        return ProfilePage();
+        return CustomersPage();
       case 4:
         return SettingPage();
       default:
@@ -71,8 +71,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               if (index == 0) provider.setAppBarTitle("Product");
               if (index == 1) provider.setAppBarTitle("Order");
               if (index == 2) provider.setAppBarTitle("Home");
-              if (index == 3) provider.setAppBarTitle("Profile");
-              if (index == 4) provider.setAppBarTitle("Setting");
+              if (index == 3) provider.setAppBarTitle("Customers");
+              if (index == 4) provider.setAppBarTitle("Account");
             },
             items: BottomNavItems.items,
           ),

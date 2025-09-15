@@ -10,6 +10,8 @@ import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../../../core/string/string_utils.dart';
+
 homeTopView() {
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
@@ -238,7 +240,7 @@ commonTopProductListView({void Function()? onTap}){
 
       SizedBox(
 
-        height: 210,
+        height: 215,
         child: Consumer<ProductProvider>(
             builder: (context,provider,child) {
               return commonListViewBuilder(
@@ -306,6 +308,7 @@ commonTopProductListView({void Function()? onTap}){
                               children: [
 
                                 commonText(text: data.name,fontWeight: FontWeight.w600),
+                                commonText(text: '$rupeeIcon${data.price}',fontWeight: FontWeight.w600,fontSize: 12),
                                 SizedBox(height: 3,),
                                 RichText(
                                   text: TextSpan(
@@ -313,14 +316,14 @@ commonTopProductListView({void Function()? onTap}){
                                       TextSpan(
                                         text: "$left ", // first part
                                         style: commonTextStyle(
-                                          fontSize: 12,
+                                          fontSize: 10,
                                           color: colorSale,
                                         ),
                                       ),
                                       TextSpan(
                                         text: right, // second part
                                         style: commonTextStyle(
-                                          fontSize: 12,
+                                          fontSize: 10,
                                           color: colorText,
                                         ),
                                       ),

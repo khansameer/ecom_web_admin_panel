@@ -373,7 +373,7 @@ Widget commonListTile({
   FontWeight? titleFontWeight,
   Color? textColor,
   double borderRadius = 10,
-  double titleFontSize = 15,
+  double titleFontSize = 14,
   Color? tileColor,
   TextOverflow? overflow,
   EdgeInsetsGeometry contentPadding = const EdgeInsets.symmetric(
@@ -393,7 +393,7 @@ Widget commonListTile({
           style: commonTextStyle(
             color: textColor ?? Colors.black,
             fontSize: titleFontSize,
-            fontWeight: titleFontWeight ?? FontWeight.w500,
+            fontWeight: titleFontWeight ?? FontWeight.w600,
           ),
         ),
     subtitle: subtitle != null
@@ -403,7 +403,7 @@ Widget commonListTile({
               overflow: overflow,
 
               fontSize: 12,
-              color: Colors.grey[600],
+              color: colorTextDesc,
             ),
           )
         : subtitleView,
@@ -824,12 +824,12 @@ class BottomNavItems {
     ),
 
     BottomNavigationBarItem(
-      icon: ImageIcon(AssetImage(icProfileMenu)),
-      label: 'Profile',
+      icon: ImageIcon(AssetImage(icTotalUser)),
+      label: 'Customers',
     ),
     BottomNavigationBarItem(
       icon: ImageIcon(AssetImage(icSetting)),
-      label: 'Setting',
+      label: 'Account',
     ),
   ];
 }

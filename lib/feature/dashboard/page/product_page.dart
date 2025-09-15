@@ -5,6 +5,8 @@ import 'package:neeknots/feature/dashboard/product_widget/common_product_widget.
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/string/string_utils.dart';
+
 class ProductPage extends StatelessWidget {
   const ProductPage({super.key});
 
@@ -85,7 +87,7 @@ class ProductPage extends StatelessWidget {
 
                   return commonProductListView(
                     image: data.icon,
-                    category: data.category,
+                    price:'$rupeeIcon${data.price}',
                     textInventory1: left,
                     textInventory2: right,
                     productName: data.name,

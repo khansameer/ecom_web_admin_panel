@@ -7,7 +7,7 @@ commonProductListView({
   required String image,
   String? textInventory1,
   String? textInventory2,
-  String? category,
+  String? price,
   Color ? colorStatusColor,
   required String productName,
   Decoration? decoration,
@@ -36,22 +36,23 @@ commonProductListView({
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 commonText(text: productName, fontWeight: FontWeight.w600,color: colorLogo),
-                commonText(text: category??'', fontWeight: FontWeight.w500,fontSize: 12),
+                commonText(text: price??'', fontWeight: FontWeight.w600,fontSize: 12),
 
                 RichText(
                   text: TextSpan(
                     children: [
                       TextSpan(
                         text: "$textInventory1 ", // first part
-                        style: commonTextStyle(fontSize: 12, color: colorSale),
+                        style: commonTextStyle(fontSize: 10, color: colorSale,),
                       ),
                       TextSpan(
                         text: textInventory2, // second part
-                        style: commonTextStyle(fontSize: 12, color: colorText),
+                        style: commonTextStyle(fontSize: 10, color: colorText),
                       ),
                     ],
                   ),
                 ),
+
               ],
             ),
           ),
