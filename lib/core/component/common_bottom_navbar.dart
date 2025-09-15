@@ -36,16 +36,17 @@ class CommonBottomNavBar extends StatelessWidget {
             ],
           ),
           child: BottomNavigationBar(
+
             backgroundColor: themeProvider.isDark?colorDarkBgColor:Colors.white,
             showSelectedLabels: true,
             showUnselectedLabels: true,
 
             unselectedLabelStyle: commonTextStyle(
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: FontWeight.w600,
             ),
             selectedLabelStyle: commonTextStyle(
-              fontSize: 12,
+              fontSize: 10,
               fontWeight: FontWeight.w600,
             ),
             iconSize: 20,
