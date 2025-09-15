@@ -14,6 +14,10 @@ class HomePage extends StatelessWidget {
         homeTopView(),
         SizedBox(height: 24,),
         SizedBox(height: 300, child: homeGraphView()),
+        SizedBox(height: 24,),
+        commonTopProductListView(),
+        SizedBox(height: 24,),
+        commonTopOrderListView(),
 
 
       ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:neeknots/provider/login_provider.dart';
+import 'package:neeknots/provider/order_provider.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:neeknots/routes/route_generator.dart';
@@ -20,6 +21,7 @@ List<SingleChildWidget> providers = [
   ChangeNotifierProvider<LoginProvider>(create: (_) => LoginProvider()),
   ChangeNotifierProvider<DashboardProvider>(create: (_) => DashboardProvider()),
   ChangeNotifierProvider<ProductProvider>(create: (_) => ProductProvider()),
+  ChangeNotifierProvider<OrdersProvider>(create: (_) => OrdersProvider()),
 ];
 
 Future<void> main() async {

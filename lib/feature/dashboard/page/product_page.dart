@@ -44,11 +44,17 @@ class ProductPage extends StatelessWidget {
                     textInventory2: right,
                     productName: data.name,
                     status: data.status,
+                    colorStatusColor: provider
+                        .getStatusColor(data.status),
                     decoration: commonBoxDecoration(
                       borderRadius: 8,
+                      borderWidth: 0.5,
                       color: provider
                           .getStatusColor(data.status)
-                          .withValues(alpha: 0.2),
+                          .withValues(alpha: 0.01),
+                      borderColor: provider
+                          .getStatusColor(data.status)
+                          .withValues(alpha: 1),
                     ),
                   );
                 },

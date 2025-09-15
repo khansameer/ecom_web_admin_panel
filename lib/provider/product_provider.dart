@@ -126,7 +126,7 @@ class ProductProvider with ChangeNotifier {
       case "Active":
         return Colors.green;
       case "Draft":
-        return Colors.grey;
+        return Colors.amber;
       default:
         return Colors.grey;
     }
