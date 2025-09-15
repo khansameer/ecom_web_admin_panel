@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 
-import '../../../core/component/CommonDropdown.dart';
 
 commonOrderView({
   required String image,
@@ -36,7 +35,7 @@ commonOrderView({
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                commonText(text: '#$orderID'??'', fontWeight: FontWeight.w600,fontSize: 14,color: colorLogo),
+                commonText(text: '#$orderID', fontWeight: FontWeight.w600,fontSize: 14,color: colorLogo),
                 commonText(text: productName, fontWeight: FontWeight.w600,fontSize: 12),
 
                 commonText(
