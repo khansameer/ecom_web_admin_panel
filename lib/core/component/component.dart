@@ -32,7 +32,7 @@ AppBar commonAppBar({
   final IconThemeData? iconTheme,
   final List<Color>? gradientColors,
 }) {
-
+  final themeProvider = Provider.of<ThemeProvider>(context); // 👈 listen:true
   return AppBar(
     surfaceTintColor: Colors.transparent,
     iconTheme: iconTheme,
@@ -59,17 +59,7 @@ AppBar commonAppBar({
         ),
     flexibleSpace: Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors:
-              gradientColors ??
-              const [
-                Colors.transparent,
-                Colors.transparent,
-                Colors.transparent,
-              ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+       color: themeProvider.isDark?colorDarkBgColor:colorLogo,
         borderRadius: BorderRadius.circular(0),
       ),
     ),

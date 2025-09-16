@@ -7,7 +7,11 @@ class CustomerDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return commonScaffold(
-      appBar: commonAppBar(title: "Customer Detail", context: context),
+      appBar: commonAppBar(
+        title: "Customer Detail",
+        context: context,
+        centerTitle: true,
+      ),
       body: Center(child: Text("Customer Details")),
     );
   }
