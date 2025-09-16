@@ -16,6 +16,8 @@ Widget buildAvatar({
   required ImagePickerProvider imageProvider,
 }) {
   final path = imageProvider.imagePath;
+
+  print('=====path======${path}');
   final fileExists = path != null && File(path).existsSync();
 
   return Container(
@@ -73,8 +75,9 @@ profileView({
             bottom: 0,
             child: commonInkWell(
               onTap: () async {
-                final path = await CommonImagePicker.pickImage(context);
+                final path = await CommonImagePicker.pickImage(context,themeProvider);
                 if (path != null) {
+                  print('=======$path');
                   imageProvider.setImagePath(path);
 
                   provider.setImageFilePath(

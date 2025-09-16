@@ -7,21 +7,23 @@ import 'package:image_picker/image_picker.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/main.dart';
+import 'package:neeknots/provider/theme_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class CommonImagePicker {
-  static Future<String?> pickImage(BuildContext context) async {
+  static Future<String?> pickImage(
+    BuildContext context,
+    ThemeProvider hemeProvider,
+  ) async {
     final source = await showDialog<ImageSource>(
       context: context,
       builder: (_) => CupertinoActionSheet(
-
         message: commonText(
           text:
-          "Choose an option below to upload your image from camera or gallery.",
+              "Choose an option below to upload your image from camera or gallery.",
           textAlign: TextAlign.center,
           fontWeight: FontWeight.w400,
           fontSize: 14,
-          color: Colors.black54,
         ),
         title: commonText(
           text: "Upload Your Image",
@@ -40,7 +42,6 @@ class CommonImagePicker {
           ),
         ),
         actions: [
-
           CupertinoActionSheetAction(
             onPressed: () => Navigator.pop(context, ImageSource.camera),
             child: Row(
@@ -48,12 +49,8 @@ class CommonImagePicker {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(Icons.camera, color: Colors.black.withValues(alpha: 0.7)),
-                commonText(
-                  fontWeight: FontWeight.w600,
-                  text: 'Camera',
-                  color: Colors.black.withValues(alpha: 0.7),
-                ),
+                Icon(Icons.camera),
+                commonText(fontWeight: FontWeight.w600, text: 'Camera'),
               ],
             ),
           ),
@@ -64,15 +61,8 @@ class CommonImagePicker {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.photo_library,
-                  color: Colors.black.withValues(alpha: 0.7),
-                ),
-                commonText(
-                  fontWeight: FontWeight.w600,
-                  text: 'Gallery',
-                  color: Colors.black.withValues(alpha: 0.7),
-                ),
+                Icon(Icons.photo_library),
+                commonText(fontWeight: FontWeight.w600, text: 'Gallery'),
               ],
             ),
           ),
@@ -82,18 +72,19 @@ class CommonImagePicker {
 
     if (source == null) return null;
 
-
     /// Ask platform-specific permissions
     bool permissionGranted = false;
 
     if (Platform.isAndroid) {
       final cameraStatus = await Permission.camera.request();
-      final storageStatus = await Permission.storage.request(); // use `storage` for general storage access
+      final storageStatus = await Permission.storage
+          .request(); // use `storage` for general storage access
       if (cameraStatus.isGranted || storageStatus.isGranted) {
         permissionGranted = true;
-      } else if (cameraStatus.isPermanentlyDenied || storageStatus.isPermanentlyDenied) {
+      } else if (cameraStatus.isPermanentlyDenied ||
+          storageStatus.isPermanentlyDenied) {
         // Open settings dialog
-        await _showPermissionDialog( isPermanent: true);
+        await _showPermissionDialog(isPermanent: true);
         return null;
       } else {
         // Show retry dialog
@@ -115,10 +106,10 @@ class CommonImagePicker {
       }
       // If permanently denied → open settings
       if (newCamera.isPermanentlyDenied || newPhotos.isPermanentlyDenied) {
-      //  await openAppSettings();
+        //  await openAppSettings();
         permissionGranted = true;
       }
-      }
+    }
 
     print('==permissionGranted===${permissionGranted}');
     if (!permissionGranted) {
@@ -126,51 +117,52 @@ class CommonImagePicker {
       return null;
     }
 
-    final pickedFile = await ImagePicker(
+    final pickedFile = await ImagePicker().pickImage(
+      imageQuality: 70, // reduce size/quality
+      maxWidth: 1080,
+      source: source,
+    );
 
-      ).pickImage(
-          imageQuality: 70, // reduce size/quality
-          maxWidth: 1080,
-          source: source);
+    if (pickedFile == null) return null;
 
-      if (pickedFile == null) return null;
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: pickedFile.path,
 
-      final croppedFile = await ImageCropper(
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: colorLogo,
+          toolbarWidgetColor: Colors.white,
+          activeControlsWidgetColor: Colors.blue,
 
-      ).cropImage(
-        sourcePath: pickedFile.path,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: true,
+        ),
+        IOSUiSettings(title: 'Crop Image'),
+      ],
+    );
 
-        uiSettings: [
-          AndroidUiSettings(
+    return croppedFile?.path;
+  }
 
-            toolbarTitle: 'Crop Image',
-            toolbarColor: colorLogo,
-            toolbarWidgetColor: Colors.white,
-            activeControlsWidgetColor: Colors.blue,
+  //openImageDialog(context, onImageSelected);
+}
 
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: true,
-          ),
-          IOSUiSettings(title: 'Crop Image'),
-        ],
-      );
-
-      return croppedFile?.path;
-    }
-      //openImageDialog(context, onImageSelected);
-    }
-
-
-
-Future<void> _showPermissionDialog( {bool isPermanent = false}) async {
+Future<void> _showPermissionDialog({bool isPermanent = false}) async {
   return showDialog(
     context: navigatorKey.currentContext!,
     builder: (ctx) {
       return CupertinoAlertDialog(
-        title: commonText(text: "Permission Required",fontSize: 16,fontWeight: FontWeight.w600),
-        content: commonText(text:isPermanent
-            ? "You have permanently denied permission. Please enable it from settings to continue."
-            : "This feature requires permission. Please allow it to continue."),
+        title: commonText(
+          text: "Permission Required",
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+        content: commonText(
+          text: isPermanent
+              ? "You have permanently denied permission. Please enable it from settings to continue."
+              : "This feature requires permission. Please allow it to continue.",
+        ),
         actions: [
           if (!isPermanent)
             TextButton(
