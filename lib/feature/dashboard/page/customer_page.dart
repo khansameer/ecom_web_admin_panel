@@ -83,8 +83,16 @@ class CustomersPage extends StatelessWidget {
                       textColor: themeProvider.isDark
                           ? Colors.white
                           : colorLogo,
-                      leadingIcon: CircleAvatar(
-                        backgroundImage: NetworkImage(data.avatar),
+                      leadingIcon: SizedBox(
+                        width: 45,
+                        height: 45,
+                        child: CircleAvatar(
+
+                          radius: 100,
+                          child: commonCircleNetworkImage(
+                            data.avatar,
+                          ),
+                        ),
                       ),
                       title: data.name,
                       subtitleView: commonText(text: data.email, fontSize: 12),

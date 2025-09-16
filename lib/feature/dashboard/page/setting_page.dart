@@ -4,9 +4,11 @@ import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/provider/profile_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
+import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/component/CommonSwitch.dart';
+import '../../../main.dart';
 import '../../../provider/image_picker_provider.dart';
 import '../setting_widget/common_setting_widget.dart';
 
@@ -20,8 +22,8 @@ class SettingPage extends StatelessWidget {
       listen: false,
     );
 
-    return Consumer2<ThemeProvider,ProfileProvider>(
-      builder: (context,themeProvider,provider,child) {
+    return Consumer2<ThemeProvider, ProfileProvider>(
+      builder: (context, themeProvider, provider, child) {
         return ListView(
           padding: EdgeInsets.all(16),
           children: [
@@ -39,7 +41,7 @@ class SettingPage extends StatelessWidget {
               text: "Sameer Khan",
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color:themeProvider.isDark?Colors.white: colorLogo,
+              color: themeProvider.isDark ? Colors.white : colorLogo,
             ),
             SizedBox(height: 4),
             commonText(
@@ -47,12 +49,21 @@ class SettingPage extends StatelessWidget {
               text: "sameer@redefinesolutions.com",
               fontSize: 13,
               fontWeight: FontWeight.w400,
-              color: themeProvider.isDark?Colors.white:Colors.black.withValues(alpha: 0.8),
+              color: themeProvider.isDark
+                  ? Colors.white
+                  : Colors.black.withValues(alpha: 0.8),
             ),
             SizedBox(height: 36),
             _commonView(
-                provider: themeProvider,
-                text: "Edit Information", image: icInfo),
+              onTap: () {
+                navigatorKey.currentState?.pushNamed(
+                  RouteName.editProfileScreen,
+                );
+              },
+              provider: themeProvider,
+              text: "Edit Information",
+              image: icInfo,
+            ),
             SizedBox(height: 24),
             _commonView(
               provider: themeProvider,
@@ -69,7 +80,7 @@ class SettingPage extends StatelessWidget {
             ),
             SizedBox(height: 24),
             _commonView(
-              text: themeProvider.isDark?"Dark Theme":"Light Theme ",
+              text: themeProvider.isDark ? "Dark Theme" : "Light Theme ",
               provider: themeProvider,
               image: icTheme,
               trailing: CommonSwitch(
@@ -83,26 +94,77 @@ class SettingPage extends StatelessWidget {
             ),
             SizedBox(height: 24),
             _commonView(
+              onTap: () {
+                navigatorKey.currentState?.pushNamed(
+                  RouteName.changePasswordScreen,
+                );
+              },
               image: icPassword,
-                provider: themeProvider,
-                text: "Change Password"),
+              provider: themeProvider,
+              text: "Change Password",
+            ),
+            SizedBox(height: 50),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                commonInkWell(
+                  onTap: () {
+                    showCommonDialog(
+                      confirmText: "Yes",
+                      onPressed: () {
+                        navigatorKey.currentState?.pushNamedAndRemoveUntil(
+                          RouteName.loginScreen,
+                          (Route<dynamic> route) => false,
+                        );
+                      },
+                      cancelText: "No",
+                      title: "Logout?",
+                      context: context,
+                      content: "Are you sure want to logout",
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 9, horizontal: 50),
+                    decoration: commonBoxDecoration(color: colorLogo),
+                    child: Center(
+                      child: commonText(
+                        text: "Logout".toUpperCase(),
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         );
-      }
+      },
     );
   }
 
-  _commonView({String? text, Widget? trailing, String? image,required ThemeProvider provider}) {
+  _commonView({
+    String? text,
+    Widget? trailing,
+    String? image,
+    void Function()? onTap,
+    required ThemeProvider provider,
+  }) {
     return Container(
-        decoration: commonBoxDecoration(
-            color: Colors.transparent,
-            borderColor: colorBorder),
+      decoration: commonBoxDecoration(
+        color: Colors.transparent,
+        borderColor: colorBorder,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: commonListTile(
+          onTap: onTap,
           titleFontWeight: FontWeight.w500,
           titleFontSize: 14,
-          textColor:provider.isDark?Colors.white: colorLogo,
+          textColor: provider.isDark ? Colors.white : colorLogo,
           contentPadding: EdgeInsetsGeometry.zero,
           trailing:
               trailing ??
@@ -118,14 +180,18 @@ class SettingPage extends StatelessWidget {
             width: 45,
             height: 45,
             decoration: commonBoxDecoration(
-              color: provider.isDark?Colors.transparent:colorLogo.withValues(alpha: 0.05),
-              borderColor: provider.isDark?Colors.white:colorLogo.withValues(alpha: 0.5),
+              color: provider.isDark
+                  ? Colors.transparent
+                  : colorLogo.withValues(alpha: 0.05),
+              borderColor: provider.isDark
+                  ? Colors.white
+                  : colorLogo.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: Center(
               child: commonPrefixIcon(
                 width: 20,
-                colorIcon: provider.isDark?Colors.white:colorLogo,
+                colorIcon: provider.isDark ? Colors.white : colorLogo,
                 height: 20,
                 image: image ?? icTotalProduct,
               ),

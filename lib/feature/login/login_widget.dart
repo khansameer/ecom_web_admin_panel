@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/provider/login_provider.dart';
+
+import '../../core/validation/validation.dart';
 
 Widget commonLoginView({
   required LoginProvider provider,
@@ -11,9 +14,9 @@ Widget commonLoginView({
     children: [
       commonTextField(
         keyboardType: TextInputType.emailAddress,
-        validator: provider.validateEmail,
+        validator: validateEmail,
 
-        prefixIcon: Icon(Icons.email_outlined, color: Colors.grey),
+        prefixIcon: commonPrefixIcon(image: icEmail),
         controller: provider.tetEmail,
         hintText: "Email",
       ),
@@ -33,8 +36,8 @@ Widget commonLoginView({
           onPressed: provider.togglePassword,
         ),
         keyboardType: TextInputType.visiblePassword,
-        validator: provider.validatePassword,
-        prefixIcon: Icon(Icons.lock_open_outlined, color: Colors.grey),
+        validator: validatePassword,
+        prefixIcon: commonPrefixIcon(image: icPassword),
       ),
       const SizedBox(height: 50),
       commonButton(text: "Login", onPressed: onPressed),

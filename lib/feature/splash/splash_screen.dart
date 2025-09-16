@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Consumer<ThemeProvider>(
         builder: (context,provider,child) {
           return commonAppBackground(
-            colorBG: provider.isDark?colorDarkBgColor:Colors.white,
+
             child: Center(
               child: commonSvgWidget(
                 color: provider.isDark?Colors.white: colorLogo,

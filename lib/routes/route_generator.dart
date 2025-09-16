@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/feature/change_password/change_password_screen.dart';
 import 'package:neeknots/feature/dashboard/page/customer_detail_page.dart';
+import 'package:neeknots/feature/edit_profile/edit_profile_screen.dart';
+import 'package:neeknots/feature/notification/notification_screen.dart';
 
 import '../feature/dashboard/dashboard_screen.dart';
 import '../feature/login/login_screen.dart';
@@ -18,6 +21,16 @@ class RouteGenerate {
         return MaterialPageRoute(builder: (_) => const DashboardScreen());
       case RouteName.customerDetail:
         return MaterialPageRoute(builder: (_) => const CustomerDetailPage());
+
+      case RouteName.notificationScreen:
+        return MaterialPageRoute(builder: (_) => const NotificationScreen());
+
+      case RouteName.changePasswordScreen:
+        return MaterialPageRoute(builder: (_) => const ChangePasswordScreen());
+
+
+      case RouteName.editProfileScreen:
+        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }

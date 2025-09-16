@@ -30,6 +30,34 @@ class LoginProvider with ChangeNotifier {
 
   final tetEmail = TextEditingController();
   final tetPassword = TextEditingController();
+  final tetCurrentPassword = TextEditingController();
+  final tetNewPassword = TextEditingController();
+  final tetConfirmPassword = TextEditingController();
+
+
+  bool _obscureCurrentPassword = true;
+
+  bool get obscureCurrentPassword => _obscureCurrentPassword;
+  void toggleCurrentPassword() {
+    _obscureCurrentPassword = !_obscureCurrentPassword;
+    notifyListeners();
+  }
+
+  bool _obscureNewPassword = true;
+
+  bool get obscureNewPassword => _obscureNewPassword;
+  void toggleNewPassword() {
+    _obscureNewPassword = !_obscureNewPassword;
+    notifyListeners();
+  }
+
+  bool _obscurConfirmPassword = true;
+
+  bool get obscureConfirmPassword => _obscurConfirmPassword;
+  void toggleConfirmPassword() {
+    _obscurConfirmPassword = !_obscurConfirmPassword;
+    notifyListeners();
+  }
 
   @override
   void dispose() {
@@ -40,31 +68,6 @@ class LoginProvider with ChangeNotifier {
 
 
 
-  String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Email is required';
-    }
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$');
-    if (!emailRegex.hasMatch(value)) {
-      return 'Enter a valid email';
-    }
-    return null;
-  }
-
-
-
-
-
-
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Password is required';
-    }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
-    return null;
-  }
 
 
 
@@ -74,6 +77,9 @@ class LoginProvider with ChangeNotifier {
 
     tetEmail.clear();
 
+    tetCurrentPassword.clear();
+    tetConfirmPassword.clear();
+    tetNewPassword.clear();
     tetPassword.clear();
 
     _isLoading = false;

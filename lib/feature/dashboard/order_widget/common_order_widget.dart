@@ -32,7 +32,7 @@ commonOrderView({
 
                 clipBehavior: Clip.antiAlias,
                 decoration: commonBoxDecoration(borderRadius: 10),
-                child: Image.network(fit: BoxFit.cover, image),
+                child: commonNetworkImage(fit: BoxFit.cover, image),
               ),
               Expanded(
                 child: Column(

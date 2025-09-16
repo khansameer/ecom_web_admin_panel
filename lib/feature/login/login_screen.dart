@@ -19,16 +19,14 @@ class LoginScreen extends StatelessWidget {
     final formLoginKey = GlobalKey<FormState>();
     return commonScaffold(
       body: Consumer<ThemeProvider>(
-        builder: (context,themeProvider,child) {
+        builder: (context, themeProvider, child) {
           return commonAppBackground(
-
-            colorBG: themeProvider.isDark?colorDarkBgColor:Colors.white,
             child: Center(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.all(20),
                 child: Consumer<LoginProvider>(
-                  builder: (context, provider ,child) {
+                  builder: (context, provider, child) {
                     return commonPopScope(
                       onBack: () {
                         provider.resetState();
@@ -42,7 +40,9 @@ class LoginScreen extends StatelessWidget {
                             Align(
                               alignment: AlignmentGeometry.center,
                               child: commonSvgWidget(
-                                color: themeProvider.isDark?Colors.white:colorLogo,
+                                color: themeProvider.isDark
+                                    ? Colors.white
+                                    : colorLogo,
                                 path: icLogo,
                                 width: size.width * 0.6,
                               ),
@@ -52,7 +52,9 @@ class LoginScreen extends StatelessWidget {
                               text: "Welcome back 👋 ",
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
-                              color: themeProvider.isDark?Colors.white:colorLogo,
+                              color: themeProvider.isDark
+                                  ? Colors.white
+                                  : colorLogo,
                             ),
                             const SizedBox(height: 2),
                             commonDescriptionText(
@@ -60,17 +62,18 @@ class LoginScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 20),
                             commonLoginView(
-
                               provider: provider,
                               onPressed: () {
                                 hideKeyboard(context);
-                                if (formLoginKey.currentState?.validate() == true) {
+                                if (formLoginKey.currentState?.validate() ==
+                                    true) {
                                   //put valid logic
 
-                                  navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                                    RouteName.dashboardScreen,
+                                  navigatorKey.currentState
+                                      ?.pushNamedAndRemoveUntil(
+                                        RouteName.dashboardScreen,
                                         (Route<dynamic> route) => false,
-                                  );
+                                      );
                                 }
                               },
                             ),
@@ -83,7 +86,7 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
           );
-        }
+        },
       ),
     );
   }

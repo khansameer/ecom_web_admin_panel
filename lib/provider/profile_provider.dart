@@ -1,19 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-
 class ProfileProvider with ChangeNotifier {
-
   bool _isFetching = false;
 
   bool get isFetching => _isFetching;
-
-
-
-
 
   bool _isUploading = false;
 
@@ -36,5 +28,20 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  final tetFName = TextEditingController();
+  final tetLName = TextEditingController();
+  final tetEmail = TextEditingController();
+  final tetPhoneNo = TextEditingController();
 
+  void resetState() {
+    tetEmail.clear();
+
+    tetFName.clear();
+    tetLName.clear();
+    tetPhoneNo.clear();
+
+    _isLoading = false;
+
+    notifyListeners();
+  }
 }

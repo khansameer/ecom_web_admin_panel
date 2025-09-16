@@ -721,13 +721,15 @@ String cleanFirebaseError(String message) {
   return message.replaceAll(RegExp(r"\[.*?\]\s*"), "");
 }
 
-Container commonAppBackground({/*required Size size,*/ required Widget child,Color? colorBG}) {
+Container commonAppBackground({required Widget child}) {
   var size = MediaQuery.of(navigatorKey.currentContext!).size;
+  final themeProvider = Provider.of<ThemeProvider>(navigatorKey.currentContext!);
   return Container(
     width: size.width,
     height: size.height,
     decoration: commonBoxDecoration(
-      color: colorBG??Colors.white,
+       borderRadius: 0,
+      color: themeProvider.isDark?colorDarkBgColor:Colors.white,
       //image: DecorationImage(fit: BoxFit.fill, image: AssetImage(icSa)),
     ),
     child: child,
@@ -965,6 +967,7 @@ class FilterItem {
   });
 }
 
+
 Widget commonCircleNetworkImage(
     String? imageUrl, {
       double size = 60,
@@ -1004,3 +1007,57 @@ Widget commonCircleNetworkImage(
     ),
   );
 }
+
+
+
+Widget commonNetworkImage(
+    String? imageUrl, {
+      double size = 60,
+      double borderWidth = 0,
+      Color borderColor = Colors.white,
+      BoxFit fit = BoxFit.cover,
+      Widget? placeholder,
+      Widget? errorWidget,
+      BoxShape shape = BoxShape.circle, // 👈 Circle ya Rectangle
+      double borderRadius = 8, // 👈 Rect ke liye radius
+    }) {
+  final isValidUrl = imageUrl != null && imageUrl.trim().isNotEmpty;
+
+  final fullUrl = isValidUrl ? imageUrl : null;
+
+  return Container(
+    width: size,
+    height: size,
+    padding: EdgeInsets.all(borderWidth),
+    decoration: BoxDecoration(
+      shape: shape,
+      border: Border.all(color: borderColor, width: borderWidth),
+      borderRadius:
+      shape == BoxShape.rectangle ? BorderRadius.circular(borderRadius) : null,
+    ),
+    child: ClipRRect(
+      borderRadius:
+      shape == BoxShape.rectangle ? BorderRadius.circular(borderRadius) : BorderRadius.zero,
+      child: isValidUrl
+          ? CachedNetworkImage(
+        height: size,
+        width: size,
+        imageUrl: fullUrl!,
+        fit: fit,
+        placeholder: (context, url) =>
+        placeholder ??
+            Center(child: SizedBox(
+              width: 20,   // 👈 yahan size set kijiye
+              height: 20,  // 👈 yahan size set kijiye
+              child: CircularProgressIndicator(
+
+                  strokeWidth: 2),
+            )),
+        errorWidget: (context, url, error) =>
+        errorWidget ?? Center(child: commonAssetImage(icDummyUser)),
+      )
+          : (errorWidget ?? Center(child: commonAssetImage(icDummyUser))),
+    ),
+  );
+}
+

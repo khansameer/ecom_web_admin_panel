@@ -31,7 +31,7 @@ commonProductListView({
 
                 clipBehavior: Clip.antiAlias,
                 decoration: commonBoxDecoration(borderRadius: 10),
-                child: Image.network(fit: BoxFit.cover, image),
+                child:commonNetworkImage(image) /*Image.network(fit: BoxFit.cover, image)*/,
               ),
               Expanded(
                 child: Column(

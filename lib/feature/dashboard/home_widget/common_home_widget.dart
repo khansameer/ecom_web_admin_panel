@@ -317,7 +317,7 @@ commonTopProductListView({void Function()? onTap}) {
                                   decoration: commonBoxDecoration(
                                     borderRadius: 10,
                                   ),
-                                  child: Image.network(
+                                  child: commonNetworkImage(
                                     fit: BoxFit.cover,
                                     data.icon,
                                   ),
@@ -473,7 +473,7 @@ commonTopOrderListView({void Function()? onTap}) {
                                   decoration: commonBoxDecoration(
                                     borderRadius: 10,
                                   ),
-                                  child: Image.network(
+                                  child: commonNetworkImage(
                                     fit: BoxFit.cover,
                                     data.products.first.icon,
                                   ),

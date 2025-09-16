@@ -7,6 +7,7 @@ const String icEmail="$iconLoginPath/mail.png";
 const String icPassword="$iconLoginPath/padlock.png";
 const String icPasswordShow="$iconLoginPath/show.png";
 const String icPasswordHide="$iconLoginPath/hide.png";
+const String icPhone="$iconLoginPath/ic_phone.png";
 
 //==============================dashboard=============================
 const String iconDashboardPath="$basePath/dashboard";
