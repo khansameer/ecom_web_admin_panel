@@ -3,6 +3,7 @@ import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/provider/theme_provider.dart';
+import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../../provider/customer_provider.dart';
@@ -15,7 +16,6 @@ class CustomersPage extends StatelessWidget {
     final provider = Provider.of<CustomerProvider>(context);
 
     return Column(
-
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 18.0, left: 18, right: 18),
@@ -40,7 +40,6 @@ class CustomersPage extends StatelessWidget {
                     options: ["All", "Active", "Inactive"],
                     selectedValue: "All",
                   ),
-
                 ];
                 showCommonFilterDialog(
                   context: context,
@@ -51,7 +50,6 @@ class CustomersPage extends StatelessWidget {
                     for (var filter in filters) {
                       filter.selectedValue = "All";
                     }
-
                   },
                   onApply: () {
                     final selectedStatus = filters
@@ -60,7 +58,6 @@ class CustomersPage extends StatelessWidget {
                     provider.setStatusFilter(selectedStatus);
 
                     //provider.setStatusFilter(value);
-
                   },
                 );
               },
@@ -69,33 +66,37 @@ class CustomersPage extends StatelessWidget {
           ),
         ),
 
-
         Expanded(
           child: commonListViewBuilder(
             padding: const EdgeInsets.all(12),
             items: provider.customers,
-            itemBuilder: (context, index,data) {
-
+            itemBuilder: (context, index, data) {
               return Consumer<ThemeProvider>(
-                builder: (context,themeProvider,child) {
+                builder: (context, themeProvider, child) {
                   return Container(
-                    decoration: commonBoxDecoration(
-                      borderColor: colorBorder
-                    ),
+                    decoration: commonBoxDecoration(borderColor: colorBorder),
                     margin: EdgeInsets.all(5),
                     child: commonListTile(
-                      textColor:themeProvider.isDark?Colors.white: colorLogo,
+                      onTap: () {
+                        Navigator.pushNamed(context, RouteName.customerDetail);
+                      },
+                      textColor: themeProvider.isDark
+                          ? Colors.white
+                          : colorLogo,
                       leadingIcon: CircleAvatar(
                         backgroundImage: NetworkImage(data.avatar),
                       ),
                       title: data.name,
-                      subtitleView: commonText(text: data.email,fontSize: 12),
+                      subtitleView: commonText(text: data.email, fontSize: 12),
                       trailing: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 5,
+                        ),
                         decoration: commonBoxDecoration(
                           borderRadius: 8,
                           borderWidth: 0.5,
-                        /*  color: provider
+                          /*  color: provider
                               .getStatusColor(data.status)
                               .withValues(alpha: 0.01),
                           borderColor: provider
@@ -103,7 +104,7 @@ class CustomersPage extends StatelessWidget {
                               .withValues(alpha: 1),*/
                         ),
                         child: commonText(
-                         text:  data.status,
+                          text: data.status,
                           color: provider.getStatusColor(data.status),
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
@@ -111,7 +112,7 @@ class CustomersPage extends StatelessWidget {
                       ),
                     ),
                   );
-                }
+                },
               );
             },
           ),
