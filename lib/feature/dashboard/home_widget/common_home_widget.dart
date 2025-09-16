@@ -27,7 +27,7 @@ homeTopView() {
                   color: colorSale,
                   provider: provider,
                   icon: icTotalSale,
-                  title: "Total Sales",
+                  title: "Today Sales",
                   subtitle: "+50% Incomes",
                   value: "\$278m",
                 ),

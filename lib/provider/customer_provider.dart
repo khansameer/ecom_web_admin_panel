@@ -132,4 +132,9 @@ class CustomerProvider with ChangeNotifier{
         return Colors.grey;
     }
   }
+  void reset() {
+    _searchQuery = "";
+    _statusFilter = "All";
+    notifyListeners();
+  }
 }

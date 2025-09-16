@@ -10,12 +10,13 @@ class CommonDropdown extends StatelessWidget {
   final List<String> items;
   final ValueChanged<String?> onChanged;
   final double? borderRadius;
-
+  final bool enabled;
   const CommonDropdown({
     super.key,
 
     required this.items,
     this.initialValue,
+    this.enabled = true, // default true
     this.borderRadius = 12.0,
     required this.onChanged,
   });
@@ -27,6 +28,7 @@ class CommonDropdown extends StatelessWidget {
         return DropdownButtonFormField2<String>(
           value: initialValue ?? (items.isNotEmpty ? items.first : null),
           decoration: InputDecoration(
+            enabled: enabled??true,
             border: commonTextFiledBorder(borderRadius: borderRadius),
             enabledBorder: commonTextFiledBorder(borderRadius: borderRadius),
             focusedBorder: commonTextFiledBorder(borderRadius: borderRadius),
@@ -41,7 +43,7 @@ class CommonDropdown extends StatelessWidget {
                 ),
               )
               .toList(),
-          onChanged: onChanged,
+          onChanged: enabled ? onChanged : null, // 👈 अब disable होगा
           buttonStyleData: const ButtonStyleData(
             padding: EdgeInsets.only(right: 8),
           ),

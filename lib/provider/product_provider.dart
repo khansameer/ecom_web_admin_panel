@@ -180,8 +180,69 @@ class ProductProvider with ChangeNotifier {
       price: 629.0,
     ),
   ];
+  List<Product> productsVariants = [
+    Product(
+      icon: "https://www.neeknots.com/cdn/shop/files/NEEK002.jpg",
+      name: "Other",
+      status: "Handbag",
+      inventory: "14 in stock for 7 variants",
+      category: "Dresses",
+      price: 499.0,
+    ),
+    Product(
+      icon: "https://www.neeknots.com/cdn/shop/files/NEEK002.jpg",
+      name: "Size",
+      status: "OS",
+      inventory: "14 in stock for 7 variants",
+      category: "Dresses",
+      price: 499.0,
+    ),
+  ];
+  List<Product> productsDetails = [
+    Product(
+      icon: "https://www.neeknots.com/cdn/shop/files/NEEK002.jpg",
+      name: "Alligator Soft Toy",
+      status: "Draft",
+      inventory: "14 in stock for 7 variants",
+      category: "Dresses",
+      price: 499.0,
+    ),
+    Product(
+      icon: "https://www.neeknots.com/cdn/shop/files/NEEK012.jpg",
+      name: "Bat Soft Toy",
+      status: "Draft",
+      inventory: "10 in stock for 5 variants",
+      category: "Dresses",
+      price: 399.0,
+    ),
+    Product(
+      icon: "https://www.neeknots.com/cdn/shop/files/NEEK018.jpg",
+      name: "Bee Soft Toy",
+      status: "Active",
+      inventory: "1 in stock for 1 variant",
+      category: "Tops",
+      price: 299.0,
+    ),
+    Product(
+      icon: "https://www.neeknots.com/cdn/shop/files/NEEK047.jpg",
+      name: "Cheetah Soft Toy",
+      status: "Active",
+      inventory: "0 in stock for 5 variants",
+      category: "Shirts",
+      price: 599.0,
+    ),
 
+  ];
 
+  int _currentIndex = 0;
+
+  List<Product> get images => productsDetails;
+  int get currentIndex => _currentIndex;
+
+  void setCurrentIndex(int index) {
+    _currentIndex = index;
+    notifyListeners();
+  }
   String _searchQuery = "";
   String _selectedCategory = "All";
   String _selectedStatus = "All";
@@ -228,5 +289,37 @@ class ProductProvider with ChangeNotifier {
       default:
         return Colors.grey;
     }
+  }
+
+
+  String _status = "Active";
+  String get status => _status;
+
+  void setFilter(String value) {
+    _status = value;
+    notifyListeners();
+  }
+  bool _isEdit = false;
+
+  bool get isEdit => _isEdit;
+
+  void toggleEdit() {
+    _isEdit = !_isEdit;
+    notifyListeners();
+  }
+
+  void setEdit(bool value) {
+    _isEdit = value;
+    notifyListeners();
+  }
+
+  void reset() {
+    _searchQuery = "";
+    _selectedCategory = "All";
+    _selectedStatus = "All";
+    _status = "Active";
+    _isEdit = false;
+    _currentIndex = 0;
+    notifyListeners();
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/provider/login_provider.dart';
 import 'package:neeknots/provider/profile_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
@@ -9,7 +10,10 @@ import 'package:provider/provider.dart';
 
 import '../../../core/component/CommonSwitch.dart';
 import '../../../main.dart';
+import '../../../provider/customer_provider.dart';
 import '../../../provider/image_picker_provider.dart';
+import '../../../provider/order_provider.dart';
+import '../../../provider/product_provider.dart';
 import '../setting_widget/common_setting_widget.dart';
 
 class SettingPage extends StatelessWidget {
@@ -71,7 +75,7 @@ class SettingPage extends StatelessWidget {
               image: icNotification,
               trailing: CommonSwitch(
                 value: themeProvider.isNotification,
-                onChanged: (value) => themeProvider.setNotification(),
+                onChanged: (value) => themeProvider.setNotification(true),
                 activeThumbColor: Colors.white,
                 inactiveThumbColor: colorLogo,
                 activeTrackColor: colorLogo,
@@ -114,6 +118,13 @@ class SettingPage extends StatelessWidget {
                     showCommonDialog(
                       confirmText: "Yes",
                       onPressed: () {
+
+                        context.read<ProductProvider>().reset();
+                        context.read<OrdersProvider>().resetFilters();
+                        context.read<CustomerProvider>().reset();
+                        context.read<ProfileProvider>().resetState();
+                        context.read<LoginProvider>().resetState();
+
                         navigatorKey.currentState?.pushNamedAndRemoveUntil(
                           RouteName.loginScreen,
                           (Route<dynamic> route) => false,

@@ -255,4 +255,11 @@ class OrdersProvider with ChangeNotifier {
     notifyListeners();
   }
 
+
+  void resetFilters() {
+    _searchQuery = "";
+    _statusFilter = "All";
+    _applyFilters();
+  }
+
 }

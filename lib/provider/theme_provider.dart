@@ -4,32 +4,38 @@ import '../core/hive/theme_cache.dart';
 
 class ThemeProvider with ChangeNotifier {
   bool _isDark = false;
+  bool _isNotification = false;
 
   bool get isDark => _isDark;
+
+  bool get isNotification => _isNotification;
 
   ThemeProvider() {
     _loadTheme();
   }
 
+  /// Toggle between Dark & Light Theme
   void toggleTheme() {
     _isDark = !_isDark;
     ThemeCache.saveTheme(_isDark);
     notifyListeners();
   }
 
-  void _loadTheme() async {
+  /// Load theme preference from cache
+  Future<void> _loadTheme() async {
     _isDark = await ThemeCache.getTheme();
     notifyListeners();
   }
 
-
-  bool _isNotification = false;
-
-  bool get isNotification => _isNotification;
-  void setNotification() {
-    _isNotification = !_isNotification;
-
+  /// Set notification state explicitly
+  void setNotification(bool value) {
+    _isNotification = value;
     notifyListeners();
   }
 
+  /// Toggle notification state
+  void toggleNotification() {
+    _isNotification = !_isNotification;
+    notifyListeners();
+  }
 }

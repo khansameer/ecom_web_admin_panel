@@ -48,10 +48,7 @@ class DashboardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void resetTab() {
-    _currentIndex = 0;
-    notifyListeners();
-  }
+
 
   String _filter = "Month";
   String get filter => _filter;
@@ -122,5 +119,14 @@ class DashboardProvider with ChangeNotifier {
   ];
 
   List<NotificationModel> get notifications => _notifications;
+
+  void resetTab() {
+    _currentIndex = 0;
+    _appbarTitle = null;
+    _isFetching = false;
+    _filter = "Month"; // 👈 default reset
+    notifyListeners();
+  }
+
 
 }

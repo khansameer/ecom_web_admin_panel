@@ -59,17 +59,18 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 
+
+
   @override
   void dispose() {
-    super.dispose();
     resetState();
+    tetEmail.dispose();
+    tetPassword.dispose();
+    tetCurrentPassword.dispose();
+    tetNewPassword.dispose();
+    tetConfirmPassword.dispose();
+    super.dispose();
   }
-
-
-
-
-
-
 
 
 

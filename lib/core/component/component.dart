@@ -279,6 +279,7 @@ Widget commonTextField({
   TextInputType keyboardType = TextInputType.text,
   bool obscureText = false,
   Widget? prefixIcon,
+  bool? enabled,
   Widget? suffixIcon,
   String? Function(String?)? validator,
   EdgeInsetsGeometry contentPadding = const EdgeInsets.symmetric(
@@ -303,6 +304,7 @@ Widget commonTextField({
   return Consumer<ThemeProvider>(
     builder: (context,provider,child) {
       return TextFormField(
+        enabled:enabled ,
         controller: controller,
         keyboardType: keyboardType,
         obscureText: obscureText,
