@@ -28,7 +28,7 @@ class CommonDropdown extends StatelessWidget {
         return DropdownButtonFormField2<String>(
           value: initialValue ?? (items.isNotEmpty ? items.first : null),
           decoration: InputDecoration(
-            enabled: enabled??true,
+            enabled: enabled,
             border: commonTextFiledBorder(borderRadius: borderRadius),
             enabledBorder: commonTextFiledBorder(borderRadius: borderRadius),
             focusedBorder: commonTextFiledBorder(borderRadius: borderRadius),

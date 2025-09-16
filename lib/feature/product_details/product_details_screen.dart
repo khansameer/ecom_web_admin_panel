@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/provider/product_provider.dart';
-import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/component/common_dropdown.dart';
