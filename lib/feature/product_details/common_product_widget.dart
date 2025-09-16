@@ -9,7 +9,7 @@ import '../../core/component/component.dart';
 import '../../main.dart';
 import '../../provider/theme_provider.dart';
 
-commonBannerView({required ProductProvider provider }){
+commonBannerView({required ProductProvider provider,void Function()? onTap }){
   final themeProvider = Provider.of<ThemeProvider>(navigatorKey.currentContext!);
   return Column(
     children: [
@@ -88,15 +88,18 @@ commonBannerView({required ProductProvider provider }){
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Container(
-              margin: EdgeInsets.only(right: 10),
-              padding: EdgeInsets.symmetric(horizontal: 15,vertical: 7),
-              decoration: commonBoxDecoration(
-                borderWidth: 0.5,
-                borderColor: themeProvider.isDark?Colors.white:colorLogo
-              ),
-              child: Center(
-                child: commonText(text: "Upload Image",color: themeProvider.isDark?Colors.white:colorLogo,fontWeight: FontWeight.w600,fontSize: 10),
+            commonInkWell(
+              onTap:onTap ,
+              child: Container(
+                margin: EdgeInsets.only(right: 10),
+                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 7),
+                decoration: commonBoxDecoration(
+                  borderWidth: 0.5,
+                  borderColor: themeProvider.isDark?Colors.white:colorLogo
+                ),
+                child: Center(
+                  child: commonText(text: "Upload Image",color: themeProvider.isDark?Colors.white:colorLogo,fontWeight: FontWeight.w600,fontSize: 10),
+                ),
               ),
             ),
           ],
