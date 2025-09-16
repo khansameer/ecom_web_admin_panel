@@ -96,12 +96,12 @@ class ProductPage extends StatelessWidget {
                     decoration: commonBoxDecoration(
                       borderRadius: 8,
                       borderWidth: 0.5,
-                      color: provider
+                     /* color: provider
                           .getStatusColor(data.status)
                           .withValues(alpha: 0.01),
                       borderColor: provider
                           .getStatusColor(data.status)
-                          .withValues(alpha: 1),
+                          .withValues(alpha: 1),*/
                     ),
                   );
                 },

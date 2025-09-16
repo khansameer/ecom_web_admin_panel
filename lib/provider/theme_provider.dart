@@ -21,4 +21,15 @@ class ThemeProvider with ChangeNotifier {
     _isDark = await ThemeCache.getTheme();
     notifyListeners();
   }
+
+
+  bool _isNotification = false;
+
+  bool get isNotification => _isNotification;
+  void setNotification() {
+    _isNotification = !_isNotification;
+
+    notifyListeners();
+  }
+
 }

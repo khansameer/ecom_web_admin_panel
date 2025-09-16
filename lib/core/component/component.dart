@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +13,7 @@ import 'package:neeknots/main.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'CommonDropdown.dart';
+import 'common_dropdown.dart';
 
 String generateUniqueId() {
   final random = Random();
@@ -190,7 +191,7 @@ TextStyle commonTextStyle({
 }
 
 BoxDecoration commonBoxDecoration({
-  Color color = Colors.white,
+  Color color = Colors.transparent,
   double borderRadius = 10.0,
   Color borderColor = Colors.transparent,
   double borderWidth = 1.0,
@@ -849,105 +850,111 @@ void showCommonFilterDialog({
     builder: (context) {
       return StatefulBuilder(
         builder: (context, setState) {
-          return Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          return Consumer<ThemeProvider>(
+            builder: (context,themeProvider,child) {
+              return Container(
+                color:themeProvider.isDark?colorDarkBgColor: Colors.white,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    commonText(
-                      text: title,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: colorLogo,
-                    ),
-                    commonInkWell(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: commonBoxDecoration(
-                          color: Colors.black,
-                          shape: BoxShape.circle,
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        commonText(
+                          text: title,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: themeProvider.isDark?Colors.white:colorLogo,
                         ),
-                        child: const Center(
-                          child: Icon(
-                            size: 15,
-                            Icons.close,
-                            color: Colors.white,
+                        commonInkWell(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: commonBoxDecoration(
+                              color: Colors.black,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Icon(
+                                size: 15,
+                                Icons.close,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
+                    const SizedBox(height: 20),
+
+                    // Dynamic Dropdowns
+                    ...filters.map((filter) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          commonText(
+                            text: filter.label,
+                            color:themeProvider.isDark?Colors.white: colorText,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                          ),
+                          const SizedBox(height: 5),
+                          CommonDropdown(
+                            initialValue: filter.selectedValue,
+                            items: filter.options,
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  filter.selectedValue = value;
+                                });
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 15),
+                        ],
+                      );
+                    }),
+
+                    const SizedBox(height: 10),
+
+                    // Buttons
+                    Row(
+                      children: [
+                        Expanded(
+                          child: commonButton(
+                            text: "Reset",
+                            colorBorder: colorLogo,
+                            textColor: colorLogo,
+                            color: Colors.white,
+                            onPressed: () {
+                              onReset();
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: commonButton(
+                            textColor: themeProvider.isDark?Colors.white:Colors.white,
+                            color: themeProvider.isDark?colorLogo:colorLogo,
+                            text: "Apply",
+                            onPressed: () {
+                              onApply();
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
                   ],
                 ),
-                const SizedBox(height: 20),
-
-                // Dynamic Dropdowns
-                ...filters.map((filter) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      commonText(
-                        text: filter.label,
-                        color: colorText,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                      const SizedBox(height: 5),
-                      CommonDropdown(
-                        initialValue: filter.selectedValue,
-                        items: filter.options,
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              filter.selectedValue = value;
-                            });
-                          }
-                        },
-                      ),
-                      const SizedBox(height: 15),
-                    ],
-                  );
-                }),
-
-                const SizedBox(height: 10),
-
-                // Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: commonButton(
-                        text: "Reset",
-                        colorBorder: colorLogo,
-                        textColor: colorLogo,
-                        color: Colors.white,
-                        onPressed: () {
-                          onReset();
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: commonButton(
-                        text: "Apply",
-                        onPressed: () {
-                          onApply();
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-              ],
-            ),
+              );
+            }
           );
         },
       );
@@ -968,3 +975,42 @@ class FilterItem {
   });
 }
 
+Widget commonCircleNetworkImage(
+    String? imageUrl, {
+      double size = 60,
+      double borderWidth = 0,
+      Color borderColor = Colors.white,
+      BoxFit fit = BoxFit.cover,
+      Widget? placeholder,
+      Widget? errorWidget,
+    }) {
+  final isValidUrl = imageUrl != null && imageUrl.trim().isNotEmpty;
+
+  // Final URL with base path
+  final fullUrl = isValidUrl ? imageUrl : null;
+
+  return Container(
+    width: size,
+    height: size,
+    padding: EdgeInsets.all(borderWidth),
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(color: borderColor, width: borderWidth),
+    ),
+    child: ClipOval(
+      child: isValidUrl
+          ? CachedNetworkImage(
+        height: size,
+        width: size,
+        imageUrl: fullUrl!,
+        fit: fit,
+        placeholder: (context, url) =>
+        placeholder ??
+            Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        errorWidget: (context, url, error) =>
+        errorWidget ?? Center(child: commonAssetImage(icDummyUser)),
+      )
+          : (errorWidget ?? Center(child: commonAssetImage(icDummyUser))),
+    ),
+  );
+}

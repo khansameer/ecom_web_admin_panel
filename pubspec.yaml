@@ -40,6 +40,10 @@ dependencies:
   hive_flutter: ^1.1.0
   dropdown_button2: ^2.3.9
   syncfusion_flutter_charts: ^31.1.19
+  cached_network_image: ^3.4.1
+  image_cropper: ^9.1.0
+  image_picker: ^1.2.0
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +71,7 @@ flutter:
     - assets/icons/login/
     - assets/icons/dashboard/
     - assets/icons/product/
+    - assets/icons/profile/
   fonts:
     - family: Poppins
       fonts:

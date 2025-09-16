@@ -3,7 +3,6 @@ import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:provider/provider.dart';
 
-import '../../main.dart';
 import '../../provider/theme_provider.dart';
 
 class CommonBottomNavBar extends StatelessWidget {
@@ -20,15 +19,16 @@ class CommonBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Consumer<ThemeProvider>(
-      builder: (context,themeProvider,child) {
+      builder: (context, themeProvider, child) {
         return Container(
           decoration: BoxDecoration(
-            color: themeProvider.isDark?colorDarkBgColor:Colors.white,
+            color: themeProvider.isDark ? colorDarkBgColor : Colors.white,
             boxShadow: [
               BoxShadow(
-                color: themeProvider.isDark?colorDarkBgColor:colorLogo.withValues(alpha: 0.5),
+                color: themeProvider.isDark
+                    ? colorDarkBgColor
+                    : colorLogo.withValues(alpha: 0.5),
                 spreadRadius: 0,
                 blurRadius: 6,
                 offset: const Offset(0, -3), // shadow upar ki taraf
@@ -36,8 +36,9 @@ class CommonBottomNavBar extends StatelessWidget {
             ],
           ),
           child: BottomNavigationBar(
-
-            backgroundColor: themeProvider.isDark?colorDarkBgColor:Colors.white,
+            backgroundColor: themeProvider.isDark
+                ? colorDarkBgColor
+                : Colors.white,
             showSelectedLabels: true,
             showUnselectedLabels: true,
 
@@ -51,7 +52,7 @@ class CommonBottomNavBar extends StatelessWidget {
             ),
             iconSize: 20,
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: themeProvider.isDark?Colors.white:colorLogo,
+            selectedItemColor: themeProvider.isDark ? Colors.white : colorLogo,
             // aap apna colorButton laga sakte ho
             unselectedItemColor: Colors.grey,
             currentIndex: currentIndex,
@@ -59,7 +60,7 @@ class CommonBottomNavBar extends StatelessWidget {
             items: items,
           ),
         );
-      }
+      },
     );
   }
 }
