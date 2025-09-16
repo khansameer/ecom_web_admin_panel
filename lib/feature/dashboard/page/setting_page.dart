@@ -19,10 +19,9 @@ class SettingPage extends StatelessWidget {
       context,
       listen: false,
     );
-    final provider = Provider.of<ProfileProvider>(context, listen: false);
 
-    return Consumer<ThemeProvider>(
-      builder: (context,themeProvider,child) {
+    return Consumer2<ThemeProvider,ProfileProvider>(
+      builder: (context,themeProvider,provider,child) {
         return ListView(
           padding: EdgeInsets.all(16),
           children: [
