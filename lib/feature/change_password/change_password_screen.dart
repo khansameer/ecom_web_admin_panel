@@ -19,6 +19,7 @@ class ChangePasswordScreen extends StatelessWidget {
     var size = MediaQuery.sizeOf(context);
     final formChangePasswordKey = GlobalKey<FormState>();
     return commonScaffold(
+      appBar: commonAppBar(title: "Change Password", context: context,centerTitle: true),
       body: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return commonAppBackground(

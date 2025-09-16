@@ -127,11 +127,11 @@ class SettingPage extends StatelessWidget {
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 9, horizontal: 50),
-                    decoration: commonBoxDecoration(color: colorLogo),
+                    decoration: commonBoxDecoration(color: themeProvider.isDark?Colors.white:colorLogo),
                     child: Center(
                       child: commonText(
                         text: "Logout".toUpperCase(),
-                        color: Colors.white,
+                        color: themeProvider.isDark?Colors.black: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),

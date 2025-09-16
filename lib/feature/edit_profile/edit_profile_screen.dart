@@ -7,14 +7,36 @@ import 'package:neeknots/provider/profile_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-class EditProfileScreen extends StatelessWidget {
+class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    init();
+  }
+  void init(){
+    final provider = Provider.of<ProfileProvider>(context, listen: false);
+
+
+    provider.tetFName.text="Sameer";
+    provider.tetLName.text="Khan";
+    provider.tetEmail.text="sameer@redefinesolutions.com";
+  }
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.sizeOf(context);
     final formProfileKey = GlobalKey<FormState>();
     return commonScaffold(
+      appBar: commonAppBar(title: "Update  Profile", context: context,centerTitle: true),
       body: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return commonAppBackground(
