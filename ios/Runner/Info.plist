@@ -58,5 +58,13 @@
 
     <key>NSPhotoLibraryAddUsageDescription</key>
     <string>We need to save cropped images to your photo library.</string>
+    <key>UIBackgroundModes</key>
+    <array>
+      <string>fetch</string>
+      <string>remote-notification</string>
+    </array>
+
+    <key>NSUserNotificationUsageDescription</key>
+    <string>This app needs notification permission</string>
 </dict>
 </plist>
