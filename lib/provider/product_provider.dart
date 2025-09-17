@@ -233,7 +233,6 @@ class ProductProvider with ChangeNotifier {
       category: "Shirts",
       price: 599.0,
     ),
-
   ];
 
   int _currentIndex = 0;
@@ -245,6 +244,7 @@ class ProductProvider with ChangeNotifier {
     _currentIndex = index;
     notifyListeners();
   }
+
   String _searchQuery = "";
   String _selectedCategory = "All";
   String _selectedStatus = "All";
@@ -255,7 +255,9 @@ class ProductProvider with ChangeNotifier {
 
   List<Product> get filteredProducts {
     return products.where((p) {
-      final matchesSearch = p.name.toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesSearch = p.name.toLowerCase().contains(
+        _searchQuery.toLowerCase(),
+      );
 
       final matchesCategory =
           _selectedCategory == "All" || p.category == _selectedCategory;
@@ -293,7 +295,6 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-
   String _status = "Active";
   String get status => _status;
 
@@ -301,6 +302,7 @@ class ProductProvider with ChangeNotifier {
     _status = value;
     notifyListeners();
   }
+
   bool _isEdit = false;
 
   bool get isEdit => _isEdit;
@@ -322,6 +324,7 @@ class ProductProvider with ChangeNotifier {
     _status = "Active";
     _isEdit = false;
     _currentIndex = 0;
+    _imageFiles.clear();
     notifyListeners();
   }
 
@@ -347,6 +350,7 @@ class ProductProvider with ChangeNotifier {
 
   void removeImage(int index) {
     _imageFiles.removeAt(index);
+
     notifyListeners();
   }
 

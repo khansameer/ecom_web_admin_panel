@@ -61,7 +61,6 @@ class OrderPage extends StatelessWidget {
               child: commonListViewBuilder(
                 padding: const EdgeInsets.all(12),
                 items: provider.orders,
-
                 itemBuilder: (context, index, data) {
                   return commonOrderView(
                     colorTextStatus: provider.getStatusColor(data.status),

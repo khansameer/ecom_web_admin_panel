@@ -68,7 +68,7 @@ class SettingPage extends StatelessWidget {
               text: "Edit Information",
               image: icInfo,
             ),
-            SizedBox(height: 24),
+            SizedBox(height: 16),
             _commonView(
               provider: themeProvider,
               text: "Notification",
@@ -82,7 +82,7 @@ class SettingPage extends StatelessWidget {
                 inactiveTrackColor: Colors.white,
               ),
             ),
-            SizedBox(height: 24),
+            SizedBox(height: 16),
             _commonView(
               text: themeProvider.isDark ? "Dark Theme" : "Light Theme ",
               provider: themeProvider,
@@ -96,7 +96,7 @@ class SettingPage extends StatelessWidget {
                 inactiveTrackColor: Colors.white,
               ),
             ),
-            SizedBox(height: 24),
+            SizedBox(height: 16),
             _commonView(
               onTap: () {
                 navigatorKey.currentState?.pushNamed(
@@ -107,7 +107,7 @@ class SettingPage extends StatelessWidget {
               provider: themeProvider,
               text: "Change Password",
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,7 +118,6 @@ class SettingPage extends StatelessWidget {
                     showCommonDialog(
                       confirmText: "Yes",
                       onPressed: () {
-
                         context.read<ProductProvider>().reset();
                         context.read<OrdersProvider>().resetFilters();
                         context.read<CustomerProvider>().reset();
@@ -138,19 +137,24 @@ class SettingPage extends StatelessWidget {
                   },
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 9, horizontal: 50),
-                    decoration: commonBoxDecoration(color: themeProvider.isDark?Colors.white:colorLogo),
+                    decoration: commonBoxDecoration(
+                      color: themeProvider.isDark ? Colors.white : colorLogo,
+                    ),
                     child: Center(
                       child: commonText(
                         text: "Logout".toUpperCase(),
-                        color: themeProvider.isDark?Colors.black: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                        color: themeProvider.isDark
+                            ? Colors.black
+                            : Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),
                 ),
               ],
             ),
+            SizedBox(height: 8),
           ],
         );
       },

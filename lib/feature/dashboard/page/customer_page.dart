@@ -46,10 +46,7 @@ class CustomersPage extends StatelessWidget {
                   title: "Filter Customer",
                   filters: filters,
                   onReset: () {
-                    // reset all filters
-                    for (var filter in filters) {
-                      filter.selectedValue = "All";
-                    }
+                    provider.setStatusFilter("All");
                   },
                   onApply: () {
                     final selectedStatus = filters
@@ -87,11 +84,8 @@ class CustomersPage extends StatelessWidget {
                         width: 45,
                         height: 45,
                         child: CircleAvatar(
-
                           radius: 100,
-                          child: commonCircleNetworkImage(
-                            data.avatar,
-                          ),
+                          child: commonCircleNetworkImage(data.avatar),
                         ),
                       ),
                       title: data.name,

@@ -23,7 +23,6 @@ class AddProductScreen extends StatefulWidget {
 }
 
 class _AddProductScreenState extends State<AddProductScreen> {
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ProductProvider>(context);
@@ -33,69 +32,94 @@ class _AddProductScreenState extends State<AddProductScreen> {
         context: context,
         centerTitle: true,
       ),
-      body: commonAppBackground(
-        child: ListView(
-          padding: EdgeInsets.all(16),
+      body: commonPopScope(
+        onBack: () {
+          provider.reset();
+        },
+        child: commonAppBackground(
+          child: ListView(
+            padding: EdgeInsets.all(16),
 
-          children: [
-            Column(
-              spacing: 24,
-              children: [
-                uploadImageView(),
-                commonInputBoxView(),
-                commonInputBoxView(title: "Description", maxLine: 5),
+            children: [
+              Column(
+                spacing: 24,
+                children: [
+                  uploadImageView(),
+                  commonInputBoxView(),
+                  commonInputBoxView(title: "Description", maxLine: 5),
 
-                Row(
-                  spacing: 20,
-                  children: [
-                    Expanded(child: commonInputBoxView(title: "Quantity", keyboardType: TextInputType.number,
-                      inputFormatter: [FilteringTextInputFormatter.digitsOnly],)),
-                    Expanded(
-                      child: commonInputBoxView(
-                        title: "Price",
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
+                  Row(
+                    spacing: 20,
+                    children: [
+                      Expanded(
+                        child: commonInputBoxView(
+                          title: "Quantity",
+                          keyboardType: TextInputType.number,
+                          inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                         ),
-                        inputFormatter: [PriceInputFormatter()],
                       ),
-                    ),
-                  ],
-                ),
+                      Expanded(
+                        child: commonInputBoxView(
+                          title: "Price",
+                          keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true,
+                          ),
+                          inputFormatter: [PriceInputFormatter()],
+                        ),
+                      ),
+                    ],
+                  ),
 
-                Row(
-                  spacing: 20,
-                  children: [
-                    Expanded(child:  dropDownView(
-                      title: "Status",
-                      selectedValue: provider.addProductStatus,
-                      items: ["Active", "Draft"],
-                      enabled: true,
-                      onChanged: (value) {
-                        provider.setStatus(value!);
-                      },
-                    ),),
-                    Expanded(child: dropDownView(
-                      title: "Category",
-                      selectedValue: provider.category,
-                      items: ["Category 1", "Category 2", "Category 3", "Category 4", "Category 5"],
-                      enabled: true,
-                      onChanged: (value) {
-                        provider.setCategory(value!);
-                      },
-                    ),),
-                  ],
-                ),
+                  Row(
+                    spacing: 20,
+                    children: [
+                      Expanded(
+                        child: dropDownView(
+                          title: "Status",
+                          selectedValue: provider.addProductStatus,
+                          items: ["Active", "Draft"],
+                          enabled: true,
+                          onChanged: (value) {
+                            provider.setStatus(value!);
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: dropDownView(
+                          title: "Category",
+                          selectedValue: provider.category,
+                          items: [
+                            "Category 1",
+                            "Category 2",
+                            "Category 3",
+                            "Category 4",
+                            "Category 5",
+                          ],
+                          enabled: true,
+                          onChanged: (value) {
+                            provider.setCategory(value!);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
 
-                SizedBox(height: 2),
-                commonButton(
-                  width: MediaQuery.sizeOf(context).width,
-                  text: "Create Product",
-                  onPressed: () {},
-                ),
-                SizedBox(height: 9),
-              ],
-            ),
-          ],
+                  SizedBox(height: 2),
+                  commonButton(
+                    width: MediaQuery.sizeOf(context).width,
+                    text: "Create Product",
+                    onPressed: () {
+                      provider.reset();
+                      Navigator.pop(context);
+                    },
+                  ),
+                  SizedBox(height: 9),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -129,7 +153,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     );
   }
 
-
   uploadImageView({String? title, int? maxLine}) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Consumer2<ProductProvider, ImagePickerProvider>(
@@ -143,144 +166,144 @@ class _AddProductScreenState extends State<AddProductScreen> {
               fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
-            provider.imageFiles.isEmpty?Container(
-              height: 200,
-              decoration: commonBoxDecoration(
-                borderColor: colorBorder,
-                borderRadius: 12,
-              ),
-              child: Center(
-                child: commonInkWell(
-                  onTap: () async {
-                    final path = await CommonImagePicker.pickImage(
-                      context,
-                      themeProvider,
-                    );
-                    if (path != null) {
-                      provider.addImage(File(path));
-                    }
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      commonAssetImage(
-                        icUpload,
-                        width: 50,
-                        height: 50,
-                        color: themeProvider.isDark
-                            ? CupertinoColors.white
-                            : Colors.black,
-                      ),
-                      commonText(
-                        text: "Upload Images",
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ):SizedBox.shrink(),
-            provider.imageFiles.isNotEmpty
-                ?   GridView.builder(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(8),
-              gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // ek row me kitni images
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 8,
-              ),
-              itemCount: provider.imageFiles.length + 1,
-              itemBuilder: (context, index) {
-                if (index == provider.imageFiles.length) {
-                  // Add button
-                  return commonInkWell(
-                    onTap: () async {
-                      final path = await CommonImagePicker.pickImage(
-                        context,
-                        themeProvider,
-                      );
-                      if (path != null) {
-                        provider.addImage(File(path));
-                      }
-                    },
-                    child: Container(
-                      decoration: commonBoxDecoration(
-                        borderColor: colorBorder,
-                        borderRadius: 8,
-                      ),
-                      child: Center(
+            provider.imageFiles.isEmpty
+                ? Container(
+                    height: 200,
+                    decoration: commonBoxDecoration(
+                      borderColor: colorBorder,
+                      borderRadius: 12,
+                    ),
+                    child: Center(
+                      child: commonInkWell(
+                        onTap: () async {
+                          final path = await CommonImagePicker.pickImage(
+                            context,
+                            themeProvider,
+                          );
+                          if (path != null) {
+                            provider.addImage(File(path));
+                          }
+                        },
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             commonAssetImage(
                               icUpload,
-                              width: 30,
-                              height: 30,
+                              width: 50,
+                              height: 50,
                               color: themeProvider.isDark
                                   ? CupertinoColors.white
                                   : Colors.black,
                             ),
                             commonText(
                               text: "Upload Images",
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w600,
                             ),
-                         /*   Icon(Icons.add,
-                                color: themeProvider.isDark
-                                    ? CupertinoColors.white
-                                    : Colors.black,
-                                size: 30),*/
                           ],
                         ),
                       ),
                     ),
-                  );
-                }
-                return Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        provider.imageFiles[index],
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-                    Positioned(
-                      right: 5,
-                      top: 5,
-                      child: commonInkWell(
-                        onTap: () {
-                          provider.removeImage(index);
-                        },
-                        child: Container(
-                          width: 30,
-                          height: 30,
-                          decoration: commonBoxDecoration(
-                            color: themeProvider.isDark
-                                ? CupertinoColors.black
-                                : Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.close, size: 18),
+                  )
+                : SizedBox.shrink(),
+            provider.imageFiles.isNotEmpty
+                ? GridView.builder(
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.all(8),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3, // ek row me kitni images
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ):SizedBox.shrink()
+                    itemCount: provider.imageFiles.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == provider.imageFiles.length) {
+                        // Add button
+                        return commonInkWell(
+                          onTap: () async {
+                            final path = await CommonImagePicker.pickImage(
+                              context,
+                              themeProvider,
+                            );
+                            if (path != null) {
+                              provider.addImage(File(path));
+                            }
+                          },
+                          child: Container(
+                            decoration: commonBoxDecoration(
+                              borderColor: colorBorder,
+                              borderRadius: 8,
+                            ),
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  commonAssetImage(
+                                    icUpload,
+                                    width: 30,
+                                    height: 30,
+                                    color: themeProvider.isDark
+                                        ? CupertinoColors.white
+                                        : Colors.black,
+                                  ),
+                                  commonText(
+                                    text: "Upload Images",
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  /*   Icon(Icons.add,
+                                color: themeProvider.isDark
+                                    ? CupertinoColors.white
+                                    : Colors.black,
+                                size: 30),*/
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              provider.imageFiles[index],
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                            ),
+                          ),
+                          Positioned(
+                            right: 5,
+                            top: 5,
+                            child: commonInkWell(
+                              onTap: () {
+                                provider.removeImage(index);
+                              },
+                              child: Container(
+                                width: 30,
+                                height: 30,
+                                decoration: commonBoxDecoration(
+                                  color: themeProvider.isDark
+                                      ? CupertinoColors.black
+                                      : Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.close, size: 18),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  )
+                : SizedBox.shrink(),
           ],
         );
       },
     );
   }
-
-
-
 
   dropDownView({
     required String title,
@@ -293,11 +316,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       spacing: 10,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        commonText(
-          text: title,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
+        commonText(text: title, fontSize: 14, fontWeight: FontWeight.w600),
         CommonDropdown(
           initialValue: selectedValue,
           items: items,

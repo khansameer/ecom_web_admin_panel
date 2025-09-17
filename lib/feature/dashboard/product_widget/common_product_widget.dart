@@ -6,25 +6,26 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
-
 commonProductListView({
   required String image,
   String? textInventory1,
   String? textInventory2,
   String? price,
-  Color ? colorStatusColor,
+  Color? colorStatusColor,
   required String productName,
   Decoration? decoration,
   required String status,
 }) {
   return Consumer<ThemeProvider>(
-    builder: (context,provider,child) {
+    builder: (context, provider, child) {
       return Container(
         decoration: commonBoxDecoration(borderColor: colorBorder),
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         child: commonInkWell(
-          onTap: (){
-            navigatorKey.currentState?.pushNamed(RouteName.productDetailsScreen);
+          onTap: () {
+            navigatorKey.currentState?.pushNamed(
+              RouteName.productDetailsScreen,
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(2.0),
@@ -33,11 +34,13 @@ commonProductListView({
               children: [
                 Container(
                   width: 100,
-                  height: 80,
+                  height: 100,
 
                   clipBehavior: Clip.antiAlias,
                   decoration: commonBoxDecoration(borderRadius: 10),
-                  child:commonNetworkImage(image) /*Image.network(fit: BoxFit.cover, image)*/,
+                  child: commonNetworkImage(
+                    image,
+                  ) /*Image.network(fit: BoxFit.cover, image)*/,
                 ),
                 Expanded(
                   child: Column(
@@ -45,29 +48,48 @@ commonProductListView({
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      commonText(text: productName, fontWeight: FontWeight.w600,color: provider.isDark?Colors.white:colorLogo),
-                      commonText(text: price??'', fontWeight: FontWeight.w600,fontSize: 13,color:Colors.blueAccent),
+                      commonText(
+                        text: productName,
+                        fontWeight: FontWeight.w600,
+                        color: provider.isDark ? Colors.white : colorLogo,
+                      ),
+                      commonText(
+                        text: price ?? '',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: Colors.blueAccent,
+                      ),
 
                       RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
                               text: "$textInventory1 ", // first part
-                              style: commonTextStyle(fontSize: 10, color: colorSale,),
+                              style: commonTextStyle(
+                                fontSize: 10,
+                                color: colorSale,
+                              ),
                             ),
                             TextSpan(
                               text: textInventory2, // second part
-                              style: commonTextStyle(fontSize: 10, color: provider.isDark?Colors.white:colorText),
+                              style: commonTextStyle(
+                                fontSize: 10,
+                                color: provider.isDark
+                                    ? Colors.white
+                                    : colorText,
+                              ),
                             ),
                           ],
                         ),
                       ),
-
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 5,
+                  ),
                   decoration: decoration /*decoration: commonBoxDecoration(
                     color: provider
                         .getStatusColor(data.status)
@@ -80,13 +102,12 @@ commonProductListView({
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(width: 1,)
+                SizedBox(width: 1),
               ],
             ),
           ),
         ),
       );
-    }
+    },
   );
 }
-

@@ -6,12 +6,11 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
-
 commonOrderView({
   required String image,
   String? date,
   String? orderID,
-  Color ? colorTextStatus,
+  Color? colorTextStatus,
 
   required String productName,
   required double price,
@@ -19,13 +18,12 @@ commonOrderView({
   required String status,
 }) {
   return Consumer<ThemeProvider>(
-    builder: (context,provider,child) {
+    builder: (context, provider, child) {
       return Container(
-
         decoration: commonBoxDecoration(borderColor: colorBorder),
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         child: commonInkWell(
-          onTap: (){
+          onTap: () {
             navigatorKey.currentState?.pushNamed(RouteName.orderDetailsScreen);
           },
           child: Padding(
@@ -35,10 +33,10 @@ commonOrderView({
               children: [
                 Container(
                   width: 100,
-                  height: 80,
 
-                  clipBehavior: Clip.antiAlias,
-                  decoration: commonBoxDecoration(borderRadius: 10),
+                  height: 100,
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  decoration: commonBoxDecoration(borderRadius: 8),
                   child: commonNetworkImage(fit: BoxFit.cover, image),
                 ),
                 Expanded(
@@ -47,25 +45,46 @@ commonOrderView({
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      commonText(text: '#$orderID', fontWeight: FontWeight.w600,fontSize: 14,color: provider.isDark?Colors.white:colorLogo),
-                      commonText(text: productName, fontWeight: FontWeight.w600,fontSize: 12),
-                      commonText(text: '\$$price', fontWeight: FontWeight.w600,fontSize: 13,color:Colors.blueAccent),
+                      commonText(
+                        text: '#$orderID',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: provider.isDark ? Colors.white : colorLogo,
+                      ),
+                      commonText(
+                        text: productName,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                      commonText(
+                        text: '\$$price',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: Colors.blueAccent,
+                      ),
 
                       commonText(
-                          color: provider.isDark?Colors.white:colorTextDesc,
-                          text: date??'', fontWeight: FontWeight.w500,fontSize: 12),
-
-
+                        color: provider.isDark ? Colors.white : colorTextDesc,
+                        text: date ?? '',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                      ),
                     ],
                   ),
                 ),
                 Container(
-                  decoration: decoration??commonBoxDecoration(
-                    borderRadius: 8,
-                    color: Colors.grey
-                        .withValues(alpha: 0.5),
+                  decoration:
+                      decoration ??
+                      commonBoxDecoration(
+                        borderRadius: 8,
+                        color: Colors.grey.withValues(alpha: 0.5),
+                      ),
+                  padding: EdgeInsets.only(
+                    left: 8,
+                    right: 8,
+                    top: 5,
+                    bottom: 5,
                   ),
-                  padding: EdgeInsets.only(left: 8,right: 8,top: 5,bottom: 5),
                   child: commonText(
                     text: status,
                     fontSize: 10,
@@ -73,13 +92,12 @@ commonOrderView({
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(width: 1,)
-
+                SizedBox(width: 1),
               ],
             ),
           ),
         ),
       );
-    }
+    },
   );
 }
