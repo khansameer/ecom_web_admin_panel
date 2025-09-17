@@ -57,18 +57,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 : colorLogo,
 
             centerTitle: true,
-            actions: [notificationWidget(), SizedBox(width: 10)],
+            actions: [notificationWidget(), SizedBox(width: 16)],
             title: provider.appbarTitle ?? "Home",
             context: context,
             leading: Container(
-              padding: EdgeInsets.only(left: 10),
+              padding: EdgeInsets.only(left: 16),
 
-              child: Center(
-                child: commonCircleAssetImage(
-                  borderColor: Colors.white,
-                  borderWidth: 2,
-                  icDummyUser,
-                  size: 40,
+              child: commonInkWell(
+                onTap: () => provider.setIndex(4),
+                child: Center(
+                  child: commonCircleAssetImage(
+                    borderColor: Colors.white,
+                    borderWidth: 2,
+                    icDummyUser,
+                    size: 40,
+                  ),
                 ),
               ),
             ),
