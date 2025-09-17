@@ -28,6 +28,7 @@ const String icPen="$iconDashboardPath/ic_pen.png";
 const String iconProductPath="$basePath/product";
 const String icProductFilter="$iconProductPath/ic_filter.png";
 const String icProductSearch="$iconProductPath/ic_search.png";
+const String icUpload="$iconProductPath/ic_upload.png";
 //==============================Profile=============================
 const String iconProfilePath="$basePath/profile";
 const String icInfo="$iconProfilePath/info.png";

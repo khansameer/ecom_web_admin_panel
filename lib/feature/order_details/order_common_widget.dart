@@ -13,7 +13,7 @@ productInfo() {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Title
-        commonHeadingView(),
+        commonHeadingView(isPayment: false),
 
         const Divider(height: 1),
 
@@ -86,13 +86,40 @@ productInfo() {
   );
 }
 
-commonHeadingView({String? title}) {
+commonHeadingView({String? title,required bool isPayment}) {
   return Padding(
     padding: EdgeInsets.all(12.0),
-    child: commonText(
-      text: title ?? "Product Information",
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
+    child: Row(
+
+      children: [
+        Expanded(
+          child: commonText(
+            text: title ?? "Product Information",
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        isPayment?Container(
+          decoration: commonBoxDecoration(
+            color: colorBorder
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+          child: Row(
+            children: [
+              commonText(
+                text: "Payment Status : ",
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              commonText(
+                text: "Paid",
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ],
+          ),
+        ):SizedBox.shrink(),
+      ],
     ),
   );
 }
@@ -105,7 +132,7 @@ customerInfo() {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Title
-        commonHeadingView(title: "Customer Information"),
+        commonHeadingView(title: "Customer Information",isPayment: false),
 
         const Divider(height: 1),
 
@@ -171,7 +198,7 @@ paymentSummery() {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Title
-        commonHeadingView(title: "Payment"),
+        commonHeadingView(title: "Payment",isPayment: true),
 
         const Divider(height: 1),
 

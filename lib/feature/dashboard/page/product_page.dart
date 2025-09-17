@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/feature/dashboard/product_widget/common_product_widget.dart';
 import 'package:neeknots/provider/product_provider.dart';
-import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/string/string_utils.dart';
+import '../../../routes/app_routes.dart';
 
 class ProductPage extends StatelessWidget {
   const ProductPage({super.key});
@@ -117,20 +118,49 @@ class ProductPage extends StatelessWidget {
                       ),
                     ),
             ),
-            Container(
-              padding: const EdgeInsets.only(
-                left: 20,
-                top: 0,
-                bottom: 10,
-                right: 20,
-              ),
-              child: commonButton(
-                text: "ADD PRODUCT",
-                onPressed: () {
-                  Navigator.pushNamed(context, RouteName.addProductScreen);
-                },
+
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+
+                children: [
+                  commonInkWell(
+                    onTap: (){
+                      Navigator.pushNamed(context, RouteName.addProductScreen);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      decoration: commonBoxDecoration(color: colorLogo),
+                      child: Center(
+                        child: commonText(
+                          color: Colors.white,
+                          text: "Add Product".toUpperCase(),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ) /*Row(
+
+                        children: [
+                          commonButton(
+                            height: 45,
+                            width: 250,
+
+                            text: "ADD PRODUCT",
+                            onPressed: () {
+                              Navigator.pushNamed(context, RouteName.addProductScreen);
+                            },
+                          ),
+                        ],
+                      )*/,
+                    ),
+                  ),
+                ],
               ),
             ),
+            SizedBox(height: 8),
           ],
         );
       },

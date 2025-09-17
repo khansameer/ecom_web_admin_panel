@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class Product {
@@ -320,6 +322,31 @@ class ProductProvider with ChangeNotifier {
     _status = "Active";
     _isEdit = false;
     _currentIndex = 0;
+    notifyListeners();
+  }
+
+  File? _imageFile;
+  File? get imageFile => _imageFile;
+  void setImageFilePath({required File img}) {
+    _imageFile = img;
+    notifyListeners();
+  }
+
+  void imagePathClear() {
+    _imageFile = null;
+    notifyListeners();
+  }
+
+  List<File> _imageFiles = [];
+  List<File> get imageFiles => _imageFiles;
+
+  void addImage(File file) {
+    _imageFiles.add(file);
+    notifyListeners();
+  }
+
+  void removeImage(int index) {
+    _imageFiles.removeAt(index);
     notifyListeners();
   }
 }

@@ -12,12 +12,13 @@ class ProfileProvider with ChangeNotifier {
   bool get isUploading => _isUploading;
 
   File? _imageFile;
+  File? get imageFile => _imageFile;
   bool _isLoading = false;
 
   String _statusMessage = '';
 
   // Getters to access state from the UI
-  File? get imageFile => _imageFile;
+
 
   bool get isLoading => _isLoading;
 
