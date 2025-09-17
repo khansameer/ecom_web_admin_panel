@@ -45,7 +45,7 @@ AppBar commonAppBar({
       ),
     ),
     centerTitle: centerTitle,
-    backgroundColor:backgroundColor,
+    backgroundColor: backgroundColor,
     // important
     elevation: 0,
     actions: actions,
@@ -59,7 +59,7 @@ AppBar commonAppBar({
         ),
     flexibleSpace: Container(
       decoration: BoxDecoration(
-       color: themeProvider.isDark?colorDarkBgColor:colorLogo,
+        color: themeProvider.isDark ? colorDarkBgColor : colorLogo,
         borderRadius: BorderRadius.circular(0),
       ),
     ),
@@ -130,9 +130,8 @@ Widget commonText({
   TextStyle? style,
   TextDecoration? decoration,
 }) {
-
   return Consumer<ThemeProvider>(
-    builder: (context,themeProvider,child) {
+    builder: (context, themeProvider, child) {
       return Text(
         text,
         textAlign: textAlign,
@@ -145,11 +144,11 @@ Widget commonText({
               fontFamily: fontFamily,
               fontSize: fontSize,
               fontWeight: fontWeight,
-              color: color ?? (themeProvider.isDark ? Colors.white :colorText),
+              color: color ?? (themeProvider.isDark ? Colors.white : colorText),
               decoration: decoration,
             ),
       );
-    }
+    },
   );
 }
 
@@ -182,7 +181,7 @@ TextStyle commonTextStyle({
 
 BoxDecoration commonBoxDecoration({
   Color color = Colors.transparent,
-  double borderRadius = 10.0,
+  double borderRadius = 8.0,
   Color borderColor = Colors.transparent,
   double borderWidth = 1.0,
   List<BoxShadow>? boxShadow,
@@ -219,13 +218,13 @@ Widget commonButton({
   final EdgeInsetsGeometry? padding,
 }) {
   return Consumer<ThemeProvider>(
-    builder: (context,provider,child) {
+    builder: (context, provider, child) {
       return SizedBox(
         height: height ?? 56,
         width: width ?? MediaQuery.sizeOf(navigatorKey.currentContext!).width,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: provider.isDark?Colors.white:colorLogo,
+            color: provider.isDark ? Colors.white : colorLogo,
 
             borderRadius: BorderRadius.circular(radius ?? 15),
           ),
@@ -257,10 +256,12 @@ Widget commonButton({
               mainAxisSize: MainAxisSize.min,
               children: [
                 commonText(
-                  color: textColor ?? (provider.isDark ?colorDarkBgColor :Colors.white),
+                  color:
+                      textColor ??
+                      (provider.isDark ? colorDarkBgColor : Colors.white),
                   text: text.toUpperCase(),
                   fontSize: fontSize,
-                // color: provider.isDark?colorDarkBgColor:Colors.white,
+                  // color: provider.isDark?colorDarkBgColor:Colors.white,
                   fontWeight: fontWeight ?? FontWeight.w600,
                 ),
                 icon ?? const SizedBox.shrink(),
@@ -269,7 +270,7 @@ Widget commonButton({
           ),
         ),
       );
-    }
+    },
   );
 }
 
@@ -300,11 +301,10 @@ Widget commonTextField({
   List<TextInputFormatter>? inputFormatters,
   TextStyle? textStyle,
 }) {
-
   return Consumer<ThemeProvider>(
-    builder: (context,provider,child) {
+    builder: (context, provider, child) {
       return TextFormField(
-        enabled:enabled ,
+        enabled: enabled,
         controller: controller,
         keyboardType: keyboardType,
         obscureText: obscureText,
@@ -317,28 +317,40 @@ Widget commonTextField({
 
         onChanged: onChanged,
         inputFormatters: inputFormatters,
-        style: textStyle ?? commonTextStyle(fontSize: 14,color: provider.isDark?Colors.white:Colors.black),
+        style:
+            textStyle ??
+            commonTextStyle(
+              fontSize: 14,
+              color: provider.isDark ? Colors.white : Colors.black,
+            ),
         decoration: InputDecoration(
           hintText: hintText,
 
           hintStyle:
               hintStyle ??
-              commonTextStyle(color: provider.isDark?Colors.grey:Colors.black.withValues(alpha: 0.5)),
+              commonTextStyle(
+                color: provider.isDark
+                    ? Colors.grey
+                    : Colors.black.withValues(alpha: 0.5),
+              ),
           contentPadding: contentPadding,
 
           prefixIcon: prefixIcon,
           suffixIcon: suffixIcon,
           border:
-              enabledBorder ?? commonTextFiledBorder(borderRadius: borderRadius),
+              enabledBorder ??
+              commonTextFiledBorder(borderRadius: borderRadius),
           enabledBorder:
-              enabledBorder ?? commonTextFiledBorder(borderRadius: borderRadius),
+              enabledBorder ??
+              commonTextFiledBorder(borderRadius: borderRadius),
           focusedBorder:
-              enabledBorder ?? commonTextFiledBorder(borderRadius: borderRadius),
+              enabledBorder ??
+              commonTextFiledBorder(borderRadius: borderRadius),
           filled: filled,
           fillColor: fillColor,
         ),
       );
-    }
+    },
   );
 }
 
@@ -464,7 +476,7 @@ Widget commonScaffold({
             ? AppBar(title: commonText(text: title), centerTitle: true)
             : null),
     body: body,
-     backgroundColor: backgroundColor,
+    backgroundColor: backgroundColor,
     floatingActionButton: floatingActionButton,
     drawer: drawer,
     bottomNavigationBar: bottomNavigationBar,
@@ -671,7 +683,7 @@ Future<bool?> showCommonDialog({
                   },
                   child: commonText(
                     text: cancelText.toUpperCase(),
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w500,
                     color: Colors.red,
                   ),
                 ),
@@ -685,7 +697,7 @@ Future<bool?> showCommonDialog({
                     },
                 child: commonText(
                   text: confirmText.toUpperCase(),
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -725,13 +737,15 @@ String cleanFirebaseError(String message) {
 
 Container commonAppBackground({required Widget child}) {
   var size = MediaQuery.of(navigatorKey.currentContext!).size;
-  final themeProvider = Provider.of<ThemeProvider>(navigatorKey.currentContext!);
+  final themeProvider = Provider.of<ThemeProvider>(
+    navigatorKey.currentContext!,
+  );
   return Container(
     width: size.width,
     height: size.height,
     decoration: commonBoxDecoration(
-       borderRadius: 0,
-      color: themeProvider.isDark?colorDarkBgColor:Colors.white,
+      borderRadius: 0,
+      color: themeProvider.isDark ? colorDarkBgColor : Colors.white,
       //image: DecorationImage(fit: BoxFit.fill, image: AssetImage(icSa)),
     ),
     child: child,
@@ -792,18 +806,28 @@ commonDescriptionText({String? text}) {
   );
 }
 
-commonPrefixIcon({required String image,double ?width,double? height,Color ?colorIcon }) {
+commonPrefixIcon({
+  required String image,
+  double? width,
+  double? height,
+  Color? colorIcon,
+}) {
   return SizedBox(
-    width: width??24,
-    height: height??24,
+    width: width ?? 24,
+    height: height ?? 24,
     child: Center(
-      child: commonAssetImage(image, width: width??24, height:height?? 24, color: colorIcon??Colors.grey),
+      child: commonAssetImage(
+        image,
+        width: width ?? 24,
+        height: height ?? 24,
+        color: colorIcon ?? Colors.grey,
+      ),
     ),
   );
 }
+
 class BottomNavItems {
   static const List<BottomNavigationBarItem> items = [
-
     BottomNavigationBarItem(
       icon: ImageIcon(AssetImage(icProductMenu)),
       label: 'Product',
@@ -845,9 +869,9 @@ void showCommonFilterDialog({
       return StatefulBuilder(
         builder: (context, setState) {
           return Consumer<ThemeProvider>(
-            builder: (context,themeProvider,child) {
+            builder: (context, themeProvider, child) {
               return Container(
-                color:themeProvider.isDark?colorDarkBgColor: Colors.white,
+                color: themeProvider.isDark ? colorDarkBgColor : Colors.white,
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -861,7 +885,9 @@ void showCommonFilterDialog({
                           text: title,
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: themeProvider.isDark?Colors.white:colorLogo,
+                          color: themeProvider.isDark
+                              ? Colors.white
+                              : colorLogo,
                         ),
                         commonInkWell(
                           onTap: () => Navigator.pop(context),
@@ -892,7 +918,9 @@ void showCommonFilterDialog({
                         children: [
                           commonText(
                             text: filter.label,
-                            color:themeProvider.isDark?Colors.white: colorText,
+                            color: themeProvider.isDark
+                                ? Colors.white
+                                : colorText,
                             fontWeight: FontWeight.w500,
                             fontSize: 14,
                           ),
@@ -933,8 +961,10 @@ void showCommonFilterDialog({
                         const SizedBox(width: 16),
                         Expanded(
                           child: commonButton(
-                            textColor: themeProvider.isDark?Colors.white:Colors.white,
-                            color: themeProvider.isDark?colorLogo:colorLogo,
+                            textColor: themeProvider.isDark
+                                ? Colors.white
+                                : Colors.white,
+                            color: themeProvider.isDark ? colorLogo : colorLogo,
                             text: "Apply",
                             onPressed: () {
                               onApply();
@@ -948,7 +978,7 @@ void showCommonFilterDialog({
                   ],
                 ),
               );
-            }
+            },
           );
         },
       );
@@ -969,16 +999,15 @@ class FilterItem {
   });
 }
 
-
 Widget commonCircleNetworkImage(
-    String? imageUrl, {
-      double size = 60,
-      double borderWidth = 0,
-      Color borderColor = Colors.white,
-      BoxFit fit = BoxFit.cover,
-      Widget? placeholder,
-      Widget? errorWidget,
-    }) {
+  String? imageUrl, {
+  double size = 60,
+  double borderWidth = 0,
+  Color borderColor = Colors.white,
+  BoxFit fit = BoxFit.cover,
+  Widget? placeholder,
+  Widget? errorWidget,
+}) {
   final isValidUrl = imageUrl != null && imageUrl.trim().isNotEmpty;
 
   // Final URL with base path
@@ -995,34 +1024,32 @@ Widget commonCircleNetworkImage(
     child: ClipOval(
       child: isValidUrl
           ? CachedNetworkImage(
-        height: size,
-        width: size,
-        imageUrl: fullUrl!,
-        fit: fit,
-        placeholder: (context, url) =>
-        placeholder ??
-            Center(child: CircularProgressIndicator(strokeWidth: 2)),
-        errorWidget: (context, url, error) =>
-        errorWidget ?? Center(child: commonAssetImage(icDummyUser)),
-      )
+              height: size,
+              width: size,
+              imageUrl: fullUrl!,
+              fit: fit,
+              placeholder: (context, url) =>
+                  placeholder ??
+                  Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              errorWidget: (context, url, error) =>
+                  errorWidget ?? Center(child: commonAssetImage(icDummyUser)),
+            )
           : (errorWidget ?? Center(child: commonAssetImage(icDummyUser))),
     ),
   );
 }
 
-
-
 Widget commonNetworkImage(
-    String? imageUrl, {
-      double size = 60,
-      double borderWidth = 0,
-      Color borderColor = Colors.white,
-      BoxFit fit = BoxFit.cover,
-      Widget? placeholder,
-      Widget? errorWidget,
-      BoxShape shape = BoxShape.circle, // 👈 Circle ya Rectangle
-      double borderRadius = 8, // 👈 Rect ke liye radius
-    }) {
+  String? imageUrl, {
+  double size = 60,
+  double borderWidth = 0,
+  Color borderColor = Colors.white,
+  BoxFit fit = BoxFit.cover,
+  Widget? placeholder,
+  Widget? errorWidget,
+  BoxShape shape = BoxShape.circle, // 👈 Circle ya Rectangle
+  double borderRadius = 8, // 👈 Rect ke liye radius
+}) {
   final isValidUrl = imageUrl != null && imageUrl.trim().isNotEmpty;
 
   final fullUrl = isValidUrl ? imageUrl : null;
@@ -1034,32 +1061,33 @@ Widget commonNetworkImage(
     decoration: BoxDecoration(
       shape: shape,
       border: Border.all(color: borderColor, width: borderWidth),
-      borderRadius:
-      shape == BoxShape.rectangle ? BorderRadius.circular(borderRadius) : null,
+      borderRadius: shape == BoxShape.rectangle
+          ? BorderRadius.circular(borderRadius)
+          : null,
     ),
     child: ClipRRect(
-      borderRadius:
-      shape == BoxShape.rectangle ? BorderRadius.circular(borderRadius) : BorderRadius.zero,
+      borderRadius: shape == BoxShape.rectangle
+          ? BorderRadius.circular(borderRadius)
+          : BorderRadius.zero,
       child: isValidUrl
           ? CachedNetworkImage(
-        height: size,
-        width: size,
-        imageUrl: fullUrl!,
-        fit: fit,
-        placeholder: (context, url) =>
-        placeholder ??
-            Center(child: SizedBox(
-              width: 20,   // 👈 yahan size set kijiye
-              height: 20,  // 👈 yahan size set kijiye
-              child: CircularProgressIndicator(
-
-                  strokeWidth: 2),
-            )),
-        errorWidget: (context, url, error) =>
-        errorWidget ?? Center(child: commonAssetImage(icDummyUser)),
-      )
+              height: size,
+              width: size,
+              imageUrl: fullUrl!,
+              fit: fit,
+              placeholder: (context, url) =>
+                  placeholder ??
+                  Center(
+                    child: SizedBox(
+                      width: 20, // 👈 yahan size set kijiye
+                      height: 20, // 👈 yahan size set kijiye
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+              errorWidget: (context, url, error) =>
+                  errorWidget ?? Center(child: commonAssetImage(icDummyUser)),
+            )
           : (errorWidget ?? Center(child: commonAssetImage(icDummyUser))),
     ),
   );
 }
-

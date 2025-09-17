@@ -47,6 +47,33 @@ commonBannerView({required ProductProvider provider, void Function()? onTap}) {
                       borderRadius: BorderRadius.circular(15),
                       child: commonNetworkImage(img.icon, fit: BoxFit.cover),
                     ),
+                    Positioned(
+                      right: 5,
+                      bottom: 5,
+                      child: commonInkWell(
+                        onTap: () {
+                          showCommonDialog(
+                            confirmText: "Remove",
+                            title: "Remove",
+                            context: context,
+                            content:
+                                "Do you want to remove this image from our product.",
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: commonBoxDecoration(
+                            shape: BoxShape.circle,
+                            color: colorLogo.withValues(alpha: 0.5),
+                          ),
+                          child: Icon(
+                            Icons.delete_outline,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -99,9 +126,9 @@ commonBannerView({required ProductProvider provider, void Function()? onTap}) {
                 ),
                 child: Center(
                   child: commonText(
-                    text: "Upload Image",
+                    text: "Add Image",
                     color: themeProvider.isDark ? Colors.white : colorLogo,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     fontSize: 10,
                   ),
                 ),

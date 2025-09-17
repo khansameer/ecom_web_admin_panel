@@ -4,6 +4,7 @@ import 'package:neeknots/feature/dashboard/page/customer_detail_page.dart';
 import 'package:neeknots/feature/edit_profile/edit_profile_screen.dart';
 import 'package:neeknots/feature/notification/notification_screen.dart';
 import 'package:neeknots/feature/order_details/order_details_screen.dart';
+import 'package:neeknots/feature/product_details/add_product_screen.dart';
 import 'package:neeknots/feature/product_details/product_details_screen.dart';
 
 import '../feature/dashboard/dashboard_screen.dart';
@@ -37,6 +38,8 @@ class RouteGenerate {
 
       case RouteName.orderDetailsScreen:
         return MaterialPageRoute(builder: (_) => const OrderDetailsScreen());
+      case RouteName.addProductScreen:
+        return MaterialPageRoute(builder: (_) => const AddProductScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
