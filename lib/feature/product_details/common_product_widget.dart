@@ -1,6 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:neeknots/core/component/price_input_format.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -9,8 +11,10 @@ import '../../core/component/component.dart';
 import '../../main.dart';
 import '../../provider/theme_provider.dart';
 
-commonBannerView({required ProductProvider provider,void Function()? onTap }){
-  final themeProvider = Provider.of<ThemeProvider>(navigatorKey.currentContext!);
+commonBannerView({required ProductProvider provider, void Function()? onTap}) {
+  final themeProvider = Provider.of<ThemeProvider>(
+    navigatorKey.currentContext!,
+  );
   return Column(
     children: [
       CarouselSlider(
@@ -41,10 +45,7 @@ commonBannerView({required ProductProvider provider,void Function()? onTap }){
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(15),
-                      child: commonNetworkImage(
-                        img.icon,
-                        fit: BoxFit.cover,
-                      ),
+                      child: commonNetworkImage(img.icon, fit: BoxFit.cover),
                     ),
                   ],
                 ),
@@ -70,83 +71,83 @@ commonBannerView({required ProductProvider provider,void Function()? onTap }){
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color:
-                (provider.currentIndex == entry.key
-                    ? colorLogo
-                    : Colors.grey)
-                    .withValues(alpha: 0.9),
+                    (provider.currentIndex == entry.key
+                            ? colorLogo
+                            : Colors.grey)
+                        .withValues(alpha: 0.9),
               ),
             ),
           );
         }).toList(),
       ),
 
-
       Align(
-        alignment:Alignment.centerRight,
+        alignment: Alignment.centerRight,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             commonInkWell(
-              onTap:onTap ,
+              onTap: onTap,
               child: Container(
                 margin: EdgeInsets.only(right: 10),
-                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 7),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),
                 decoration: commonBoxDecoration(
                   borderWidth: 0.5,
-                  borderColor: themeProvider.isDark?Colors.white:colorLogo
+                  borderColor: themeProvider.isDark ? Colors.white : colorLogo,
                 ),
                 child: Center(
-                  child: commonText(text: "Upload Image",color: themeProvider.isDark?Colors.white:colorLogo,fontWeight: FontWeight.w600,fontSize: 10),
+                  child: commonText(
+                    text: "Upload Image",
+                    color: themeProvider.isDark ? Colors.white : colorLogo,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                  ),
                 ),
               ),
             ),
           ],
         ),
-      )
-    
+      ),
     ],
   );
 }
 
-commonFormView({required ProductProvider provider}){
+commonFormView({required ProductProvider provider}) {
   return Column(
-
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       _commonHeading(text: "Product Name"),
-      SizedBox(height: 8,),
-      commonTextField(
-        enabled: provider.isEdit,
-        hintText: "Alligator Soft Toy",
-      ),
-      SizedBox(height: 15,),
+      SizedBox(height: 8),
+      commonTextField(enabled: provider.isEdit, hintText: "Alligator Soft Toy"),
+      SizedBox(height: 15),
       _commonHeading(text: "Product Description"),
-      SizedBox(height: 8,),
+      SizedBox(height: 8),
       commonTextField(
         enabled: provider.isEdit,
         hintText:
-        "The Paraiso blouse embodies effortless warm-weather dressing. The unique cotton eyelet is enhanced by the volume of the tiers, which end in a high-low hem. The puff sleeves add just a touch of sweetness. Shown with the Norte short for a tonal look.",
+            "The Paraiso blouse embodies effortless warm-weather dressing. The unique cotton eyelet is enhanced by the volume of the tiers, which end in a high-low hem. The puff sleeves add just a touch of sweetness. Shown with the Norte short for a tonal look.",
       ),
 
-      SizedBox(height: 15,),
+      SizedBox(height: 15),
 
       Row(
         spacing: 10,
         children: [
           Expanded(
             child: Column(
-
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _commonHeading(text: "Qty"),
-                SizedBox(height: 8,),
+                SizedBox(height: 8),
                 commonTextField(
                   hintText: "1",
                   enabled: provider.isEdit,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
               ],
             ),
@@ -158,10 +159,14 @@ commonFormView({required ProductProvider provider}){
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _commonHeading(text: "Price"),
-                SizedBox(height: 8,),
+                SizedBox(height: 8),
                 commonTextField(
                   hintText: "\$25",
                   enabled: provider.isEdit,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [PriceInputFormatter()],
                 ),
               ],
             ),
@@ -172,74 +177,78 @@ commonFormView({required ProductProvider provider}){
   );
 }
 
-commonVariants({required ProductProvider provider }){
-  return Column(spacing: 0,
+commonVariants({required ProductProvider provider}) {
+  return Column(
+    spacing: 0,
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       _commonHeading(text: "Variants"),
-      SizedBox(height: 8,),
+      SizedBox(height: 8),
       commonListViewBuilder(
         shrinkWrap: true,
         padding: EdgeInsetsGeometry.zero,
         items: provider.productsVariants,
         itemBuilder: (context, index, data) {
           return Consumer<ThemeProvider>(
-              builder: (context,themeProvider,child) {
-                return Container(
-                  decoration: commonBoxDecoration(
-                    borderColor: colorBorder,
-                  ),
-                  margin: EdgeInsets.all(5),
-                  padding: EdgeInsets.all(5),
-                  child: commonListTile(
-                    textColor: themeProvider.isDark?Colors.white:colorLogo,
-                    contentPadding: EdgeInsetsGeometry.zero,
-                    leadingIcon: Container(
-                      width: 40,
-                      margin: EdgeInsets.only(left: 5),
-                      height: 40,
-                      decoration: commonBoxDecoration(color: themeProvider.isDark?Colors.white:colorLogo),
-                      child: Center(
-                        child: commonText(
-                          color:themeProvider.isDark?Colors.black: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          text: data.name[0],
-                        ),
+            builder: (context, themeProvider, child) {
+              return Container(
+                decoration: commonBoxDecoration(borderColor: colorBorder),
+                margin: EdgeInsets.all(5),
+                padding: EdgeInsets.all(5),
+                child: commonListTile(
+                  textColor: themeProvider.isDark ? Colors.white : colorLogo,
+                  contentPadding: EdgeInsetsGeometry.zero,
+                  leadingIcon: Container(
+                    width: 40,
+                    margin: EdgeInsets.only(left: 5),
+                    height: 40,
+                    decoration: commonBoxDecoration(
+                      color: themeProvider.isDark ? Colors.white : colorLogo,
+                    ),
+                    child: Center(
+                      child: commonText(
+                        color: themeProvider.isDark
+                            ? Colors.black
+                            : Colors.white,
+                        fontWeight: FontWeight.w700,
+                        text: data.name[0],
                       ),
                     ),
-                    subtitleView: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          decoration: commonBoxDecoration(
-                            color: colorBorder,
-                            borderRadius: 5,
+                  ),
+                  subtitleView: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        decoration: commonBoxDecoration(
+                          color: colorBorder,
+                          borderRadius: 5,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 4.0,
+                            horizontal: 10,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 4.0,
-                              horizontal: 10,
-                            ),
-                            child: commonText(
-                              text: data.status,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          child: commonText(
+                            text: data.status,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ],
-                    ),
-                    title: data.name,
+                      ),
+                    ],
                   ),
-                );
-              }
+                  title: data.name,
+                ),
+              );
+            },
           );
         },
       ),
     ],
   );
 }
+
 _commonHeading({String? text}) {
   return commonText(
     text: text ?? "Product Description",
