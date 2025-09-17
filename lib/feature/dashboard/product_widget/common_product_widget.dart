@@ -46,7 +46,7 @@ commonProductListView({
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       commonText(text: productName, fontWeight: FontWeight.w600,color: provider.isDark?Colors.white:colorLogo),
-                      commonText(text: price??'', fontWeight: FontWeight.w600,fontSize: 12),
+                      commonText(text: price??'', fontWeight: FontWeight.w600,fontSize: 13,color:Colors.blueAccent),
 
                       RichText(
                         text: TextSpan(

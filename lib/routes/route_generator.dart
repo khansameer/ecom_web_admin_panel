@@ -3,6 +3,7 @@ import 'package:neeknots/feature/change_password/change_password_screen.dart';
 import 'package:neeknots/feature/dashboard/page/customer_detail_page.dart';
 import 'package:neeknots/feature/edit_profile/edit_profile_screen.dart';
 import 'package:neeknots/feature/notification/notification_screen.dart';
+import 'package:neeknots/feature/order_details/order_details_screen.dart';
 import 'package:neeknots/feature/product_details/product_details_screen.dart';
 
 import '../feature/dashboard/dashboard_screen.dart';
@@ -33,6 +34,9 @@ class RouteGenerate {
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case RouteName.productDetailsScreen:
         return MaterialPageRoute(builder: (_) => const ProductDetailsScreen());
+
+      case RouteName.orderDetailsScreen:
+        return MaterialPageRoute(builder: (_) => const OrderDetailsScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }

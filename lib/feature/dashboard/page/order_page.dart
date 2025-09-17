@@ -80,6 +80,7 @@ class OrderPage extends StatelessWidget {
                     image: data.products.first.icon,
                     productName: data.customerName,
                     status: data.status,
+                    price: data.price,
                     date: data.date.toLocal().toString().split(' ')[0],
                   );
                 },

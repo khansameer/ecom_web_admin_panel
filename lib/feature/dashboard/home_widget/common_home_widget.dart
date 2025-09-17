@@ -367,6 +367,7 @@ commonTopProductListView({void Function()? onTap}) {
                                     fontWeight: FontWeight.w600,
                                   ),
                                   commonText(
+                                    color:Colors.blueAccent,
                                     text: '$rupeeIcon${data.price}',
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12,
@@ -515,15 +516,22 @@ commonTopOrderListView({void Function()? onTap}) {
                             Container(
                               margin: EdgeInsets.only(left: 5),
                               child: Column(
+                                spacing: 5,
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  commonText(
-                                    text: '#${data.orderId}',
-                                    fontWeight: FontWeight.w600,
-                                    color: themeProvider.isDark
-                                        ? Colors.white
-                                        : colorLogo,
+                                  Row(
+                                    children: [
+                                     Expanded(child:  commonText(
+                                       text: '#${data.orderId}',
+                                       fontWeight: FontWeight.w600,
+                                       color: themeProvider.isDark
+                                           ? Colors.white
+                                           : colorLogo,
+                                     ),),
+                                      
+                                      commonText(text: '\$${data.price}',color:Colors.blueAccent,fontWeight: FontWeight.w600,fontSize: 13,)
+                                    ],
                                   ),
                                   Row(
                                     children: [
