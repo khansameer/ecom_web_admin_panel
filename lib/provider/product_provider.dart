@@ -349,4 +349,7 @@ class ProductProvider with ChangeNotifier {
     _imageFiles.removeAt(index);
     notifyListeners();
   }
+
+  String addProductStatus = "Active";
+  String category = "Category 1";
 }
