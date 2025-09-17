@@ -36,7 +36,6 @@ class ProductDetailsScreen extends StatelessWidget {
                   themeProvider,
                 );
                 if (path != null) {
-                  print('=======$path');
                   //imageProvider.setImagePath(path);
 
                   /*  provider.setImageFilePath(
