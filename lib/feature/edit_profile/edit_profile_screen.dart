@@ -15,7 +15,6 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-
   @override
   void initState() {
     // TODO: implement initState
@@ -23,20 +22,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     init();
   }
-  void init(){
+
+  void init() {
     final provider = Provider.of<ProfileProvider>(context, listen: false);
 
-
-    provider.tetFName.text="Sameer";
-    provider.tetLName.text="Khan";
-    provider.tetEmail.text="sameer@redefinesolutions.com";
+    provider.tetFName.text = "Sameer";
+    provider.tetLName.text = "Khan";
+    provider.tetEmail.text = "sameer@redefinesolutions.com";
   }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.sizeOf(context);
     final formProfileKey = GlobalKey<FormState>();
     return commonScaffold(
-      appBar: commonAppBar(title: "Update  Profile", context: context,centerTitle: true),
+      appBar: commonAppBar(
+        title: "Update  Profile",
+        context: context,
+        centerTitle: true,
+      ),
       body: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return commonAppBackground(
@@ -70,12 +74,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             commonHeadingText(
                               text: "Update Information",
                               fontSize: 22,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                               color: themeProvider.isDark
                                   ? Colors.white
                                   : colorLogo,
                             ),
-                            const SizedBox(height: 2),
+                            const SizedBox(height: 4),
                             commonDescriptionText(
                               text:
                                   "Review and update your personal details to keep your account accurate.",
@@ -86,7 +90,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               children: [
                                 commonTextField(
                                   hintText: "First Name",
-                                  validator: (value) => emptyError(value, errorMessage: "First Name is required"),
+                                  validator: (value) => emptyError(
+                                    value,
+                                    errorMessage: "First Name is required",
+                                  ),
 
                                   controller: provider.tetFName,
                                   maxLines: 1,
@@ -102,7 +109,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 commonTextField(
                                   hintText: "Last Name",
                                   maxLines: 1,
-                                  validator: (value) => emptyError(value, errorMessage: "Last Name is required"),
+                                  validator: (value) => emptyError(
+                                    value,
+                                    errorMessage: "Last Name is required",
+                                  ),
                                   controller: provider.tetLName,
                                   keyboardType: TextInputType.name,
                                   prefixIcon: commonPrefixIcon(
@@ -141,15 +151,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
 
                             const SizedBox(height: 50),
-                            commonButton(text: "Update", onPressed: () {
-                              hideKeyboard(context);
-                              if (formProfileKey.currentState?.validate() ==
-                                  true) {
-                                //put valid logic
-
-
-                              }
-                            }),
+                            commonButton(
+                              text: "Update",
+                              onPressed: () {
+                                hideKeyboard(context);
+                                if (formProfileKey.currentState?.validate() ==
+                                    true) {
+                                  //put valid logic
+                                }
+                              },
+                            ),
                           ],
                         ),
                       ),
