@@ -164,7 +164,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   // commonFormView(provider: provider),
                   SizedBox(height: 15),
                   commonVariants(provider: provider),
-                  SizedBox(height: 15),
+                  SizedBox(height: 30),
 
                   commonButton(
                     fontSize: 14,
@@ -174,31 +174,34 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     onPressed: () {
                       showCommonBottomSheet(
                         context: context,
-                        content: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            commonFormView(provider: provider),
-                            SizedBox(height: 15),
-                            _commonHeading(text: "Status"),
+                        content: SingleChildScrollView(
+                          physics: BouncingScrollPhysics(),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              commonFormView(provider: provider),
+                              SizedBox(height: 15),
+                              _commonHeading(text: "Status"),
 
-                            SizedBox(height: 15),
-                            CommonDropdown(
-                              initialValue: provider.status,
-                              items: ["Active", "Draft"],
-                              enabled: provider.isEdit,
-                              onChanged: provider.isEdit
-                                  ? (value) {
-                                      provider.setFilter(value!);
-                                    }
-                                  : (value) {},
-                            ),
-                            SizedBox(height: 30),
+                              SizedBox(height: 15),
+                              CommonDropdown(
+                                initialValue: provider.status,
+                                items: ["Active", "Draft"],
+                                enabled: provider.isEdit,
+                                onChanged: provider.isEdit
+                                    ? (value) {
+                                        provider.setFilter(value!);
+                                      }
+                                    : (value) {},
+                              ),
+                              SizedBox(height: 30),
 
-                            commonButton(text: "Update", onPressed: () {}),
-                            SizedBox(height: 30),
-                          ],
+                              commonButton(text: "Update", onPressed: () {}),
+                              SizedBox(height: 30),
+                            ],
+                          ),
                         ),
                       );
                     },
