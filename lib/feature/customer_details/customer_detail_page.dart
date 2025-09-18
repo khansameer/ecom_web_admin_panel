@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
 
-import '../order_details/order_common_widget.dart';
 import 'common_customer_widget.dart';
 
 class CustomerDetailPage extends StatelessWidget {
@@ -15,11 +14,15 @@ class CustomerDetailPage extends StatelessWidget {
         context: context,
         centerTitle: true,
       ),
-      body: commonAppBackground(child: ListView(children: [
-        customerDetailsInfo(),
-        customerOrderDetailsInfo(),
-        customerProductInfo(),
-      ],)),
+      body: commonAppBackground(
+        child: ListView(
+          children: [
+            customerDetailsInfo(),
+            customerOrderDetailsInfo(),
+            customerProductInfo(),
+          ],
+        ),
+      ),
     );
   }
 }

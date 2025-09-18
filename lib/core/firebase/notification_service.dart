@@ -13,11 +13,10 @@ import '../../routes/app_routes.dart';
 import 'local_notification.dart';
 import 'notification_storage.dart';
 
-
 @pragma('vm:entry-point') // 👈 Needed so native code can call it
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+      FlutterLocalNotificationsPlugin();
   static GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
@@ -26,14 +25,16 @@ class NotificationService {
   @pragma('vm:entry-point')
   void initNotificationListeners() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      log("🔥 FG Notification received: ${message.messageId}, data: ${message.data}");
+      log(
+        "🔥 FG Notification received: ${message.messageId}, data: ${message.data}",
+      );
       await _showLocalNotification(message);
-
     });
   }
 
-  static Future<void> initializeApp(
-      {required GlobalKey<NavigatorState> navigatorKey}) async {
+  static Future<void> initializeApp({
+    required GlobalKey<NavigatorState> navigatorKey,
+  }) async {
     _navigatorKey = navigatorKey;
     await Firebase.initializeApp();
     await _initializeLocalNotifications();
@@ -42,13 +43,12 @@ class NotificationService {
 
     // Handle notification tap when app is terminated
     FirebaseMessaging.instance.getInitialMessage().then((message) async {
-
       if (message != null) {
         final safeData = message.data.map(
-              (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
+          (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
         );
 
-       /* await NotificationStorage.saveNotification(
+        /* await NotificationStorage.saveNotification(
           LocalNotification(
             id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
             title: message.notification?.title ?? message.data['title'] ?? 'New Notification',
@@ -59,21 +59,26 @@ class NotificationService {
           ),
         );*/
         final notification = LocalNotification(
-          id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-          title: message.notification?.title ?? message.data['title'] ?? 'New Notification',
+          id:
+              message.messageId ??
+              DateTime.now().millisecondsSinceEpoch.toString(),
+          title:
+              message.notification?.title ??
+              message.data['title'] ??
+              'New Notification',
           body: message.notification?.body ?? message.data['body'] ?? '',
           category: safeData['category'] ?? '',
           receivedAt: DateTime.now(),
           data: safeData,
         );
 
-
-
-// ✅ Provider के जरिए add करो
+        // ✅ Provider के जरिए add करो
         final context = _navigatorKey.currentContext;
         if (context != null) {
-          Provider.of<NotificationProvider>(context, listen: false)
-              .addNotification(notification);
+          Provider.of<NotificationProvider>(
+            context,
+            listen: false,
+          ).addNotification(notification);
         } else {
           // अगर context नहीं मिला तो fallback
           await NotificationStorage.saveNotification(notification);
@@ -103,23 +108,27 @@ class NotificationService {
     }
 
     token = await FirebaseMessaging.instance.getToken();
-    debugPrint("Firebase Token: $token");
+    debugPrint("Firebase Token by Flutter code: $token");
 
     _messaging.onTokenRefresh.listen((newToken) {
       token = newToken;
       debugPrint("Token refreshed: $token");
     });
   }
+
   static Future<void> _initializeLocalNotifications() async {
     const AndroidInitializationSettings androidSettings =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
+    const InitializationSettings initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
     );
-    const InitializationSettings initSettings =
-    InitializationSettings(android: androidSettings, iOS: iosSettings);
 
     // 👇 Create Android channel
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -132,7 +141,8 @@ class NotificationService {
     // Register the channel with system
     await _localNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
     await _localNotificationsPlugin.initialize(
@@ -151,7 +161,6 @@ class NotificationService {
     );
   }
 
-
   /// FCM setup
   static Future<void> _initializeFirebaseMessaging() async {
     if (_permissionRequested) return;
@@ -167,7 +176,6 @@ class NotificationService {
       debugPrint('Notification permission declined');
       return;
     }
-
 
     debugPrint('Notification permission granted');
 
@@ -193,28 +201,32 @@ class NotificationService {
 
       final String title =
           notification?.title ?? message.data['title'] ?? 'New Notification';
-      final String body =
-          notification?.body ?? message.data['body'] ?? '';
+      final String body = notification?.body ?? message.data['body'] ?? '';
 
       final safeData = message.data.map(
-            (k, v) => MapEntry(k.toString(), v?.toString() ?? ''),
+        (k, v) => MapEntry(k.toString(), v?.toString() ?? ''),
       );
       final notification1 = LocalNotification(
-        id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        title: message.notification?.title ?? message.data['title'] ?? 'New Notification',
+        id:
+            message.messageId ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
+        title:
+            message.notification?.title ??
+            message.data['title'] ??
+            'New Notification',
         body: message.notification?.body ?? message.data['body'] ?? '',
         category: safeData['category'] ?? '',
         receivedAt: DateTime.now(),
         data: safeData,
       );
 
-
-
-// ✅ Provider के जरिए add करो
+      // ✅ Provider के जरिए add करो
       final context = _navigatorKey.currentContext;
       if (context != null) {
-        Provider.of<NotificationProvider>(context, listen: false)
-            .addNotification(notification1);
+        Provider.of<NotificationProvider>(
+          context,
+          listen: false,
+        ).addNotification(notification1);
       } else {
         // अगर context नहीं मिला तो fallback
         await NotificationStorage.saveNotification(notification1);
@@ -244,7 +256,8 @@ class NotificationService {
           android: AndroidNotificationDetails(
             'high_importance_channel',
             'High Importance Notifications',
-            channelDescription: 'This channel is used for important notifications.',
+            channelDescription:
+                'This channel is used for important notifications.',
             importance: Importance.max,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
@@ -260,33 +273,35 @@ class NotificationService {
   /// Background handler called by native
 
   @pragma('vm:entry-point')
-  static Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  static Future<void> firebaseMessagingBackgroundHandler(
+    RemoteMessage message,
+  ) async {
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
 
-     final safeData = message.data.map(
-          (key, value) => MapEntry(
-        key.toString(),
-        value?.toString() ?? '',
-      ),
+    final safeData = message.data.map(
+      (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
     );
 
     final notification1 = LocalNotification(
       id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      title: message.notification?.title ?? message.data['title'] ?? 'New Notification',
+      title:
+          message.notification?.title ??
+          message.data['title'] ??
+          'New Notification',
       body: message.notification?.body ?? message.data['body'] ?? '',
       category: safeData['category'] ?? '',
       receivedAt: DateTime.now(),
       data: safeData,
     );
 
-
-
-// ✅ Provider के जरिए add करो
+    // ✅ Provider के जरिए add करो
     final context = _navigatorKey.currentContext;
     if (context != null) {
-      Provider.of<NotificationProvider>(context, listen: false)
-          .addNotification(notification1);
+      Provider.of<NotificationProvider>(
+        context,
+        listen: false,
+      ).addNotification(notification1);
     } else {
       // अगर context नहीं मिला तो fallback
       await NotificationStorage.saveNotification(notification1);
@@ -300,13 +315,14 @@ class NotificationService {
   }
 
   /// Handle navigation from notification
-  static Future<void> _handlePayloadNavigation(
-      {required String payload, required Map<String, dynamic> data}) async {
+  static Future<void> _handlePayloadNavigation({
+    required String payload,
+    required Map<String, dynamic> data,
+  }) async {
     debugPrint('Handling payload: $payload');
     debugPrint('Handling payload: ${data['id']}');
 
     switch (data['category']) {
-
       case 'join_class':
         _navigatorKey.currentState?.pushNamed(
           RouteName.dashboardScreen,
@@ -326,7 +342,7 @@ class NotificationService {
         );
         break;
       case 'chat':
-       /* _navigatorKey.currentState?.push(
+        /* _navigatorKey.currentState?.push(
           MaterialPageRoute(
             builder: (_) => ChatScreen(
               currentUserId: user?.sId ?? '',
