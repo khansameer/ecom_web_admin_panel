@@ -142,18 +142,24 @@ commonBannerView({required ProductProvider provider, void Function()? onTap}) {
 }
 
 commonFormView({required ProductProvider provider}) {
+
+
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       _commonHeading(text: "Product Name"),
       SizedBox(height: 8),
-      commonTextField(enabled: provider.isEdit, hintText: "Alligator Soft Toy"),
+      commonTextField(
+          controller: provider.tetName,
+          enabled: false, hintText: "Alligator Soft Toy"),
       SizedBox(height: 15),
       _commonHeading(text: "Product Description"),
       SizedBox(height: 8),
       commonTextField(
-        enabled: provider.isEdit,
+        controller: provider.tetDesc,
+
+        enabled: true,
         hintText:
             "The Paraiso blouse embodies effortless warm-weather dressing. The unique cotton eyelet is enhanced by the volume of the tiers, which end in a high-low hem. The puff sleeves add just a touch of sweetness. Shown with the Norte short for a tonal look.",
       ),
@@ -172,7 +178,8 @@ commonFormView({required ProductProvider provider}) {
                 SizedBox(height: 8),
                 commonTextField(
                   hintText: "1",
-                  enabled: provider.isEdit,
+                  controller: provider.tetQty,
+
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
@@ -188,8 +195,10 @@ commonFormView({required ProductProvider provider}) {
                 _commonHeading(text: "Price"),
                 SizedBox(height: 8),
                 commonTextField(
+                  controller: provider.tetPrice,
+
                   hintText: "\$25",
-                  enabled: provider.isEdit,
+
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),

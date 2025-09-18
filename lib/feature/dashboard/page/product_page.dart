@@ -7,6 +7,7 @@ import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/string/string_utils.dart';
+import '../../../main.dart';
 import '../../../routes/app_routes.dart';
 
 class ProductPage extends StatelessWidget {
@@ -45,12 +46,12 @@ class ProductPage extends StatelessWidget {
                           FilterItem(
                             label: "Category",
                             options: ["All", "Dresses", "Tops", "Shirts"],
-                            selectedValue: "All",
+                            selectedValue: provider.selectedCategory, // 👈 provider से लो
                           ),
                           FilterItem(
                             label: "Status",
                             options: ["All", "Active", "Draft"],
-                            selectedValue: "All",
+                            selectedValue: provider.selectedStatus, // 👈 provider से लो
                           ),
                         ];
                         showCommonFilterDialog(
@@ -103,6 +104,12 @@ class ProductPage extends StatelessWidget {
 
                             return commonProductListView(
                               image: data.icon,
+                              onTap: (){
+                                navigatorKey.currentState?.pushNamed(
+                                    RouteName.productDetailsScreen,
+                                    arguments:data
+                                );
+                              },
                               price: '$rupeeIcon${data.price}',
                               textInventory1: left,
                               textInventory2: right,
@@ -133,7 +140,7 @@ class ProductPage extends StatelessWidget {
                 ),
               ],
             ),
-            Positioned(
+          /*  Positioned(
               left: 0,
               right: 0,
               bottom: 8,
@@ -171,7 +178,7 @@ class ProductPage extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
+            ),*/
           ],
         );
       },

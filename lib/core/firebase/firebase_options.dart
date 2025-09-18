@@ -32,11 +32,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCiw9vPwuWHlSXnw2cEo3WcRbpY9TpR65A',
-    appId: '1:827584649778:android:3c835a1585e76d90b33a2b',
-    messagingSenderId: '827584649778',
-    projectId: 'neeknots-604ce',
-    storageBucket: 'neeknots-604ce.firebasestorage.app',
+    apiKey: 'AIzaSyDuiduBnXasIFR_vb4G3bU4Nm96A9tQIaQ',
+    appId: '1:1027672009884:android:519b3c6e8f4fbce73a9159',
+    messagingSenderId: '1027672009884',
+    projectId: 'neeknots-a8758',
+    storageBucket: 'neeknots-a8758.firebasestorage.app',
   );
   static const FirebaseOptions ios = FirebaseOptions(
     iosBundleId: 'com.redefine.neeknots',

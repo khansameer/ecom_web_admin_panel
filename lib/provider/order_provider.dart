@@ -22,6 +22,7 @@ class Order {
   final List<Product> products;
   final double totalAmount;
   final String status;
+  final String ?paymentStatus;
   final DateTime date;
   final double price;
 
@@ -32,6 +33,7 @@ class Order {
     required this.totalAmount,
     required this.status,
     required this.price,
+    this.paymentStatus,
     required this.date,
   });
 }
@@ -148,7 +150,18 @@ class OrdersProvider with ChangeNotifier {
         return Colors.grey;
     }
   }
-
+  Color getPaymentStatusColor(String status) {
+    switch (status) {
+      case "Pending":
+        return Colors.amber;
+      case "Failed":
+        return Colors.red;
+      case "Paid":
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
   List<OrderDetails> ordersDetails = [
     OrderDetails(
       title: "Addison Sweater Dress-Black",
@@ -200,6 +213,7 @@ class OrdersProvider with ChangeNotifier {
         products: [products[0], products[2]],
         totalAmount: 1200.0,
         price: 750.00,
+        paymentStatus: "Paid",
         status: "Pending",
         date: DateTime.now().subtract(Duration(days: 1)),
       ),
@@ -208,6 +222,7 @@ class OrdersProvider with ChangeNotifier {
         customerName: "Neha Verma",
         products: [products[1]],
         totalAmount: 650.0,
+        paymentStatus: "Pending",
         price: 650.00,
         status: "Shipped",
         date: DateTime.now().subtract(Duration(days: 2)),
@@ -215,6 +230,7 @@ class OrdersProvider with ChangeNotifier {
       Order(
         orderId: "ORD003",
         customerName: "Amit Singh",
+        paymentStatus: "Pending",
         products: [products[3], products[2]],
         totalAmount: 1800.0,
         price: 300.00,
@@ -224,6 +240,7 @@ class OrdersProvider with ChangeNotifier {
       Order(
         orderId: "ORD001",
         customerName: "Rahul Sharma",
+        paymentStatus: "Pending",
         products: [products[0], products[2]],
         totalAmount: 1200.0,
         status: "Pending",
@@ -234,6 +251,7 @@ class OrdersProvider with ChangeNotifier {
         orderId: "ORD002",
         customerName: "Neha Verma",
         products: [products[1]],
+        paymentStatus: "Paid",
         totalAmount: 650.0,
         status: "Shipped",
         price: 180.00,
@@ -242,6 +260,7 @@ class OrdersProvider with ChangeNotifier {
       Order(
         orderId: "ORD003",
         customerName: "Amit Singh",
+        paymentStatus: "Paid",
         products: [products[3], products[2]],
         totalAmount: 1800.0,
         price: 1800.00,
@@ -251,6 +270,7 @@ class OrdersProvider with ChangeNotifier {
       Order(
         orderId: "ORD001",
         customerName: "Rahul Sharma",
+        paymentStatus: "Paid",
         products: [products[0], products[2]],
         totalAmount: 1200.0,
         price: 980.00,
@@ -259,6 +279,7 @@ class OrdersProvider with ChangeNotifier {
       ),
       Order(
         orderId: "ORD002",
+        paymentStatus: "Paid",
         customerName: "Neha Verma",
         products: [products[1]],
         totalAmount: 650.0,
@@ -269,6 +290,7 @@ class OrdersProvider with ChangeNotifier {
       Order(
         orderId: "ORD003",
         customerName: "Amit Singh",
+        paymentStatus: "Paid",
         products: [products[3], products[2]],
         totalAmount: 1800.0,
         price: 150.00,
@@ -280,6 +302,7 @@ class OrdersProvider with ChangeNotifier {
         customerName: "Rahul Sharma",
         products: [products[0], products[2]],
         totalAmount: 1200.0,
+        paymentStatus: "Paid",
         status: "Pending",
         price: 180.00,
         date: DateTime.now().subtract(Duration(days: 1)),
@@ -290,6 +313,7 @@ class OrdersProvider with ChangeNotifier {
         products: [products[1]],
         price: 1050.00,
         totalAmount: 650.0,
+        paymentStatus: "Paid",
         status: "Shipped",
         date: DateTime.now().subtract(Duration(days: 2)),
       ),
@@ -299,6 +323,7 @@ class OrdersProvider with ChangeNotifier {
         products: [products[3], products[2]],
         totalAmount: 1800.0,
         price: 1890.00,
+        paymentStatus: "Paid",
         status: "Delivered",
         date: DateTime.now().subtract(Duration(days: 5)),
       ),
@@ -311,10 +336,13 @@ class OrdersProvider with ChangeNotifier {
     _searchQuery = query.toLowerCase();
     _applyFilters();
   }
+  String _selectedStatus = "All";
 
+  String get selectedStatus => _selectedStatus;
   /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
   void filterByStatus(String status) {
     _statusFilter = status;
+    _selectedStatus = status;
     _applyFilters();
   }
 

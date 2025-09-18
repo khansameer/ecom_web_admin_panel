@@ -24,7 +24,7 @@ class CustomerProvider with ChangeNotifier{
       name: "John Doe",
       email: "john@example.com",
       phone: "9876543210",
-      status: "Active",
+      status: "Subscribed",
       avatar: "https://i.pravatar.cc/150?img=1",
     ),
     Customer(
@@ -32,7 +32,7 @@ class CustomerProvider with ChangeNotifier{
       name: "Jane Smith",
       email: "jane@example.com",
       phone: "8765432109",
-      status: "Inactive",
+      status: "Subscribed",
       avatar: "https://i.pravatar.cc/150?img=2",
     ),
     Customer(
@@ -40,7 +40,7 @@ class CustomerProvider with ChangeNotifier{
       name: "Michael Johnson",
       email: "michael@example.com",
       phone: "7654321098",
-      status: "Active",
+      status: "Not Subscribed",
       avatar: "https://i.pravatar.cc/150?img=3",
     ),
     Customer(
@@ -48,7 +48,7 @@ class CustomerProvider with ChangeNotifier{
       name: "Emily Davis",
       email: "emily@example.com",
       phone: "6543210987",
-      status: "Active",
+      status: "Not Subscribed",
       avatar: "https://i.pravatar.cc/150?img=4",
     ),
     Customer(
@@ -56,7 +56,7 @@ class CustomerProvider with ChangeNotifier{
       name: "David Wilson",
       email: "david@example.com",
       phone: "5432109876",
-      status: "Inactive",
+      status: "Subscribed",
       avatar: "https://i.pravatar.cc/150?img=5",
     ),
     Customer(
@@ -64,7 +64,7 @@ class CustomerProvider with ChangeNotifier{
       name: "Sophia Taylor",
       email: "sophia@example.com",
       phone: "4321098765",
-      status: "Active",
+      status: "Not Subscribed",
       avatar: "https://i.pravatar.cc/150?img=6",
     ),
     Customer(
@@ -72,7 +72,7 @@ class CustomerProvider with ChangeNotifier{
       name: "James Anderson",
       email: "james@example.com",
       phone: "3210987654",
-      status: "Active",
+      status: "Not Subscribed",
       avatar: "https://i.pravatar.cc/150?img=7",
     ),
     Customer(
@@ -80,7 +80,7 @@ class CustomerProvider with ChangeNotifier{
       name: "Olivia Thomas",
       email: "olivia@example.com",
       phone: "2109876543",
-      status: "Inactive",
+      status: "Subscribed",
       avatar: "https://i.pravatar.cc/150?img=8",
     ),
     Customer(
@@ -88,7 +88,7 @@ class CustomerProvider with ChangeNotifier{
       name: "Daniel Martinez",
       email: "daniel@example.com",
       phone: "1098765432",
-      status: "Active",
+      status: "Subscribed",
       avatar: "https://i.pravatar.cc/150?img=9",
     ),
     Customer(
@@ -96,7 +96,7 @@ class CustomerProvider with ChangeNotifier{
       name: "Emma Garcia",
       email: "emma@example.com",
       phone: "9988776655",
-      status: "Active",
+      status: "Subscribed",
       avatar: "https://i.pravatar.cc/150?img=10",
     ),
   ];
@@ -116,20 +116,23 @@ class CustomerProvider with ChangeNotifier{
     _searchQuery = query;
     notifyListeners();
   }
+  String _selectedStatusFilter = "All";
 
+  String get selectedStatusFilter => _selectedStatusFilter;
   void setStatusFilter(String status) {
+    _selectedStatusFilter = status;
     _statusFilter = status;
     notifyListeners();
   }
 
   Color getStatusColor(String status) {
     switch (status) {
-      case "Active":
+      case "Subscribed":
         return Colors.green;
-      case "Inactive":
-        return Colors.red;
+     /* case "Inactive":
+        return Colors.red;*/
       default:
-        return Colors.grey;
+        return Colors.red;
     }
   }
   void reset() {

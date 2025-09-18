@@ -11,7 +11,7 @@ commonOrderView({
   String? date,
   String? orderID,
   Color? colorTextStatus,
-
+  void Function()? onTap,
   required String productName,
   required double price,
   Decoration? decoration,
@@ -23,9 +23,7 @@ commonOrderView({
         decoration: commonBoxDecoration(borderColor: colorBorder),
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         child: commonInkWell(
-          onTap: () {
-            navigatorKey.currentState?.pushNamed(RouteName.orderDetailsScreen);
-          },
+          onTap:onTap,
           child: Padding(
             padding: const EdgeInsets.all(2.0),
             child: Row(

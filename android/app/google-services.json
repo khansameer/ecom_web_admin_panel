@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "827584649778",
-    "project_id": "neeknots-604ce",
-    "storage_bucket": "neeknots-604ce.firebasestorage.app"
+    "project_number": "1027672009884",
+    "project_id": "neeknots-a8758",
+    "storage_bucket": "neeknots-a8758.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:827584649778:android:3c835a1585e76d90b33a2b",
+        "mobilesdk_app_id": "1:1027672009884:android:519b3c6e8f4fbce73a9159",
         "android_client_info": {
           "package_name": "com.redefine.neeknots"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCiw9vPwuWHlSXnw2cEo3WcRbpY9TpR65A"
+          "current_key": "AIzaSyDuiduBnXasIFR_vb4G3bU4Nm96A9tQIaQ"
         }
       ],
       "services": {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -9,9 +11,39 @@ import '../../main.dart';
 import '../../provider/theme_provider.dart';
 import 'common_product_widget.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
-  const ProductDetailsScreen({super.key});
+class ProductDetailsScreen extends StatefulWidget {
+  const ProductDetailsScreen({super.key, required this.product});
 
+  final Product product;
+
+  @override
+  State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    init();
+  }
+  void init(){
+   /* final provider = Provider.of<ProductProvider>(context);
+
+    provider.tetName.text=widget.product.name;
+    provider.tetDesc.text=widget.product.desc??'';
+    provider.tetQty.text='${widget.product.qty}';
+    provider.tetPrice.text='${widget.product.price}';*/
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<ProductProvider>(context, listen: false);
+
+      provider.tetName.text = widget.product.name;
+      provider.tetDesc.text = widget.product.desc ?? '';
+      provider.tetQty.text = '${widget.product.qty}';
+      provider.tetPrice.text = '${widget.product.price}';
+    });
+
+  }
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ProductProvider>(context);
@@ -51,33 +83,124 @@ class ProductDetailsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  commonFormView(provider: provider),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
+                    children: [
+                      SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: commonText(
+                              text: widget.product.name,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: themeProvider.isDark
+                                  ? Colors.white
+                                  : colorLogo,
+                            ),
+                          ),
+                          commonText(
+                            text: '$rupeeIcon${widget.product.price}',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.blueAccent,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 3),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: commonText(
+                              text: "Quantity : ${widget.product.qty}",
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          commonText(
+                            text: widget.product.status,
+                            fontWeight: FontWeight.w600,
+                            color: provider.getStatusColor(widget.product.status),
+                          ),
+                        ],
+                      ),
 
+                      commonText(
+                        text: widget.product.desc ?? '',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      SizedBox(height: 2),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _commonDotView(themeProvider: themeProvider),
+                          _commonDotView(
+                            text: "Baby Safe",
+                            themeProvider: themeProvider,
+                          ),
+                          _commonDotView(
+                            text: "Handwashable",
+                            themeProvider: themeProvider,
+                          ),
+                          _commonDotView(
+                            text: "Environment Friendly",
+                            themeProvider: themeProvider,
+                          ),
+                          _commonDotView(
+                            text: "Handmade Product",
+                            themeProvider: themeProvider,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  // commonFormView(provider: provider),
                   SizedBox(height: 15),
                   commonVariants(provider: provider),
                   SizedBox(height: 15),
-                  _commonHeading(text: "Status"),
-                  SizedBox(height: 15),
-                  CommonDropdown(
-                    initialValue: provider.status,
-                    items: ["Active", "Draft"],
-                    enabled: provider.isEdit, // 👈 इस से ही control हो जाएगा
-                    onChanged: provider.isEdit
-                        ? (value) {
-                            provider.setFilter(value!);
-                          }
-                        : (value) {}, // 👈 fallback empty function
-                  ),
-                  SizedBox(height: 30),
+
                   commonButton(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    text: provider.isEdit ? "Update" : "Edit",
+                    text: "Edit",
+                    //text: provider.isEdit ? "Update" : "Edit",
                     onPressed: () {
-                      if (provider.isEdit) {
-                        /// TODO: Save / Update logic here
-                      }
-                      provider.toggleEdit(); // 👈 provider state change
+                      showCommonBottomSheet(
+                        context: context,
+                        content: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            commonFormView(provider: provider),
+                            SizedBox(height: 15),
+                            _commonHeading(text: "Status"),
+
+                            SizedBox(height: 15),
+                            CommonDropdown(
+                              initialValue: provider.status,
+                              items: ["Active", "Draft"],
+                              enabled: provider.isEdit,
+                              onChanged: provider.isEdit
+                                  ? (value) {
+                                      provider.setFilter(value!);
+                                    }
+                                  : (value) {},
+                            ),
+                            SizedBox(height: 30),
+
+                            commonButton(text: "Update", onPressed: () {}),
+                            SizedBox(height: 30),
+                          ],
+                        ),
+                      );
                     },
                   ),
                   SizedBox(height: 15),
@@ -87,6 +210,25 @@ class ProductDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  _commonDotView({String? text, required ThemeProvider themeProvider}) {
+    return Row(
+      spacing: 10,
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: commonBoxDecoration(
+            color: themeProvider.isDark
+                ? Colors.white
+                : Colors.black.withValues(alpha: 0.5),
+            shape: BoxShape.circle,
+          ),
+        ),
+        Expanded(child: commonText(text: text ?? 'Pure Cotton', fontSize: 12)),
+      ],
     );
   }
 

@@ -4,6 +4,8 @@ import 'package:neeknots/provider/order_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/image/image_utils.dart';
+import '../../../main.dart';
+import '../../../routes/app_routes.dart';
 import '../order_widget/common_order_widget.dart';
 
 class OrderPage extends StatelessWidget {
@@ -36,7 +38,7 @@ class OrderPage extends StatelessWidget {
                       FilterItem(
                         label: "Status",
                         options: ["All", "Pending", "Shipped", "Delivered"],
-                        selectedValue: "All",
+                        selectedValue: provider.selectedStatus, // 👈 यहाँ provider से value लो
                       ),
                     ];
 
@@ -63,6 +65,9 @@ class OrderPage extends StatelessWidget {
                 items: provider.orders,
                 itemBuilder: (context, index, data) {
                   return commonOrderView(
+                    onTap: (){
+                      navigatorKey.currentState?.pushNamed(RouteName.orderDetailsScreen,arguments: data);
+                    },
                     colorTextStatus: provider.getStatusColor(data.status),
                     decoration: commonBoxDecoration(
                       borderRadius: 8,

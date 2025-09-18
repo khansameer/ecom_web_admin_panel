@@ -114,8 +114,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   break;
               }
 
-              if (index == 0) provider.setAppBarTitle("Product");
-              if (index == 1) provider.setAppBarTitle("Order");
+              if (index == 0) provider.setAppBarTitle("Products");
+              if (index == 1) provider.setAppBarTitle("Orders");
               if (index == 2) provider.setAppBarTitle("Home");
               if (index == 3) provider.setAppBarTitle("Customers");
               if (index == 4) provider.setAppBarTitle("Account");
