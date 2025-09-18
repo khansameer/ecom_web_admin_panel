@@ -27,8 +27,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     super.initState();
     init();
   }
-  void init(){
-   /* final provider = Provider.of<ProductProvider>(context);
+
+  void init() {
+    /* final provider = Provider.of<ProductProvider>(context);
 
     provider.tetName.text=widget.product.name;
     provider.tetDesc.text=widget.product.desc??'';
@@ -42,8 +43,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       provider.tetQty.text = '${widget.product.qty}';
       provider.tetPrice.text = '${widget.product.price}';
     });
-
   }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ProductProvider>(context);
@@ -123,7 +124,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           commonText(
                             text: widget.product.status,
                             fontWeight: FontWeight.w600,
-                            color: provider.getStatusColor(widget.product.status),
+                            color: provider.getStatusColor(
+                              widget.product.status,
+                            ),
                           ),
                         ],
                       ),
@@ -186,19 +189,23 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               _commonHeading(text: "Status"),
 
                               SizedBox(height: 15),
+
                               CommonDropdown(
                                 initialValue: provider.status,
                                 items: ["Active", "Draft"],
-                                enabled: provider.isEdit,
-                                onChanged: provider.isEdit
-                                    ? (value) {
-                                        provider.setFilter(value!);
-                                      }
-                                    : (value) {},
+                                enabled: true,
+                                onChanged: (value) {
+                                  provider.setFilter(value!);
+                                },
                               ),
                               SizedBox(height: 30),
 
-                              commonButton(text: "Update", onPressed: () {}),
+                              commonButton(
+                                text: "Update",
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
                               SizedBox(height: 30),
                             ],
                           ),
@@ -211,6 +218,66 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGlassChip({
+    required String category,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isSelected ? Colors.green : Colors.black45,
+          width: 1.5,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 6,
+              children: [
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, anim) =>
+                      ScaleTransition(scale: anim, child: child),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check_circle_rounded,
+                          size: 16,
+                          color: Colors.green,
+                          key: ValueKey("check"),
+                        )
+                      : const SizedBox.shrink(key: ValueKey("empty")),
+                ),
+                // if (isSelected) ...[
+                //   const Icon(
+                //     Icons.check_circle_rounded,
+                //     size: 16,
+                //     color: Colors.white,
+                //   ),
+                // ],
+                Text(
+                  category,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
