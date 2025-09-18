@@ -16,4 +16,5 @@ const Color colorButton =Color.fromRGBO(100, 141, 219, 1);
  const  Color colorUser = Color.fromRGBO(41,171,145,1);
  const  Color colorText = Color.fromRGBO(0,0,0,0.8);
  const  Color colorTextDesc = Color.fromRGBO(0,0,0,0.3);
+ const  Color colorTextDesc1 = Color.fromRGBO(0,0,0,0.7);
  const  Color colorBorder = Color.fromRGBO(158,158,158,0.3);

@@ -13,6 +13,7 @@ import 'package:neeknots/main.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../feature/order_details/order_common_widget.dart';
 import 'common_dropdown.dart';
 
 String generateUniqueId() {
@@ -614,10 +615,12 @@ void showCommonBottomSheet({
 
   bool isDismissible = true,
 }) {
+  final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.white,
+    backgroundColor:themeProvider.isDark?colorDarkBgColor: Colors.white,
     isDismissible: isDismissible,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -630,7 +633,7 @@ void showCommonBottomSheet({
           right: 16,
           top: 24,
         ),
-        child: content,
+        child:content,
       );
     },
   );
@@ -1088,6 +1091,30 @@ Widget commonNetworkImage(
                   errorWidget ?? Center(child: commonAssetImage(icDummyUser)),
             )
           : (errorWidget ?? Center(child: commonAssetImage(icDummyUser))),
+    ),
+  );
+}
+commonBoxView({required Widget contentView,required String title}){
+  return Container(
+    decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
+    margin: const EdgeInsets.all(0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Title
+        commonHeadingView(title: title, isPayment: false),
+
+        const Divider(height: 1),
+
+        // Content
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child:contentView ,
+        ),
+
+
+
+      ],
     ),
   );
 }

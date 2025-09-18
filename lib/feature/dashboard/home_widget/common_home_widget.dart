@@ -3,13 +3,16 @@ import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/common_dropdown.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/main.dart';
 import 'package:neeknots/provider/dashboard_provider.dart';
 import 'package:neeknots/provider/order_provider.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
+import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
+import '../../../core/component/AnimatedCounter.dart';
 import '../../../core/string/string_utils.dart';
 
 homeTopView() {
@@ -29,17 +32,27 @@ homeTopView() {
                   icon: icTotalSale,
                   title: "Today Sales",
                   subtitle: "+50% Incomes",
-                  value: "\$278m",
+                  onTap: (){
+                    navigatorKey.currentState?.pushNamed(RouteName.salesDetailsScreen,arguments: 278);
+                  },
+                  leftText: rupeeIcon,
+                  rightText: "m",
+                  //value: "\$278m",
+                  value: 278,
                 ),
               ),
               Expanded(
                 child: _commonDashboardView(
                   color: colorProduct,
                   provider: provider,
+                  leftText: rupeeIcon,
+                  onTap: (){
+                    navigatorKey.currentState?.pushNamed(RouteName.totalProductScreen);
+                  },
                   icon: icProductMenu,
                   title: "Total Product",
                   subtitle: "+25% New Product",
-                  value: "548",
+                  value: 548,
                 ),
               ),
             ],
@@ -50,21 +63,28 @@ homeTopView() {
                 child: _commonDashboardView(
                   color: Colors.blue.shade400,
                   icon: icOrderMenu,
+                  onTap: (){
+                    navigatorKey.currentState?.pushNamed(RouteName.totalOrderScreen);
+                  },
                   provider: provider,
                   title: "Total  Order",
+                  leftText: rupeeIcon,
                   subtitle: "+25 New Order",
-                  value: "845",
+                  value: 845,
                 ),
               ),
               Expanded(
                 child: _commonDashboardView(
                   color: colorUser,
-
+                  onTap: (){
+                    navigatorKey.currentState?.pushNamed(RouteName.totalCustomerScreen);
+                  },
                   provider: provider,
                   icon: icTotalUser,
+                  leftText: rupeeIcon,
                   title: "Total Customer",
                   subtitle: "+48% New User",
-                  value: "4215",
+                  value: 4215,
                 ),
               ),
             ],
@@ -81,69 +101,90 @@ _commonDashboardView({
   required String icon,
   required String title,
   subtitle,
-  required String value,
+  required int value,
+  String ?leftText,
+  String ? rightText,
+  void Function()? onTap
 }) {
-  return Container(
-    width: 140,
-    margin: EdgeInsets.all(5),
-    padding: const EdgeInsets.all(16),
-    decoration: commonBoxDecoration(
-      color: color?.withValues(alpha: 0.05) ?? colorLogo.withValues(alpha: 0.1),
 
-      borderColor:
-          color?.withValues(alpha: 0.3) ?? colorLogo.withValues(alpha: 0.3),
-      borderRadius: 10,
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          padding: EdgeInsets.all(2), // border thickness
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: color ?? Colors.transparent, // border color
-              width: 1.5, // border width
+/*  AnimatedCounter(
+    endValue: 4215,
+    duration: Duration(seconds: 3),
+    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
+  ),*/
+  return commonInkWell(
+    onTap: onTap,
+    child: Container(
+      width: 140,
+      margin: EdgeInsets.all(5),
+      padding: const EdgeInsets.all(16),
+      decoration: commonBoxDecoration(
+        color: color?.withValues(alpha: 0.05) ?? colorLogo.withValues(alpha: 0.1),
+
+        borderColor:
+            color?.withValues(alpha: 0.3) ?? colorLogo.withValues(alpha: 0.3),
+        borderRadius: 10,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(2), // border thickness
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: color ?? Colors.transparent, // border color
+                width: 1.5, // border width
+              ),
+            ),
+            child: CircleAvatar(
+              radius: 28,
+
+              backgroundColor: Colors.white,
+              child: Center(
+                child: commonAssetImage(
+                  icon,
+                  width: 24,
+                  height: 24,
+                  color: color ?? Colors.transparent,
+                ),
+              ) /*Icon(
+                icon,
+                color: startColor ?? Colors.transparent,
+                size: 28,
+              )*/,
             ),
           ),
-          child: CircleAvatar(
-            radius: 28,
-
-            backgroundColor: Colors.white,
-            child: Center(
-              child: commonAssetImage(
-                icon,
-                width: 24,
-                height: 24,
-                color: color ?? Colors.transparent,
-              ),
-            ) /*Icon(
-              icon,
-              color: startColor ?? Colors.transparent,
-              size: 28,
-            )*/,
+          const SizedBox(height: 12),
+          commonText(
+            text: title,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: provider.isDark ? Colors.white : colorText,
           ),
-        ),
-        const SizedBox(height: 12),
-        commonText(
-          text: title,
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: provider.isDark ? Colors.white : colorText,
-        ),
-        commonText(
-          text: subtitle,
-          fontSize: 12,
-          color: provider.isDark ? Colors.white : colorTextDesc,
-        ),
-        const SizedBox(height: 8),
-        commonText(
-          text: value,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: provider.isDark ? Colors.white : colorText,
-        ),
-      ],
+
+
+          commonText(
+            text: subtitle,
+            fontSize: 12,
+            color: provider.isDark ? Colors.white : colorTextDesc,
+          ),
+          const SizedBox(height: 8),
+          AnimatedCounter(
+            leftText: leftText,
+            rightText: rightText?.isNotEmpty==true?rightText:'',
+            endValue: value,
+            duration: Duration(seconds: 2),
+            style:commonTextStyle(fontSize: 25, fontWeight: FontWeight.w600,  color: provider.isDark ? Colors.white : colorTextDesc1,),
+          ),
+          /*commonText(
+            text: value,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: provider.isDark ? Colors.white : colorText,
+          ),*/
+        ],
+      ),
     ),
   );
 }

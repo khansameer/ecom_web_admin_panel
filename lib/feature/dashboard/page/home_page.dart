@@ -3,6 +3,8 @@ import 'package:neeknots/feature/dashboard/home_widget/common_home_widget.dart';
 import 'package:neeknots/provider/dashboard_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/component/AnimatedCounter.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -13,6 +15,7 @@ class HomePage extends StatelessWidget {
       physics: BouncingScrollPhysics(),
       padding: EdgeInsets.all(12),
       children: [
+      
         homeTopView(),
         SizedBox(height: 24,),
         SizedBox(height: 300, child: homeGraphView()),

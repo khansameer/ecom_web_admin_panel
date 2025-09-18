@@ -50,6 +50,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     final themeProvider = Provider.of<ThemeProvider>(
       navigatorKey.currentContext!,
     );
+    final parts = widget.product.inventory.split("for");
+    final left = "${parts[0]}for";
+    final right = parts.length > 1
+        ? parts[1].trim()
+        : "";
     return commonScaffold(
       appBar: commonAppBar(
         title: "Product Details",
@@ -112,28 +117,89 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       SizedBox(height: 3),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Expanded(
+                          Container(
+                            decoration: commonBoxDecoration(
+                                borderColor: colorBorder
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
                             child: commonText(
-                              text: "Quantity : ${widget.product.qty}",
+                              fontSize: 12,
                               fontWeight: FontWeight.w500,
+                              text: "Qty : ${widget.product.qty}",
+
                             ),
                           ),
-                          commonText(
-                            text: widget.product.status,
-                            fontWeight: FontWeight.w600,
-                            color: provider.getStatusColor(widget.product.status),
+
+                          Spacer(),
+                          Container(
+                            decoration: commonBoxDecoration(
+                                borderColor: colorBorder
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                            child: Row(
+                              children: [
+                                commonText(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  text: "Status : ",
+
+                                ),
+                                commonText(
+                                  textAlign: TextAlign.right,
+                                  text: widget.product.status,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  color: provider.getStatusColor(widget.product.status),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Spacer(),
+                          Container(
+                            decoration: commonBoxDecoration(
+                                borderColor: colorBorder
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                              child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: "$left ", // first part
+                                      style: commonTextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: colorSale,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: right, // second part
+                                      style: commonTextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: themeProvider.isDark
+                                            ? Colors.white
+                                            : colorText,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
+                      SizedBox(height: 3),
 
                       commonText(
                         text: widget.product.desc ?? '',
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                       ),
-                      SizedBox(height: 2),
+                      SizedBox(height: 1),
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         spacing: 6,
@@ -181,6 +247,29 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
+                              Row(
+                               mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  commonInkWell(
+                                    onTap: () => Navigator.pop(context),
+                                    child: Container(
+                                      width: 24,
+                                      height: 24,
+                                      decoration: commonBoxDecoration(
+                                        color: Colors.black,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          size: 15,
+                                          Icons.close,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               commonFormView(provider: provider),
                               SizedBox(height: 15),
                               _commonHeading(text: "Status"),

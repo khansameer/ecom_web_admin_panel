@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/feature/SalesDetailsScreen.dart';
 import 'package:neeknots/feature/change_password/change_password_screen.dart';
 import 'package:neeknots/feature/customer_details/customer_detail_page.dart';
 import 'package:neeknots/feature/edit_profile/edit_profile_screen.dart';
@@ -6,12 +7,15 @@ import 'package:neeknots/feature/notification/notification_screen.dart';
 import 'package:neeknots/feature/order_details/order_details_screen.dart';
 import 'package:neeknots/feature/product_details/add_product_screen.dart';
 import 'package:neeknots/feature/product_details/product_details_screen.dart';
+import 'package:neeknots/feature/total_order_screen.dart';
 import 'package:neeknots/provider/order_provider.dart' hide Product;
 import 'package:neeknots/provider/product_provider.dart';
 
 import '../feature/dashboard/dashboard_screen.dart';
 import '../feature/login/login_screen.dart';
 import '../feature/splash/splash_screen.dart';
+import '../feature/total_customer_screen.dart';
+import '../feature/total_product_screen.dart';
 import 'app_routes.dart';
 
 class RouteGenerate {
@@ -45,6 +49,15 @@ class RouteGenerate {
         return MaterialPageRoute(builder: (_) =>  OrderDetailsScreen(order: args,));
       case RouteName.addProductScreen:
         return MaterialPageRoute(builder: (_) => const AddProductScreen());
+      case RouteName.totalOrderScreen:
+        return MaterialPageRoute(builder: (_) => const TotalOrderScreen());
+      case RouteName.totalCustomerScreen:
+        return MaterialPageRoute(builder: (_) => const TotalCustomerScreen());
+      case RouteName.totalProductScreen:
+        return MaterialPageRoute(builder: (_) => const TotalProductScreen());
+      case RouteName.salesDetailsScreen:
+        final args = settings.arguments as int;
+        return MaterialPageRoute(builder: (_) => SalesDetailsScreen(todaySales: args));
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
