@@ -100,16 +100,7 @@ class CustomersPage extends StatelessWidget {
                           horizontal: 8,
                           vertical: 4,
                         ),
-                        decoration: commonBoxDecoration(
-                          borderRadius: 8,
-                          borderWidth: 0.5,
-                          /*  color: provider
-                              .getStatusColor(data.status)
-                              .withValues(alpha: 0.01),
-                          borderColor: provider
-                              .getStatusColor(data.status)
-                              .withValues(alpha: 1),*/
-                        ),
+
                         child: commonText(
                           text: data.status,
                           color: provider.getStatusColor(data.status),
