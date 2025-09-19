@@ -74,7 +74,7 @@ class _ProductPageState extends State<ProductPage> {
                             label: "Status",
                             options: ["All", "Active", "Draft"],
                             selectedValue:
-                                provider.selectedStatus, // 👈 provider से लो
+                                provider.selectedStatus.toString().toCapitalize(), // 👈 provider से लो
                           ),
                         ];
                         showCommonFilterDialog(
