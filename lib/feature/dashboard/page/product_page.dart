@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/feature/dashboard/product_widget/common_product_widget.dart';
 import 'package:neeknots/provider/product_provider.dart';
@@ -9,8 +10,32 @@ import '../../../core/string/string_utils.dart';
 import '../../../main.dart';
 import '../../../routes/app_routes.dart';
 
-class ProductPage extends StatelessWidget {
+class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
+
+  @override
+  State<ProductPage> createState() => _ProductPageState();
+}
+
+class _ProductPageState extends State<ProductPage> {
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+    Future<void> init() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+
+      final postMdl = Provider.of<ProductProvider>(
+        navigatorKey.currentContext!,
+        listen: false,
+      );
+
+
+      postMdl.getProductList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,38 +108,40 @@ class ProductPage extends StatelessWidget {
                 ),
 
                 Expanded(
-                  child: provider.filteredProducts.isNotEmpty
-                      ? commonListViewBuilder(
+                  child: provider.productModel?.products?.isNotEmpty==true
+                      ? ListView.builder(
                           padding: const EdgeInsets.only(
                             left: 12,
                             right: 12,
                             top: 12,
                             bottom: 48,
                           ),
-                          items: provider.filteredProducts,
-                          itemBuilder: (context, index, data) {
-                            final parts = data.inventory.split("for");
+                          itemCount: provider.productModel?.products?.length??0,
+                          itemBuilder: (context, index, ) {
+
+                            var data= provider.productModel?.products?[index];
+                            /*final parts = data.inventory.split("for");
                             final left = "${parts[0]}for";
                             final right = parts.length > 1
                                 ? parts[1].trim()
-                                : "";
+                                : "";*/
 
                             return commonProductListView(
-                              image: data.icon,
+                              image: data?.image?.src??'',
                               onTap: () {
-                                navigatorKey.currentState?.pushNamed(
+                              /*  navigatorKey.currentState?.pushNamed(
                                   RouteName.productDetailsScreen,
                                   arguments: data,
-                                );
+                                );*/
                               },
-                              price: '$rupeeIcon${data.price}',
-                              textInventory1: left,
-                              textInventory2: right,
-                              productName: data.name,
-                              status: data.status,
-                              colorStatusColor: provider.getStatusColor(
-                                data.status,
-                              ),
+                              price: '0',
+                              textInventory1: "",
+                              textInventory2: '',
+                              productName: data?.title??'',
+                              status: data?.status??'',
+                              colorStatusColor: data?.status?.isNotEmpty==true?provider.getStatusColor(
+                                data!.status.toString().toCapitalize(),
+                              ):Colors.grey,
                               decoration: commonBoxDecoration(
                                 borderRadius: 8,
                                 borderWidth: 0.5,
@@ -137,45 +164,9 @@ class ProductPage extends StatelessWidget {
                 ),
               ],
             ),
-            /*  Positioned(
-              left: 0,
-              right: 0,
-              bottom: 8,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+            provider.isFetching?showLoaderList():SizedBox.shrink()
 
-                  children: [
-                    commonInkWell(
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          RouteName.addProductScreen,
-                        );
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 16,
-                        ),
-                        decoration: commonBoxDecoration(color: colorLogo),
-                        child: Center(
-                          child: commonText(
-                            color: Colors.white,
-                            text: "Add Product".toUpperCase(),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),*/
+
           ],
         );
       },

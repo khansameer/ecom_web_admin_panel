@@ -1,6 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:neeknots/main.dart';
+import 'package:neeknots/models/product_model.dart';
+
+import '../service/api_config.dart';
+import '../service/api_services.dart';
+import '../service/gloable_status_code.dart';
 
 class Product {
   final String name;
@@ -447,4 +454,34 @@ class ProductProvider with ChangeNotifier {
 
   String addProductStatus = "Active";
   String category = "Category 1";
+
+  //--------------------------------------------------------------API Calling -----------------------------------------------------
+
+  final _service = ApiService();
+  bool _isFetching = false;
+
+  bool get isFetching => _isFetching;
+  ProductModel ? _productModel;
+
+  ProductModel ? get productModel => _productModel;
+
+  Future<void> getProductList() async {
+    _isFetching = true;
+    notifyListeners();
+    final response = await _service.callGetMethod(
+      context: navigatorKey.currentContext!,
+      url: ApiConfig.productsUrl,
+    );
+
+    if (globalStatusCode == 200) {
+      debugPrint('=======decode==${json.decode(response)}');
+
+      _productModel = ProductModel.fromJson(json.decode(response));
+      _isFetching = false;
+      notifyListeners();
+    }
+
+    _isFetching = false;
+    notifyListeners();
+  }
 }
