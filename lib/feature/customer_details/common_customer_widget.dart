@@ -171,7 +171,7 @@ customerProductInfo() {
           child: commonText(
             fontSize: 13,
             fontWeight: FontWeight.w500,
-            text: "3 September 2025 at  7:19 pm from  Draft Orders",
+            text: "13 Sept 2025 at 7:19 pm from  Draft Orders",
           ),
         ),
         SizedBox(height: 10),

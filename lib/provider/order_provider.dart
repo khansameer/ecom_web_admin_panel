@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Product {
   final String name;
@@ -36,6 +37,11 @@ class Order {
     this.paymentStatus,
     required this.date,
   });
+
+  // ✅ Format date when needed
+  String get formattedDate {
+    return DateFormat("dd-MMM-yyyy hh:mm a").format(date);
+  }
 }
 
 class OrderDetails {

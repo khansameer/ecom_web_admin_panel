@@ -114,7 +114,7 @@ class _ProductPageState extends State<ProductPage> {
                             left: 12,
                             right: 12,
                             top: 12,
-                            bottom: 48,
+                            bottom: 12,
                           ),
                           itemCount: provider.productModel?.products?.length??0,
                           itemBuilder: (context, index, ) {

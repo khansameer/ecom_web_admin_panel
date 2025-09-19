@@ -29,16 +29,15 @@ class SettingPage extends StatelessWidget {
     return Consumer2<ThemeProvider, ProfileProvider>(
       builder: (context, themeProvider, provider, child) {
         return ListView(
+          physics: BouncingScrollPhysics(),
           padding: EdgeInsets.all(16),
           children: [
-            SizedBox(height: 30),
             profileView(
               themeProvider: themeProvider,
               context: context,
               provider: provider,
               imageProvider: imageProvider,
             ),
-
             SizedBox(height: 36),
             commonText(
               textAlign: TextAlign.center,
