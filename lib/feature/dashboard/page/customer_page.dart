@@ -90,19 +90,31 @@ class CustomersPage extends StatelessWidget {
                       title: data.name,
                       subtitleView: commonText(text: data.email, fontSize: 12),
                       trailing: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: provider
+                              .getStatusColor(data.status)
+                              .withValues(alpha: 0.1),
+                        ),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 5,
+                          horizontal: 8,
+                          vertical: 4,
                         ),
                         decoration: commonBoxDecoration(
                           borderRadius: 8,
                           borderWidth: 0.5,
+                          /*  color: provider
+                              .getStatusColor(data.status)
+                              .withValues(alpha: 0.01),
+                          borderColor: provider
+                              .getStatusColor(data.status)
+                              .withValues(alpha: 1),*/
                         ),
                         child: commonText(
                           text: data.status,
                           color: provider.getStatusColor(data.status),
                           fontSize: 10,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),

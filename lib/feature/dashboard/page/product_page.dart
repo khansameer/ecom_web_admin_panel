@@ -89,7 +89,7 @@ class ProductPage extends StatelessWidget {
                             left: 12,
                             right: 12,
                             top: 12,
-                            bottom: 48,
+                            bottom: 12,
                           ),
                           items: provider.filteredProducts,
                           itemBuilder: (context, index, data) {

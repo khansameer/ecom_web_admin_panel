@@ -20,7 +20,7 @@ class OrderPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 18.0, left: 18, right: 18),
               child: commonTextField(
-                hintText: "Search by Order ID, Name, or Date",
+                hintText: "Search by Order ID, Name",
                 prefixIcon: commonPrefixIcon(
                   image: icProductSearch,
                   width: 16,
@@ -74,14 +74,11 @@ class OrderPage extends StatelessWidget {
                     },
                     colorTextStatus: provider.getStatusColor(data.status),
                     decoration: commonBoxDecoration(
-                      borderRadius: 8,
-                      borderWidth: 0.5,
-                      /*color: provider
+                      borderRadius: 4,
+
+                      color: provider
                           .getStatusColor(data.status)
-                          .withValues(alpha: 0.01),
-                      borderColor: provider
-                          .getStatusColor(data.status)
-                          .withValues(alpha: 1),*/
+                          .withValues(alpha: 0.1),
                     ),
 
                     orderID: data.orderId,
@@ -89,7 +86,7 @@ class OrderPage extends StatelessWidget {
                     productName: data.customerName,
                     status: data.status,
                     price: data.price,
-                    date: data.date.toLocal().toString().split(' ')[0],
+                    date: data.formattedDate, //data.date.toLocal().toString(),
                   );
                 },
               ),

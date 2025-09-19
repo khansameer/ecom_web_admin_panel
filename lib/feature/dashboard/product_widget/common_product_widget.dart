@@ -62,7 +62,8 @@ commonProductListView({
                               text: "$textInventory1 ", // first part
                               style: commonTextStyle(
                                 fontSize: 10,
-                                color: colorSale,
+                                fontWeight: FontWeight.w500,
+                                color: colorOffline,
                               ),
                             ),
                             TextSpan(
@@ -83,18 +84,20 @@ commonProductListView({
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 5,
+                    vertical: 4,
                   ),
-                  decoration: decoration /*decoration: commonBoxDecoration(
-                    color: provider
-                        .getStatusColor(data.status)
-                        .withValues(alpha: 0.5),
-                  )*/,
+
+                  decoration: BoxDecoration(
+                    color: colorStatusColor != null
+                        ? colorStatusColor.withValues(alpha: 0.1)
+                        : Colors.white.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                   child: commonText(
                     text: status,
                     color: colorStatusColor,
                     fontSize: 10,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 SizedBox(width: 1),
