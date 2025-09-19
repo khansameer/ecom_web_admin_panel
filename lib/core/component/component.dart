@@ -620,7 +620,7 @@ void showCommonBottomSheet({
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor:themeProvider.isDark?colorDarkBgColor: Colors.white,
+    backgroundColor: themeProvider.isDark ? colorDarkBgColor : Colors.white,
     isDismissible: isDismissible,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -633,7 +633,7 @@ void showCommonBottomSheet({
           right: 16,
           top: 24,
         ),
-        child:content,
+        child: content,
       );
     },
   );
@@ -1094,7 +1094,8 @@ Widget commonNetworkImage(
     ),
   );
 }
-commonBoxView({required Widget contentView,required String title}){
+
+commonBoxView({required Widget contentView, required String title}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(0),
@@ -1107,13 +1108,7 @@ commonBoxView({required Widget contentView,required String title}){
         const Divider(height: 1),
 
         // Content
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child:contentView ,
-        ),
-
-
-
+        Padding(padding: const EdgeInsets.all(12.0), child: contentView),
       ],
     ),
   );

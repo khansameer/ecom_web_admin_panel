@@ -1,11 +1,6 @@
-
 import 'package:flutter/cupertino.dart';
 
-
-
-
 class LoginProvider with ChangeNotifier {
-
   final bool _isFetching = false;
 
   bool get isFetching => _isFetching;
@@ -17,14 +12,10 @@ class LoginProvider with ChangeNotifier {
 
   bool get obscurePassword => _obscurePassword;
 
-
-
   void togglePassword() {
     _obscurePassword = !_obscurePassword;
     notifyListeners();
   }
-
-
 
   final tetEmail = TextEditingController();
   final tetPassword = TextEditingController();
@@ -32,10 +23,10 @@ class LoginProvider with ChangeNotifier {
   final tetNewPassword = TextEditingController();
   final tetConfirmPassword = TextEditingController();
 
-
   bool _obscureCurrentPassword = true;
 
   bool get obscureCurrentPassword => _obscureCurrentPassword;
+
   void toggleCurrentPassword() {
     _obscureCurrentPassword = !_obscureCurrentPassword;
     notifyListeners();
@@ -44,6 +35,7 @@ class LoginProvider with ChangeNotifier {
   bool _obscureNewPassword = true;
 
   bool get obscureNewPassword => _obscureNewPassword;
+
   void toggleNewPassword() {
     _obscureNewPassword = !_obscureNewPassword;
     notifyListeners();
@@ -52,12 +44,11 @@ class LoginProvider with ChangeNotifier {
   bool _obscurConfirmPassword = true;
 
   bool get obscureConfirmPassword => _obscurConfirmPassword;
+
   void toggleConfirmPassword() {
     _obscurConfirmPassword = !_obscurConfirmPassword;
     notifyListeners();
   }
-
-
 
   @override
   void dispose() {
@@ -70,10 +61,7 @@ class LoginProvider with ChangeNotifier {
     super.dispose();
   }
 
-
-
   void resetState() {
-
     tetEmail.clear();
 
     tetCurrentPassword.clear();

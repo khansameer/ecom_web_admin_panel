@@ -7,13 +7,12 @@ import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 notificationWidget() {
-
   return commonInkWell(
-    onTap: (){
+    onTap: () {
       navigatorKey.currentState?.pushNamed(RouteName.notificationScreen);
     },
     child: Consumer<DashboardProvider>(
-      builder: (context,provider,child) {
+      builder: (context, provider, child) {
         return Stack(
           clipBehavior: Clip.none,
           children: [
@@ -36,7 +35,9 @@ notificationWidget() {
                 ),
                 child: Center(
                   child: commonText(
-                    text:  provider.notifications.isNotEmpty?'${provider.notifications.length}':"0",
+                    text: provider.notifications.isNotEmpty
+                        ? '${provider.notifications.length}'
+                        : "0",
                     fontWeight: FontWeight.w600,
                     fontSize: 10,
                     color: Colors.white,
@@ -46,7 +47,7 @@ notificationWidget() {
             ),
           ],
         );
-      }
+      },
     ),
   );
 }

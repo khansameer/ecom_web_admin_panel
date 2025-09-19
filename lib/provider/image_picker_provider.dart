@@ -14,6 +14,7 @@ class ImagePickerProvider with ChangeNotifier {
     _imagePath = null;
     notifyListeners();
   }
+
   void resetState() {
     _imagePath = null;
     notifyListeners();

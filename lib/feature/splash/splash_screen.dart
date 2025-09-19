@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(const Duration(seconds: 3), () async {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
         RouteName.dashboardScreen,
-            (Route<dynamic> route) => false,
+        (Route<dynamic> route) => false,
       );
     });
   }
@@ -37,18 +37,17 @@ class _SplashScreenState extends State<SplashScreen> {
     var size = MediaQuery.sizeOf(context);
     return commonScaffold(
       body: Consumer<ThemeProvider>(
-        builder: (context,provider,child) {
+        builder: (context, provider, child) {
           return commonAppBackground(
-
             child: Center(
               child: commonSvgWidget(
-                color: provider.isDark?Colors.white: colorLogo,
+                color: provider.isDark ? Colors.white : colorLogo,
                 path: icLogo,
                 width: size.width * 0.8,
               ),
             ),
           );
-        }
+        },
       ),
     );
   }

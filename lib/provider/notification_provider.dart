@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:neeknots/core/firebase/notification_storage.dart';
+
 import '../core/firebase/local_notification.dart';
 
 class NotificationProvider extends ChangeNotifier {
@@ -7,6 +8,7 @@ class NotificationProvider extends ChangeNotifier {
   bool _isLoading = true;
 
   List<LocalNotification> get list => _list;
+
   bool get isLoading => _isLoading;
 
   Future<void> load() async {
@@ -35,6 +37,5 @@ class NotificationProvider extends ChangeNotifier {
 
     await load();
     notifyListeners();
-
   }
 }

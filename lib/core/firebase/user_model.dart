@@ -5,8 +5,8 @@ class UserModel {
   String? sId;
   String? email;
   String? displayName;
-  dynamic  phone;
-  dynamic  avatar;
+  dynamic phone;
+  dynamic avatar;
   bool? active;
   String? createdAt;
   String? updatedAt;
@@ -16,21 +16,22 @@ class UserModel {
   String? country;
   String? countryCode;
 
-  UserModel(
-      {this.token,
-        this.sId,
-        this.email,
-        this.displayName,
-        this.phone,
-        this.avatar,
-        this.active,
-        this.createdAt,
-        this.updatedAt,
-        this.countryCode,
-        this.role,
-        this.type,
-        this.description,
-        this.country});
+  UserModel({
+    this.token,
+    this.sId,
+    this.email,
+    this.displayName,
+    this.phone,
+    this.avatar,
+    this.active,
+    this.createdAt,
+    this.updatedAt,
+    this.countryCode,
+    this.role,
+    this.type,
+    this.description,
+    this.country,
+  });
 
   UserModel.fromJson(Map<String, dynamic> json) {
     token = json['token'];

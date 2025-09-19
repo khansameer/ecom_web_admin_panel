@@ -17,7 +17,6 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     init();

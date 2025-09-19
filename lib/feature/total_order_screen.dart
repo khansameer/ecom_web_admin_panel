@@ -9,11 +9,12 @@ class TotalOrderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return commonScaffold(
-        appBar: commonAppBar(
-          title: "Total Orders",
-          context: context,
-          centerTitle: true,
-        ),
-        body: commonAppBackground(child: OrderPage()));
+      appBar: commonAppBar(
+        title: "Total Orders",
+        context: context,
+        centerTitle: true,
+      ),
+      body: commonAppBackground(child: OrderPage()),
+    );
   }
 }

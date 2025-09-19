@@ -12,7 +12,7 @@ import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../../../core/component/AnimatedCounter.dart';
+import '../../../core/component/animated_counter.dart';
 import '../../../core/string/string_utils.dart';
 
 homeTopView() {
@@ -32,8 +32,11 @@ homeTopView() {
                   icon: icTotalSale,
                   title: "Today Sales",
                   subtitle: "+50% Incomes",
-                  onTap: (){
-                    navigatorKey.currentState?.pushNamed(RouteName.salesDetailsScreen,arguments: 278);
+                  onTap: () {
+                    navigatorKey.currentState?.pushNamed(
+                      RouteName.salesDetailsScreen,
+                      arguments: 278,
+                    );
                   },
                   leftText: rupeeIcon,
                   rightText: "m",
@@ -46,8 +49,10 @@ homeTopView() {
                   color: colorProduct,
                   provider: provider,
                   leftText: rupeeIcon,
-                  onTap: (){
-                    navigatorKey.currentState?.pushNamed(RouteName.totalProductScreen);
+                  onTap: () {
+                    navigatorKey.currentState?.pushNamed(
+                      RouteName.totalProductScreen,
+                    );
                   },
                   icon: icProductMenu,
                   title: "Total Product",
@@ -63,8 +68,10 @@ homeTopView() {
                 child: _commonDashboardView(
                   color: Colors.blue.shade400,
                   icon: icOrderMenu,
-                  onTap: (){
-                    navigatorKey.currentState?.pushNamed(RouteName.totalOrderScreen);
+                  onTap: () {
+                    navigatorKey.currentState?.pushNamed(
+                      RouteName.totalOrderScreen,
+                    );
                   },
                   provider: provider,
                   title: "Total  Order",
@@ -76,8 +83,10 @@ homeTopView() {
               Expanded(
                 child: _commonDashboardView(
                   color: colorUser,
-                  onTap: (){
-                    navigatorKey.currentState?.pushNamed(RouteName.totalCustomerScreen);
+                  onTap: () {
+                    navigatorKey.currentState?.pushNamed(
+                      RouteName.totalCustomerScreen,
+                    );
                   },
                   provider: provider,
                   icon: icTotalUser,
@@ -102,12 +111,11 @@ _commonDashboardView({
   required String title,
   subtitle,
   required int value,
-  String ?leftText,
-  String ? rightText,
-  void Function()? onTap
+  String? leftText,
+  String? rightText,
+  void Function()? onTap,
 }) {
-
-/*  AnimatedCounter(
+  /*  AnimatedCounter(
     endValue: 4215,
     duration: Duration(seconds: 3),
     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
@@ -119,7 +127,8 @@ _commonDashboardView({
       margin: EdgeInsets.all(5),
       padding: const EdgeInsets.all(16),
       decoration: commonBoxDecoration(
-        color: color?.withValues(alpha: 0.05) ?? colorLogo.withValues(alpha: 0.1),
+        color:
+            color?.withValues(alpha: 0.05) ?? colorLogo.withValues(alpha: 0.1),
 
         borderColor:
             color?.withValues(alpha: 0.3) ?? colorLogo.withValues(alpha: 0.3),
@@ -163,7 +172,6 @@ _commonDashboardView({
             color: provider.isDark ? Colors.white : colorText,
           ),
 
-
           commonText(
             text: subtitle,
             fontSize: 12,
@@ -172,10 +180,14 @@ _commonDashboardView({
           const SizedBox(height: 8),
           AnimatedCounter(
             leftText: leftText,
-            rightText: rightText?.isNotEmpty==true?rightText:'',
+            rightText: rightText?.isNotEmpty == true ? rightText : '',
             endValue: value,
             duration: Duration(seconds: 2),
-            style:commonTextStyle(fontSize: 25, fontWeight: FontWeight.w600,  color: provider.isDark ? Colors.white : colorTextDesc1,),
+            style: commonTextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.w600,
+              color: provider.isDark ? Colors.white : colorTextDesc1,
+            ),
           ),
           /*commonText(
             text: value,
@@ -408,7 +420,7 @@ commonTopProductListView({void Function()? onTap}) {
                                     fontWeight: FontWeight.w600,
                                   ),
                                   commonText(
-                                    color:Colors.blueAccent,
+                                    color: Colors.blueAccent,
                                     text: '$rupeeIcon${data.price}',
                                     fontWeight: FontWeight.w600,
                                     fontSize: 12,
@@ -563,15 +575,22 @@ commonTopOrderListView({void Function()? onTap}) {
                                 children: [
                                   Row(
                                     children: [
-                                     Expanded(child:  commonText(
-                                       text: '#${data.orderId}',
-                                       fontWeight: FontWeight.w600,
-                                       color: themeProvider.isDark
-                                           ? Colors.white
-                                           : colorLogo,
-                                     ),),
-                                      
-                                      commonText(text: '\$${data.price}',color:Colors.blueAccent,fontWeight: FontWeight.w600,fontSize: 13,)
+                                      Expanded(
+                                        child: commonText(
+                                          text: '#${data.orderId}',
+                                          fontWeight: FontWeight.w600,
+                                          color: themeProvider.isDark
+                                              ? Colors.white
+                                              : colorLogo,
+                                        ),
+                                      ),
+
+                                      commonText(
+                                        text: '\$${data.price}',
+                                        color: Colors.blueAccent,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 13,
+                                      ),
                                     ],
                                   ),
                                   Row(
@@ -590,7 +609,9 @@ commonTopOrderListView({void Function()? onTap}) {
                                             .split(' ')[0],
                                         fontWeight: FontWeight.w600,
                                         fontSize: 10,
-                                        color: themeProvider.isDark?Colors.white:colorTextDesc,
+                                        color: themeProvider.isDark
+                                            ? Colors.white
+                                            : colorTextDesc,
                                       ),
                                       SizedBox(width: 5),
                                     ],

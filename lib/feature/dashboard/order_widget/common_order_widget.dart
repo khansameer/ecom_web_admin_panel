@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
-import 'package:neeknots/main.dart';
 import 'package:neeknots/provider/theme_provider.dart';
-import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 commonOrderView({
@@ -23,7 +21,7 @@ commonOrderView({
         decoration: commonBoxDecoration(borderColor: colorBorder),
         margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         child: commonInkWell(
-          onTap:onTap,
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(2.0),
             child: Row(

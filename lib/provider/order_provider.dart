@@ -22,7 +22,7 @@ class Order {
   final List<Product> products;
   final double totalAmount;
   final String status;
-  final String ?paymentStatus;
+  final String? paymentStatus;
   final DateTime date;
   final double price;
 
@@ -150,6 +150,7 @@ class OrdersProvider with ChangeNotifier {
         return Colors.grey;
     }
   }
+
   Color getPaymentStatusColor(String status) {
     switch (status) {
       case "Pending":
@@ -162,6 +163,7 @@ class OrdersProvider with ChangeNotifier {
         return Colors.grey;
     }
   }
+
   List<OrderDetails> ordersDetails = [
     OrderDetails(
       title: "Addison Sweater Dress-Black",
@@ -336,9 +338,11 @@ class OrdersProvider with ChangeNotifier {
     _searchQuery = query.toLowerCase();
     _applyFilters();
   }
+
   String _selectedStatus = "All";
 
   String get selectedStatus => _selectedStatus;
+
   /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
   void filterByStatus(String status) {
     _statusFilter = status;

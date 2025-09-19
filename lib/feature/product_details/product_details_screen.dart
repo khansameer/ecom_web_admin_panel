@@ -27,8 +27,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     super.initState();
     init();
   }
-  void init(){
-   /* final provider = Provider.of<ProductProvider>(context);
+
+  void init() {
+    /* final provider = Provider.of<ProductProvider>(context);
 
     provider.tetName.text=widget.product.name;
     provider.tetDesc.text=widget.product.desc??'';
@@ -42,8 +43,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       provider.tetQty.text = '${widget.product.qty}';
       provider.tetPrice.text = '${widget.product.price}';
     });
-
   }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ProductProvider>(context);
@@ -52,9 +53,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
     final parts = widget.product.inventory.split("for");
     final left = "${parts[0]}for";
-    final right = parts.length > 1
-        ? parts[1].trim()
-        : "";
+    final right = parts.length > 1 ? parts[1].trim() : "";
     return commonScaffold(
       appBar: commonAppBar(
         title: "Product Details",
@@ -121,37 +120,43 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         children: [
                           Container(
                             decoration: commonBoxDecoration(
-                                borderColor: colorBorder
+                              borderColor: colorBorder,
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 5,
+                            ),
                             child: commonText(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                               text: "Qty : ${widget.product.qty}",
-
                             ),
                           ),
 
                           Spacer(),
                           Container(
                             decoration: commonBoxDecoration(
-                                borderColor: colorBorder
+                              borderColor: colorBorder,
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 5,
+                            ),
                             child: Row(
                               children: [
                                 commonText(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                   text: "Status : ",
-
                                 ),
                                 commonText(
                                   textAlign: TextAlign.right,
                                   text: widget.product.status,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
-                                  color: provider.getStatusColor(widget.product.status),
+                                  color: provider.getStatusColor(
+                                    widget.product.status,
+                                  ),
                                 ),
                               ],
                             ),
@@ -159,10 +164,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           Spacer(),
                           Container(
                             decoration: commonBoxDecoration(
-                                borderColor: colorBorder
+                              borderColor: colorBorder,
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 5),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                                vertical: 5,
+                              ),
                               child: RichText(
                                 textAlign: TextAlign.center,
                                 text: TextSpan(
@@ -248,7 +256,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Row(
-                               mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   commonInkWell(
                                     onTap: () => Navigator.pop(context),

@@ -1,12 +1,13 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 class SalesData {
   final String x;
   final double y;
 
   SalesData(this.x, this.y);
 }
+
 class NotificationModel {
   final String title;
   final String description;
@@ -48,9 +49,8 @@ class DashboardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-
   String _filter = "Month";
+
   String get filter => _filter;
 
   void setFilter(String value) {
@@ -96,26 +96,106 @@ class DashboardProvider with ChangeNotifier {
   }
 
   final List<NotificationModel> _notifications = [
-    NotificationModel(title: "Welcome", description: "Thanks for joining our app!", time: "10:00 AM"),
-    NotificationModel(title: "Offer Alert", description: "Get 20% off on your next purchase.", time: "10:30 AM"),
-    NotificationModel(title: "Reminder", description: "Don't forget your meeting at 3 PM.", time: "11:00 AM"),
-    NotificationModel(title: "Update", description: "A new version of the app is available.", time: "11:30 AM"),
-    NotificationModel(title: "Security", description: "Your password was changed successfully.", time: "12:00 PM"),
-    NotificationModel(title: "Event", description: "Join our live session today at 6 PM.", time: "12:30 PM"),
-    NotificationModel(title: "Survey", description: "Complete the survey and win rewards.", time: "1:00 PM"),
-    NotificationModel(title: "News", description: "Check out the latest industry updates.", time: "1:30 PM"),
-    NotificationModel(title: "Task", description: "You have 2 pending tasks to complete.", time: "2:00 PM"),
-    NotificationModel(title: "Promo", description: "Special offer valid till midnight!", time: "2:30 PM"),
-    NotificationModel(title: "Delivery", description: "Your package is out for delivery.", time: "3:00 PM"),
-    NotificationModel(title: "Payment", description: "Your payment has been received.", time: "3:30 PM"),
-    NotificationModel(title: "Message", description: "You have 3 unread messages.", time: "4:00 PM"),
-    NotificationModel(title: "Like", description: "Someone liked your post.", time: "4:30 PM"),
-    NotificationModel(title: "Comment", description: "You got a new comment.", time: "5:00 PM"),
-    NotificationModel(title: "Friend Request", description: "John has sent you a friend request.", time: "5:30 PM"),
-    NotificationModel(title: "System", description: "System maintenance at 11 PM tonight.", time: "6:00 PM"),
-    NotificationModel(title: "Achievement", description: "You unlocked a new badge!", time: "6:30 PM"),
-    NotificationModel(title: "Reminder", description: "Drink a glass of water now.", time: "7:00 PM"),
-    NotificationModel(title: "Logout", description: "You have been logged out securely.", time: "7:30 PM"),
+    NotificationModel(
+      title: "Welcome",
+      description: "Thanks for joining our app!",
+      time: "10:00 AM",
+    ),
+    NotificationModel(
+      title: "Offer Alert",
+      description: "Get 20% off on your next purchase.",
+      time: "10:30 AM",
+    ),
+    NotificationModel(
+      title: "Reminder",
+      description: "Don't forget your meeting at 3 PM.",
+      time: "11:00 AM",
+    ),
+    NotificationModel(
+      title: "Update",
+      description: "A new version of the app is available.",
+      time: "11:30 AM",
+    ),
+    NotificationModel(
+      title: "Security",
+      description: "Your password was changed successfully.",
+      time: "12:00 PM",
+    ),
+    NotificationModel(
+      title: "Event",
+      description: "Join our live session today at 6 PM.",
+      time: "12:30 PM",
+    ),
+    NotificationModel(
+      title: "Survey",
+      description: "Complete the survey and win rewards.",
+      time: "1:00 PM",
+    ),
+    NotificationModel(
+      title: "News",
+      description: "Check out the latest industry updates.",
+      time: "1:30 PM",
+    ),
+    NotificationModel(
+      title: "Task",
+      description: "You have 2 pending tasks to complete.",
+      time: "2:00 PM",
+    ),
+    NotificationModel(
+      title: "Promo",
+      description: "Special offer valid till midnight!",
+      time: "2:30 PM",
+    ),
+    NotificationModel(
+      title: "Delivery",
+      description: "Your package is out for delivery.",
+      time: "3:00 PM",
+    ),
+    NotificationModel(
+      title: "Payment",
+      description: "Your payment has been received.",
+      time: "3:30 PM",
+    ),
+    NotificationModel(
+      title: "Message",
+      description: "You have 3 unread messages.",
+      time: "4:00 PM",
+    ),
+    NotificationModel(
+      title: "Like",
+      description: "Someone liked your post.",
+      time: "4:30 PM",
+    ),
+    NotificationModel(
+      title: "Comment",
+      description: "You got a new comment.",
+      time: "5:00 PM",
+    ),
+    NotificationModel(
+      title: "Friend Request",
+      description: "John has sent you a friend request.",
+      time: "5:30 PM",
+    ),
+    NotificationModel(
+      title: "System",
+      description: "System maintenance at 11 PM tonight.",
+      time: "6:00 PM",
+    ),
+    NotificationModel(
+      title: "Achievement",
+      description: "You unlocked a new badge!",
+      time: "6:30 PM",
+    ),
+    NotificationModel(
+      title: "Reminder",
+      description: "Drink a glass of water now.",
+      time: "7:00 PM",
+    ),
+    NotificationModel(
+      title: "Logout",
+      description: "You have been logged out securely.",
+      time: "7:30 PM",
+    ),
   ];
 
   List<NotificationModel> get notifications => _notifications;
@@ -127,6 +207,4 @@ class DashboardProvider with ChangeNotifier {
     _filter = "Month"; // 👈 default reset
     notifyListeners();
   }
-
-
 }

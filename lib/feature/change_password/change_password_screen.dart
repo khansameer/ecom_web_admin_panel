@@ -18,7 +18,11 @@ class ChangePasswordScreen extends StatelessWidget {
     var size = MediaQuery.sizeOf(context);
     final formChangePasswordKey = GlobalKey<FormState>();
     return commonScaffold(
-      appBar: commonAppBar(title: "Change Password", context: context,centerTitle: true),
+      appBar: commonAppBar(
+        title: "Change Password",
+        context: context,
+        centerTitle: true,
+      ),
       body: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return commonAppBackground(
@@ -59,7 +63,8 @@ class ChangePasswordScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 2),
                             commonDescriptionText(
-                              text: "Keep your account safe by updating your password.",
+                              text:
+                                  "Keep your account safe by updating your password.",
                             ),
                             const SizedBox(height: 30),
                             Column(
@@ -82,7 +87,9 @@ class ChangePasswordScreen extends StatelessWidget {
                                   keyboardType: TextInputType.visiblePassword,
                                   validator: validatePassword,
 
-                                  prefixIcon: commonPrefixIcon(image: icPassword),
+                                  prefixIcon: commonPrefixIcon(
+                                    image: icPassword,
+                                  ),
                                 ),
                                 commonTextField(
                                   hintText: "New Password",
@@ -100,7 +107,9 @@ class ChangePasswordScreen extends StatelessWidget {
                                   ),
                                   keyboardType: TextInputType.visiblePassword,
                                   validator: validatePassword,
-                                  prefixIcon: commonPrefixIcon(image: icPassword),
+                                  prefixIcon: commonPrefixIcon(
+                                    image: icPassword,
+                                  ),
                                 ),
                                 commonTextField(
                                   hintText: "Confirm Password",
@@ -117,39 +126,43 @@ class ChangePasswordScreen extends StatelessWidget {
                                     onPressed: provider.toggleConfirmPassword,
                                   ),
                                   keyboardType: TextInputType.visiblePassword,
-                                  validator: (value) => validateConfirmPassword(value, provider.tetNewPassword.text),
-                                  prefixIcon: commonPrefixIcon(image: icPassword),
+                                  validator: (value) => validateConfirmPassword(
+                                    value,
+                                    provider.tetNewPassword.text,
+                                  ),
+                                  prefixIcon: commonPrefixIcon(
+                                    image: icPassword,
+                                  ),
                                 ),
-
                               ],
                             ),
 
                             const SizedBox(height: 50),
-                            commonButton(text: "Change Password", onPressed: (){
-
-                              hideKeyboard(context);
-                              if (formChangePasswordKey.currentState?.validate() ==
-                                  true) {
-                                showCommonDialog(
-                                  showCancel: false,
-                                  confirmText: "Login Again",
-                                  onPressed: () {
-                                    navigatorKey.currentState?.pushNamedAndRemoveUntil(
-                                      RouteName.loginScreen,
-                                          (Route<dynamic> route) => false,
-                                    );
-                                  },
-                                  cancelText: "No",
-                                  title: "Success",
-                                  context: context,
-                                  content: "Password change successfully!",
-                                );
-
-
-                              }
-
-
-                            }),
+                            commonButton(
+                              text: "Change Password",
+                              onPressed: () {
+                                hideKeyboard(context);
+                                if (formChangePasswordKey.currentState
+                                        ?.validate() ==
+                                    true) {
+                                  showCommonDialog(
+                                    showCancel: false,
+                                    confirmText: "Login Again",
+                                    onPressed: () {
+                                      navigatorKey.currentState
+                                          ?.pushNamedAndRemoveUntil(
+                                            RouteName.loginScreen,
+                                            (Route<dynamic> route) => false,
+                                          );
+                                    },
+                                    cancelText: "No",
+                                    title: "Success",
+                                    context: context,
+                                    content: "Password change successfully!",
+                                  );
+                                }
+                              },
+                            ),
                           ],
                         ),
                       ),

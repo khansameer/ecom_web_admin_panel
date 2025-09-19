@@ -121,11 +121,7 @@ customerProductInfo() {
                 child: Row(
                   spacing: 20,
                   children: [
-                    commonText(
-                      text: "#1014",
-
-                      fontWeight: FontWeight.w600,
-                    ),
+                    commonText(text: "#1014", fontWeight: FontWeight.w600),
                     Container(
                       decoration: commonBoxDecoration(color: colorBorder),
                       child: Padding(

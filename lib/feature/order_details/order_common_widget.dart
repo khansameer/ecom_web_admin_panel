@@ -150,17 +150,26 @@ orderInfo({required Order order}) {
             children: [
               _buildRow(
                 colorText: themeProvider.isDark ? Colors.white : colorLogo,
-                title: "Order No", value: '#${order.orderId}', fontWeight: FontWeight.w600,),
+                title: "Order No",
+                value: '#${order.orderId}',
+                fontWeight: FontWeight.w600,
+              ),
               _buildRow(
                 fontSize: 14,
 
                 fontWeight: FontWeight.w600,
                 title: "Order Status",
                 value: order.status,
-                colorText:orderProvider.getStatusColor(order.status),
-
+                colorText: orderProvider.getStatusColor(order.status),
               ),
-              _buildRow(title: "Payment Status", value: order.paymentStatus??'', fontWeight: FontWeight.w600, colorText: orderProvider.getPaymentStatusColor(order.paymentStatus??''),),
+              _buildRow(
+                title: "Payment Status",
+                value: order.paymentStatus ?? '',
+                fontWeight: FontWeight.w600,
+                colorText: orderProvider.getPaymentStatusColor(
+                  order.paymentStatus ?? '',
+                ),
+              ),
             ],
           ),
         ),

@@ -38,7 +38,8 @@ class OrderPage extends StatelessWidget {
                       FilterItem(
                         label: "Status",
                         options: ["All", "Pending", "Shipped", "Delivered"],
-                        selectedValue: provider.selectedStatus, // 👈 यहाँ provider से value लो
+                        selectedValue: provider
+                            .selectedStatus, // 👈 यहाँ provider से value लो
                       ),
                     ];
 
@@ -65,8 +66,11 @@ class OrderPage extends StatelessWidget {
                 items: provider.orders,
                 itemBuilder: (context, index, data) {
                   return commonOrderView(
-                    onTap: (){
-                      navigatorKey.currentState?.pushNamed(RouteName.orderDetailsScreen,arguments: data);
+                    onTap: () {
+                      navigatorKey.currentState?.pushNamed(
+                        RouteName.orderDetailsScreen,
+                        arguments: data,
+                      );
                     },
                     colorTextStatus: provider.getStatusColor(data.status),
                     decoration: commonBoxDecoration(

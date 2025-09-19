@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:neeknots/provider/customer_provider.dart';
 import 'package:neeknots/provider/image_picker_provider.dart';
@@ -42,8 +41,12 @@ List<SingleChildWidget> providers = [
   ChangeNotifierProvider<OrdersProvider>(create: (_) => OrdersProvider()),
   ChangeNotifierProvider<CustomerProvider>(create: (_) => CustomerProvider()),
   ChangeNotifierProvider<ProfileProvider>(create: (_) => ProfileProvider()),
-  ChangeNotifierProvider<ImagePickerProvider>(create: (_) => ImagePickerProvider()),
-  ChangeNotifierProvider<NotificationProvider>(create: (_) => NotificationProvider()),
+  ChangeNotifierProvider<ImagePickerProvider>(
+    create: (_) => ImagePickerProvider(),
+  ),
+  ChangeNotifierProvider<NotificationProvider>(
+    create: (_) => NotificationProvider(),
+  ),
 ];
 
 Future<void> main() async {
@@ -81,7 +84,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
 
     return MaterialApp(
       scaffoldMessengerKey: rootScaffoldMessengerKey,

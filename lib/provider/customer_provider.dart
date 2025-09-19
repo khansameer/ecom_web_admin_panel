@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 class Customer {
   final String id;
   final String name;
@@ -17,7 +17,8 @@ class Customer {
     required this.avatar,
   });
 }
-class CustomerProvider with ChangeNotifier{
+
+class CustomerProvider with ChangeNotifier {
   final List<Customer> _customers = [
     Customer(
       id: "1",
@@ -106,7 +107,9 @@ class CustomerProvider with ChangeNotifier{
 
   List<Customer> get customers {
     return _customers.where((c) {
-      final matchesSearch = c.name.toLowerCase().contains(_searchQuery.toLowerCase());
+      final matchesSearch = c.name.toLowerCase().contains(
+        _searchQuery.toLowerCase(),
+      );
       final matchesStatus = _statusFilter == "All" || c.status == _statusFilter;
       return matchesSearch && matchesStatus;
     }).toList();
@@ -116,9 +119,11 @@ class CustomerProvider with ChangeNotifier{
     _searchQuery = query;
     notifyListeners();
   }
+
   String _selectedStatusFilter = "All";
 
   String get selectedStatusFilter => _selectedStatusFilter;
+
   void setStatusFilter(String status) {
     _selectedStatusFilter = status;
     _statusFilter = status;
@@ -129,12 +134,12 @@ class CustomerProvider with ChangeNotifier{
     switch (status) {
       case "Subscribed":
         return Colors.green;
-     /* case "Inactive":
-        return Colors.red;*/
+
       default:
         return Colors.red;
     }
   }
+
   void reset() {
     _searchQuery = "";
     _statusFilter = "All";

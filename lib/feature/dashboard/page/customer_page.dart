@@ -38,7 +38,8 @@ class CustomersPage extends StatelessWidget {
                   FilterItem(
                     label: "Email Subscription",
                     options: ["All", "Subscribed", "Not Subscribed"],
-                    selectedValue: provider.selectedStatusFilter, // 👈 provider से लो
+                    selectedValue:
+                        provider.selectedStatusFilter, // 👈 provider से लो
                   ),
                 ];
                 showCommonFilterDialog(
@@ -53,8 +54,6 @@ class CustomersPage extends StatelessWidget {
                         .firstWhere((f) => f.label == "Email Subscription")
                         .selectedValue;
                     provider.setStatusFilter(selectedStatus);
-
-                    //provider.setStatusFilter(value);
                   },
                 );
               },
@@ -98,12 +97,6 @@ class CustomersPage extends StatelessWidget {
                         decoration: commonBoxDecoration(
                           borderRadius: 8,
                           borderWidth: 0.5,
-                          /*  color: provider
-                              .getStatusColor(data.status)
-                              .withValues(alpha: 0.01),
-                          borderColor: provider
-                              .getStatusColor(data.status)
-                              .withValues(alpha: 1),*/
                         ),
                         child: commonText(
                           text: data.status,

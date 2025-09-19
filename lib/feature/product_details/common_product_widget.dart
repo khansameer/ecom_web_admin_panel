@@ -1,5 +1,4 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:neeknots/core/component/price_input_format.dart';
@@ -142,8 +141,6 @@ commonBannerView({required ProductProvider provider, void Function()? onTap}) {
 }
 
 commonFormView({required ProductProvider provider}) {
-
-
   return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,8 +148,10 @@ commonFormView({required ProductProvider provider}) {
       _commonHeading(text: "Product Name"),
       SizedBox(height: 8),
       commonTextField(
-          controller: provider.tetName,
-          enabled: false, hintText: "Alligator Soft Toy"),
+        controller: provider.tetName,
+        enabled: false,
+        hintText: "Alligator Soft Toy",
+      ),
       SizedBox(height: 15),
       _commonHeading(text: "Product Description"),
       SizedBox(height: 8),

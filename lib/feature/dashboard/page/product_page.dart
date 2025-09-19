@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/feature/dashboard/product_widget/common_product_widget.dart';
@@ -46,12 +45,14 @@ class ProductPage extends StatelessWidget {
                           FilterItem(
                             label: "Category",
                             options: ["All", "Dresses", "Tops", "Shirts"],
-                            selectedValue: provider.selectedCategory, // 👈 provider से लो
+                            selectedValue:
+                                provider.selectedCategory, // 👈 provider से लो
                           ),
                           FilterItem(
                             label: "Status",
                             options: ["All", "Active", "Draft"],
-                            selectedValue: provider.selectedStatus, // 👈 provider से लो
+                            selectedValue:
+                                provider.selectedStatus, // 👈 provider से लो
                           ),
                         ];
                         showCommonFilterDialog(
@@ -59,10 +60,6 @@ class ProductPage extends StatelessWidget {
                           title: "Filter Orders",
                           filters: filters,
                           onReset: () {
-                            // reset all filters
-                            for (var filter in filters) {
-                              filter.selectedValue = "All";
-                            }
                             provider.setCategory("All");
                             provider.setStatus("All");
                           },
@@ -104,10 +101,10 @@ class ProductPage extends StatelessWidget {
 
                             return commonProductListView(
                               image: data.icon,
-                              onTap: (){
+                              onTap: () {
                                 navigatorKey.currentState?.pushNamed(
-                                    RouteName.productDetailsScreen,
-                                    arguments:data
+                                  RouteName.productDetailsScreen,
+                                  arguments: data,
                                 );
                               },
                               price: '$rupeeIcon${data.price}',
@@ -140,7 +137,7 @@ class ProductPage extends StatelessWidget {
                 ),
               ],
             ),
-          /*  Positioned(
+            /*  Positioned(
               left: 0,
               right: 0,
               bottom: 8,

@@ -8,7 +8,7 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/component/CommonSwitch.dart';
+import '../../../core/component/common_switch.dart';
 import '../../../main.dart';
 import '../../../provider/customer_provider.dart';
 import '../../../provider/image_picker_provider.dart';

@@ -5,8 +5,8 @@ class AnimatedCounter extends StatelessWidget {
   final Duration duration;
   final TextStyle? style;
   final String prefix;
-  final String ?leftText;
-  final String ?rightText;
+  final String? leftText;
+  final String? rightText;
   final String suffix;
 
   const AnimatedCounter({
@@ -15,7 +15,7 @@ class AnimatedCounter extends StatelessWidget {
     this.duration = const Duration(seconds: 2),
     this.style,
     this.leftText,
-    this.rightText='',
+    this.rightText = '',
     this.prefix = '',
     this.suffix = '',
   });
@@ -26,10 +26,7 @@ class AnimatedCounter extends StatelessWidget {
       tween: IntTween(begin: 0, end: endValue),
       duration: duration,
       builder: (context, value, child) {
-        return Text(
-          style: style,
-          "$leftText$prefix$value$suffix$rightText",
-        );
+        return Text(style: style, "$leftText$prefix$value$suffix$rightText");
       },
     );
   }

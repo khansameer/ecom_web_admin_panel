@@ -25,10 +25,10 @@ class Product {
 }
 
 class ProductProvider with ChangeNotifier {
-  var tetName=TextEditingController();
-  var tetDesc=TextEditingController();
-  var tetQty=TextEditingController();
-  var tetPrice=TextEditingController();
+  var tetName = TextEditingController();
+  var tetDesc = TextEditingController();
+  var tetQty = TextEditingController();
+  var tetPrice = TextEditingController();
   List<Product> products = [
     Product(
       icon: "https://www.neeknots.com/cdn/shop/files/NEEK002.jpg",
@@ -57,7 +57,8 @@ class ProductProvider with ChangeNotifier {
       name: "Bee Soft Toy",
       status: "Active",
       qty: "5",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
       inventory: "1 in stock for 1 variant",
       category: "Tops",
       price: 299.0,
@@ -66,7 +67,8 @@ class ProductProvider with ChangeNotifier {
       icon: "https://www.neeknots.com/cdn/shop/files/NEEK047.jpg",
       name: "Cheetah Soft Toy",
       qty: "25",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
       status: "Active",
       inventory: "0 in stock for 5 variants",
       category: "Shirts",
@@ -77,7 +79,8 @@ class ProductProvider with ChangeNotifier {
       name: "Dinosaur Soft Toy",
       status: "Draft",
       qty: "10",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "8 in stock for 3 variants",
       category: "Toys",
@@ -88,7 +91,8 @@ class ProductProvider with ChangeNotifier {
       name: "Elephant Soft Toy",
       status: "Active",
       qty: "5",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "12 in stock for 6 variants",
       category: "Animals",
@@ -99,7 +103,8 @@ class ProductProvider with ChangeNotifier {
       name: "Frog Soft Toy",
       status: "Draft",
       qty: "2",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "7 in stock for 2 variants",
       category: "Animals",
@@ -110,7 +115,8 @@ class ProductProvider with ChangeNotifier {
       name: "Giraffe Soft Toy",
       status: "Active",
       qty: "3",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "5 in stock for 3 variants",
       category: "Animals",
@@ -120,7 +126,8 @@ class ProductProvider with ChangeNotifier {
       icon: "https://www.neeknots.com/cdn/shop/files/NEEK090.jpg",
       name: "Hippo Soft Toy",
       qty: "9",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       status: "Draft",
       inventory: "9 in stock for 4 variants",
@@ -132,7 +139,8 @@ class ProductProvider with ChangeNotifier {
       name: "Iguana Soft Toy",
       status: "Active",
       qty: "5",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "11 in stock for 5 variants",
       category: "Reptiles",
@@ -143,7 +151,8 @@ class ProductProvider with ChangeNotifier {
       name: "Jaguar Soft Toy",
       status: "Draft",
       qty: "15",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "3 in stock for 1 variant",
       category: "Cats",
@@ -153,7 +162,8 @@ class ProductProvider with ChangeNotifier {
       icon: "https://www.neeknots.com/cdn/shop/files/NEEK090.jpg",
       name: "Koala Soft Toy",
       qty: "10",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       status: "Active",
       inventory: "6 in stock for 2 variants",
@@ -165,7 +175,8 @@ class ProductProvider with ChangeNotifier {
       name: "Lion Soft Toy",
       status: "Draft",
       qty: "20",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "0 in stock for 4 variants",
       category: "Cats",
@@ -176,7 +187,8 @@ class ProductProvider with ChangeNotifier {
       name: "Monkey Soft Toy",
       status: "Active",
       qty: "100",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "15 in stock for 7 variants",
       category: "Animals",
@@ -187,7 +199,8 @@ class ProductProvider with ChangeNotifier {
       name: "Narwhal Soft Toy",
       status: "Draft",
       qty: "13",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "4 in stock for 2 variants",
       category: "Sea",
@@ -198,7 +211,8 @@ class ProductProvider with ChangeNotifier {
       name: "Octopus Soft Toy",
       status: "Active",
       qty: "12",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "2 in stock for 1 variant",
       category: "Sea",
@@ -216,7 +230,8 @@ class ProductProvider with ChangeNotifier {
       icon: "https://www.neeknots.com/cdn/shop/files/NEEK120.jpg",
       name: "Quokka Soft Toy",
       qty: "20",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       status: "Active",
       inventory: "5 in stock for 2 variants",
@@ -228,7 +243,8 @@ class ProductProvider with ChangeNotifier {
       name: "Rabbit Soft Toy",
       status: "Draft",
       qty: "99",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "13 in stock for 6 variants",
       category: "Animals",
@@ -239,7 +255,8 @@ class ProductProvider with ChangeNotifier {
       name: "Shark Soft Toy",
       status: "Active",
       qty: "12",
-      desc: "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
+      desc:
+          "Warm and cuddly animal friends for your little one to keep them company. These handmade, organic toys are non-toxic and will excite any child who sees them! Organic materials such as love, affection, and attention create happiness on the face of every kid who holds one of these magical creations.",
 
       inventory: "9 in stock for 4 variants",
       category: "Sea",

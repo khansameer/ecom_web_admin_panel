@@ -25,7 +25,7 @@ Widget buildAvatar({
     height: 120,
     decoration: commonBoxDecoration(
       shape: BoxShape.circle,
-      borderColor: themeProvider.isDark?Colors.white:colorLogo,
+      borderColor: themeProvider.isDark ? Colors.white : colorLogo,
       borderWidth: 2,
       color: Colors.white, // prevent gray fallback
     ),
@@ -67,15 +67,20 @@ profileView({
       Stack(
         children: [
           buildAvatar(
-              themeProvider: themeProvider,
-              provider: provider, imageProvider: imageProvider),
+            themeProvider: themeProvider,
+            provider: provider,
+            imageProvider: imageProvider,
+          ),
 
           Positioned(
             right: 0,
             bottom: 0,
             child: commonInkWell(
               onTap: () async {
-                final path = await CommonImagePicker.pickImage(context,themeProvider);
+                final path = await CommonImagePicker.pickImage(
+                  context,
+                  themeProvider,
+                );
                 if (path != null) {
                   print('=======$path');
                   imageProvider.setImagePath(path);
