@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 
 import '../../../core/string/string_utils.dart';
 import '../../../main.dart';
-import '../../../routes/app_routes.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -24,14 +23,12 @@ class _ProductPageState extends State<ProductPage> {
     init();
   }
 
-    Future<void> init() async {
+  Future<void> init() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-
       final postMdl = Provider.of<ProductProvider>(
         navigatorKey.currentContext!,
         listen: false,
       );
-
 
       postMdl.getProductList();
     });
@@ -67,12 +64,12 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                       onPressed: () {
                         final filters = [
-                          FilterItem(
+                          /*FilterItem(
                             label: "Category",
                             options: ["All", "Dresses", "Tops", "Shirts"],
                             selectedValue:
                                 provider.selectedCategory, // 👈 provider से लो
-                          ),
+                          ),*/
                           FilterItem(
                             label: "Status",
                             options: ["All", "Active", "Draft"],
@@ -82,23 +79,21 @@ class _ProductPageState extends State<ProductPage> {
                         ];
                         showCommonFilterDialog(
                           context: context,
-                          title: "Filter Orders",
+                          title: "Filter Product",
                           filters: filters,
                           onReset: () {
                             provider.setCategory("All");
                             provider.setStatus("All");
                           },
                           onApply: () {
-                            final selectedStatus = filters
-                                .firstWhere((f) => f.label == "Category")
-                                .selectedValue;
 
-                            final selectedDate = filters
+
+                            final selectedStatus = filters
                                 .firstWhere((f) => f.label == "Status")
                                 .selectedValue;
 
-                            provider.setCategory(selectedStatus);
-                            provider.setStatus(selectedDate);
+
+                            provider.setStatus(selectedStatus.toLowerCase());
                           },
                         );
                       },
@@ -108,7 +103,7 @@ class _ProductPageState extends State<ProductPage> {
                 ),
 
                 Expanded(
-                  child: provider.productModel?.products?.isNotEmpty==true
+                  child: provider.filteredProducts?.isNotEmpty == true
                       ? ListView.builder(
                           padding: const EdgeInsets.only(
                             left: 12,
@@ -116,32 +111,40 @@ class _ProductPageState extends State<ProductPage> {
                             top: 12,
                             bottom: 12,
                           ),
-                          itemCount: provider.productModel?.products?.length??0,
-                          itemBuilder: (context, index, ) {
-
-                            var data= provider.productModel?.products?[index];
-                            /*final parts = data.inventory.split("for");
-                            final left = "${parts[0]}for";
-                            final right = parts.length > 1
-                                ? parts[1].trim()
-                                : "";*/
+                          itemCount:
+                              provider.filteredProducts?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            var data = provider.filteredProducts?[index];
+                            final totalVariants = data?.variants?.length;
+                            //  final left = "${parts[0]}for";
+                            num? totalInventory =
+                                data?.variants?.isNotEmpty == true
+                                ? data?.variants?.fold(
+                                    0,
+                                    (sum, variant) =>
+                                        sum! + (variant.inventoryQuantity ?? 0),
+                                  )
+                                : 0;
 
                             return commonProductListView(
-                              image: data?.image?.src??'',
+                              image: data?.image?.src ?? '',
                               onTap: () {
-                              /*  navigatorKey.currentState?.pushNamed(
+                                /*  navigatorKey.currentState?.pushNamed(
                                   RouteName.productDetailsScreen,
                                   arguments: data,
                                 );*/
                               },
-                              price: '0',
-                              textInventory1: "",
-                              textInventory2: '',
-                              productName: data?.title??'',
-                              status: data?.status??'',
-                              colorStatusColor: data?.status?.isNotEmpty==true?provider.getStatusColor(
-                                data!.status.toString().toCapitalize(),
-                              ):Colors.grey,
+                              price: data?.variants?.isNotEmpty == true?'$rupeeIcon${data?.variants?.first.price}':'$rupeeIcon 0',
+                              textInventory1: "$totalInventory in stock",
+                              textInventory2: ' for $totalVariants variants',
+                              productName: data?.title ?? '',
+                              status:
+                                  data?.status.toString().toCapitalize() ?? '',
+                              colorStatusColor: data?.status?.isNotEmpty == true
+                                  ? provider.getStatusColor(
+                                      data!.status.toString().toCapitalize(),
+                                    )
+                                  : Colors.grey,
                               decoration: commonBoxDecoration(
                                 borderRadius: 8,
                                 borderWidth: 0.5,
@@ -164,9 +167,7 @@ class _ProductPageState extends State<ProductPage> {
                 ),
               ],
             ),
-            provider.isFetching?showLoaderList():SizedBox.shrink()
-
-
+            provider.isFetching ? showLoaderList() : SizedBox.shrink(),
           ],
         );
       },

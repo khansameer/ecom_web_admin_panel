@@ -333,11 +333,11 @@ commonTopProductListView({void Function()? onTap}) {
             ],
           ),
 
-          SizedBox(
+        /*  SizedBox(
             height: 215,
             child: Consumer<ProductProvider>(
               builder: (context, provider, child) {
-                return commonListViewBuilder(
+                return ListView(
                   padding: EdgeInsetsGeometry.zero,
                   shrinkWrap: true,
                   items: provider.filteredProducts,
@@ -459,7 +459,7 @@ commonTopProductListView({void Function()? onTap}) {
                 );
               },
             ),
-          ),
+          ),*/
         ],
       );
     },

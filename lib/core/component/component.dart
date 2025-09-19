@@ -1088,9 +1088,9 @@ Widget commonNetworkImage(
                     ),
                   ),
               errorWidget: (context, url, error) =>
-                  errorWidget ?? Center(child: commonAssetImage(icDummyUser)),
+                  errorWidget ?? Center(child: commonAssetImage(icErrorImage)),
             )
-          : (errorWidget ?? Center(child: commonAssetImage(icDummyUser))),
+          : (errorWidget ?? Center(child: commonAssetImage(icErrorImage))),
     ),
   );
 }
