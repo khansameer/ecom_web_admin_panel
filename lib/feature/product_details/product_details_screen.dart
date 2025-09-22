@@ -72,11 +72,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   themeProvider,
                 );
                 if (path != null) {
-                  //imageProvider.setImagePath(path);
-
-                  /*  provider.setImageFilePath(
-                  img: File(imageProvider.imagePath!),
-                );*/
                   provider.uploadProductImage(imagePath: path);
                 }
               },

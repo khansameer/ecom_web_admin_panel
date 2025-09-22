@@ -123,7 +123,6 @@ commonBannerView({
       : SizedBox(
           width: double.infinity,
           height: 360,
-
           child: commonAssetImage(icErrorImage),
         );
 }
