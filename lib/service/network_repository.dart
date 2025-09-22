@@ -29,9 +29,6 @@ Future callPostMethod(String url, Map<String, dynamic> params) async {
 }
 
 Future callPatchMethod(String url, Map<String, dynamic> body) async {
-
-
-
   return await http
       .patch(
         Uri.parse(url),
@@ -48,8 +45,6 @@ Future callPostMethodWithToken({
   required Map<String, dynamic> params,
   Map<String, String>? headers,
 }) async {
-
-
   return await http
       .post(
         Uri.parse(url),
@@ -62,7 +57,6 @@ Future callPostMethodWithToken({
 }
 
 Future callPutMethodWithToken(String url, Map<String, dynamic> params) async {
-
   final uri = Uri.parse(url);
 
   final response = await http
@@ -80,8 +74,6 @@ Future callDeleteMethod({
   required String url,
   Map<String, dynamic>? params,
 }) async {
-
-
   return await http
       .delete(
         Uri.parse(url),
@@ -94,7 +86,6 @@ Future callDeleteMethod({
 }
 
 Future callGETMethod({required String url, String? key}) async {
-
   return await http.get(Uri.parse(url), headers: commonHeadersToken).then((
     http.Response response,
   ) {
@@ -104,8 +95,8 @@ Future callGETMethod({required String url, String? key}) async {
 
 Future getResponse(Response response) async {
   globalStatusCode = response.statusCode;
-  debugPrint("----response Body ${response.body}");
-  debugPrint("----response request ${response.request}");
+  // debugPrint("----response Body ${response.body}");
+  // debugPrint("----response request ${response.request}");
 
   if (globalStatusCode == 500 ||
       globalStatusCode == 502 ||

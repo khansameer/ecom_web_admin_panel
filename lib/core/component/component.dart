@@ -16,6 +16,8 @@ import 'package:provider/provider.dart';
 import '../../feature/order_details/order_common_widget.dart';
 import 'common_dropdown.dart';
 
+import 'package:html/parser.dart' as html_parser;
+
 String generateUniqueId() {
   final random = Random();
   final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -533,11 +535,7 @@ Widget showLoaderList1() {
     child: Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Color.fromRGBO(100, 141, 219, 1), // base color
-            Color.fromRGBO(70, 110, 210, 1), // medium shade
-            Color.fromRGBO(40, 80, 180, 1), // darker shade
-          ],
+          colors: [colorLogo, colorLogo],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -714,11 +712,7 @@ Widget showLoaderList() {
     child: Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color.fromRGBO(100, 141, 219, 1), // base color
-            Color.fromRGBO(70, 110, 210, 1), // medium shade
-            Color.fromRGBO(40, 80, 180, 1), // darker shade
-          ],
+          colors: [colorLogo, colorLogo],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -1045,7 +1039,6 @@ Widget commonCircleNetworkImage(
 Widget commonNetworkImage(
   String? imageUrl, {
   double size = 60,
-
   double borderWidth = 0,
   Color borderColor = Colors.white,
   BoxFit fit = BoxFit.cover,
@@ -1125,4 +1118,9 @@ commonErrorBoxView({required String text}) {
       child: commonText(text: text,fontWeight: FontWeight.w700,fontSize: 14,color: colorLogo),
     ),
   );
+}
+
+String removeHtmlTags(String htmlString) {
+  final document = html_parser.parse(htmlString);
+  return document.body?.text ?? '';
 }

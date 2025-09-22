@@ -8,8 +8,8 @@ import 'package:neeknots/feature/order_details/order_details_screen.dart';
 import 'package:neeknots/feature/product_details/add_product_screen.dart';
 import 'package:neeknots/feature/product_details/product_details_screen.dart';
 import 'package:neeknots/feature/total_order_screen.dart';
+import 'package:neeknots/models/product_model.dart';
 import 'package:neeknots/provider/order_provider.dart' hide Product;
-import 'package:neeknots/provider/product_provider.dart';
 
 import '../feature/dashboard/dashboard_screen.dart';
 import '../feature/login/login_screen.dart';
@@ -41,10 +41,10 @@ class RouteGenerate {
       case RouteName.editProfileScreen:
         return MaterialPageRoute(builder: (_) => const EditProfileScreen());
       case RouteName.productDetailsScreen:
-        final args = settings.arguments as Product;
+        final args = settings.arguments as Products;
 
         return MaterialPageRoute(
-          builder: (_) => ProductDetailsScreen(product: args),
+          builder: (_) => ProductDetailsScreen(products: args),
         );
 
       case RouteName.orderDetailsScreen:

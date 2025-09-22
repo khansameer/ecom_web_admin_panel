@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/string/string_utils.dart';
+import 'package:neeknots/models/product_model.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -12,9 +14,9 @@ import '../../provider/theme_provider.dart';
 import 'common_product_widget.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  const ProductDetailsScreen({super.key, required this.product});
+  const ProductDetailsScreen({super.key, required this.products});
 
-  final Product product;
+  final Products products;
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -23,25 +25,18 @@ class ProductDetailsScreen extends StatefulWidget {
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     init();
   }
 
   void init() {
-    /* final provider = Provider.of<ProductProvider>(context);
-
-    provider.tetName.text=widget.product.name;
-    provider.tetDesc.text=widget.product.desc??'';
-    provider.tetQty.text='${widget.product.qty}';
-    provider.tetPrice.text='${widget.product.price}';*/
+    //Update
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<ProductProvider>(context, listen: false);
-
-      provider.tetName.text = widget.product.name;
-      provider.tetDesc.text = widget.product.desc ?? '';
-      provider.tetQty.text = '${widget.product.qty}';
-      provider.tetPrice.text = '${widget.product.price}';
+      provider.tetName.text = widget.products.title ?? '';
+      provider.tetDesc.text = widget.products.bodyHtml ?? '';
+      provider.tetQty.text = '${widget.products.variants?.length ?? 0}';
+      provider.tetPrice.text = widget.products.variants?.first.price ?? "0";
     });
   }
 
@@ -51,9 +46,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     final themeProvider = Provider.of<ThemeProvider>(
       navigatorKey.currentContext!,
     );
-    final parts = widget.product.inventory.split("for");
-    final left = "${parts[0]}for";
-    final right = parts.length > 1 ? parts[1].trim() : "";
+    final stockInfo = _stockCalculation();
+    final inventory = stockInfo["inventory"];
+    final variants = stockInfo["variants"];
+
     return commonScaffold(
       appBar: commonAppBar(
         title: "Product Details",
@@ -66,6 +62,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             SizedBox(height: 8),
             commonBannerView(
               provider: provider,
+              images: widget.products.images ?? [],
               onTap: () async {
                 final path = await CommonImagePicker.pickImage(
                   context,
@@ -98,7 +95,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         children: [
                           Expanded(
                             child: commonText(
-                              text: widget.product.name,
+                              text: widget.products.title ?? '',
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: themeProvider.isDark
@@ -107,7 +104,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                           ),
                           commonText(
-                            text: '$rupeeIcon${widget.product.price}',
+                            text: _priceCalculation(),
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                             color: Colors.blueAccent,
@@ -126,11 +123,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               horizontal: 8.0,
                               vertical: 5,
                             ),
-                            child: commonText(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              text: "Qty : ${widget.product.qty}",
+                            child: _commonRichText(
+                              str1: inventory ?? '',
+                              str2: variants ?? '',
+                              provider: themeProvider,
                             ),
+                            /**
+                             * commonText(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              text: "${_stockCalculation()}",
+                              // "Qty:- ${widget.products.variants?.length ?? 0} ",
+                              // ${widget.product.qty}",
+                            ),
+                             */
                           ),
 
                           Spacer(),
@@ -151,51 +157,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 ),
                                 commonText(
                                   textAlign: TextAlign.right,
-                                  text: widget.product.status,
+                                  text: widget.products.status ?? '',
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
                                   color: provider.getStatusColor(
-                                    widget.product.status,
+                                    widget.products.status?.toCapitalize() ??
+                                        'Grey',
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
-                          Spacer(),
-                          Container(
-                            decoration: commonBoxDecoration(
-                              borderColor: colorBorder,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                                vertical: 5,
-                              ),
-                              child: RichText(
-                                textAlign: TextAlign.center,
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: "$left ", // first part
-                                      style: commonTextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        color: colorSale,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: right, // second part
-                                      style: commonTextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                        color: themeProvider.isDark
-                                            ? Colors.white
-                                            : colorText,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                             ),
                           ),
                         ],
@@ -203,34 +173,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       SizedBox(height: 3),
 
                       commonText(
-                        text: widget.product.desc ?? '',
+                        text: "Description", //widget.product.desc ?? '',
                         fontSize: 13,
-                        fontWeight: FontWeight.w400,
+                        fontWeight: FontWeight.w600,
                       ),
-                      SizedBox(height: 1),
-                      Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: [
-                          _commonDotView(themeProvider: themeProvider),
-                          _commonDotView(
-                            text: "Baby Safe",
-                            themeProvider: themeProvider,
-                          ),
-                          _commonDotView(
-                            text: "Handwashable",
-                            themeProvider: themeProvider,
-                          ),
-                          _commonDotView(
-                            text: "Environment Friendly",
-                            themeProvider: themeProvider,
-                          ),
-                          _commonDotView(
-                            text: "Handmade Product",
-                            themeProvider: themeProvider,
-                          ),
-                        ],
+
+                      commonText(
+                        text: removeHtmlTags(widget.products.bodyHtml ?? ''),
                       ),
                     ],
                   ),
@@ -309,6 +258,59 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Map<String, String> _stockCalculation() {
+    var data = widget.products.variants ?? [];
+    final totalVariants = data.length;
+    //  final left = "${parts[0]}for";
+    num? totalInventory = data.isNotEmpty == true
+        ? data.fold(
+            0,
+            (sum, variant) => sum! + (variant.inventoryQuantity ?? 0),
+          )
+        : 0;
+
+    return {
+      "inventory": "$totalInventory in stock",
+      "variants": "for $totalVariants variants",
+    };
+  }
+
+  _priceCalculation() {
+    var data = widget.products.variants ?? [];
+    final priceText = data.isNotEmpty == true
+        ? '$rupeeIcon${data.first.price}'
+        : '$rupeeIcon 0';
+    return priceText;
+  }
+
+  _commonRichText({
+    required String str1,
+    required String str2,
+    required ThemeProvider provider,
+  }) {
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: "$str1 ", // first part
+            style: commonTextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: colorOffline,
+            ),
+          ),
+          TextSpan(
+            text: str2, // second part
+            style: commonTextStyle(
+              fontSize: 12,
+              color: provider.isDark ? Colors.white : colorText,
+            ),
+          ),
+        ],
       ),
     );
   }
