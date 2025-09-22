@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/provider/order_provider.dart';
 
+import '../../models/order_model.dart';
 import 'order_common_widget.dart';
 
 class OrderDetailsScreen extends StatelessWidget {

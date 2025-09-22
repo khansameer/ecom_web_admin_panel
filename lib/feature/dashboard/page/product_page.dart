@@ -129,10 +129,7 @@ class _ProductPageState extends State<ProductPage> {
                             return commonProductListView(
                               image: data?.image?.src ?? '',
                               onTap: () {
-                                /*  navigatorKey.currentState?.pushNamed(
-                                  RouteName.productDetailsScreen,
-                                  arguments: data,
-                                );*/
+
                               },
                               price: data?.variants?.isNotEmpty == true?'$rupeeIcon${data?.variants?.first.price}':'$rupeeIcon 0',
                               textInventory1: "$totalInventory in stock",
@@ -148,12 +145,7 @@ class _ProductPageState extends State<ProductPage> {
                               decoration: commonBoxDecoration(
                                 borderRadius: 8,
                                 borderWidth: 0.5,
-                                /* color: provider
-                              .getStatusColor(data.status)
-                              .withValues(alpha: 0.01),
-                          borderColor: provider
-                              .getStatusColor(data.status)
-                              .withValues(alpha: 1),*/
+
                               ),
                             );
                           },

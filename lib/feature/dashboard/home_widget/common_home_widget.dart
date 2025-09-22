@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/common_dropdown.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/main.dart';
 import 'package:neeknots/provider/dashboard_provider.dart';
@@ -13,9 +14,12 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../core/component/animated_counter.dart';
+import '../../../core/component/date_utils.dart';
 import '../../../core/string/string_utils.dart';
+import '../order_widget/common_order_widget.dart';
+import '../product_widget/common_product_widget.dart';
 
-homeTopView() {
+homeTopView({required int  totalProduct,required int totalOrder, }) {
   return Consumer<ThemeProvider>(
     builder: (context, provider, child) {
       return Column(
@@ -48,7 +52,7 @@ homeTopView() {
                 child: _commonDashboardView(
                   color: colorProduct,
                   provider: provider,
-                  leftText: rupeeIcon,
+                  leftText: '',
                   onTap: () {
                     navigatorKey.currentState?.pushNamed(
                       RouteName.totalProductScreen,
@@ -57,7 +61,7 @@ homeTopView() {
                   icon: icProductMenu,
                   title: "Total Product",
                   subtitle: "+25% New Product",
-                  value: 548,
+                  value: totalProduct,
                 ),
               ),
             ],
@@ -75,9 +79,9 @@ homeTopView() {
                   },
                   provider: provider,
                   title: "Total  Order",
-                  leftText: rupeeIcon,
+                  leftText: '',
                   subtitle: "+25 New Order",
-                  value: 845,
+                  value: totalOrder,
                 ),
               ),
               Expanded(
@@ -172,12 +176,12 @@ _commonDashboardView({
             color: provider.isDark ? Colors.white : colorText,
           ),
 
-          commonText(
+        /*  commonText(
             text: subtitle,
             fontSize: 12,
             color: provider.isDark ? Colors.white : colorTextDesc,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 8),*/
           AnimatedCounter(
             leftText: leftText,
             rightText: rightText?.isNotEmpty == true ? rightText : '',
@@ -333,133 +337,64 @@ commonTopProductListView({void Function()? onTap}) {
             ],
           ),
 
-        /*  SizedBox(
-            height: 215,
+      SizedBox(
+        height: 130,
             child: Consumer<ProductProvider>(
               builder: (context, provider, child) {
-                return ListView(
+                return commonListViewBuilder(
                   padding: EdgeInsetsGeometry.zero,
                   shrinkWrap: true,
-                  items: provider.filteredProducts,
+                  items: provider.filteredProducts??[],
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index, data) {
-                    final parts = data.inventory.split("for");
-                    final left = "${parts[0]}for";
-                    final right = parts.length > 1 ? parts[1].trim() : "";
 
-                    return Center(
-                      child: Container(
-                        decoration: commonBoxDecoration(
-                          color: Colors.transparent,
-                          borderColor: colorBorder,
-                        ),
-                        margin: EdgeInsets.only(right: 8),
-                        padding: EdgeInsets.all(2),
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  width: double.infinity,
 
-                                  height: 140,
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: commonBoxDecoration(
-                                    borderRadius: 10,
-                                  ),
-                                  child: commonNetworkImage(
-                                    fit: BoxFit.cover,
-                                    data.icon,
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 5,
-                                  right: 6,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 2,
-                                    ),
-                                    decoration: commonBoxDecoration(
-                                      borderRadius: 5,
+                    var data = provider.filteredProducts?[index];
+                    final totalVariants = data?.variants?.length;
+                    //  final left = "${parts[0]}for";
+                    num? totalInventory =
+                    data?.variants?.isNotEmpty == true
+                        ? data?.variants?.fold(
+                      0,
+                          (sum, variant) =>
+                      sum! + (variant.inventoryQuantity ?? 0),
+                    )
+                        : 0;
 
-                                      color: Colors.white.withValues(
-                                        alpha: 0.9,
-                                      ),
-                                      borderColor: provider
-                                          .getStatusColor(data.status)
-                                          .withValues(alpha: 1),
-                                    ),
-                                    height: 30,
-                                    child: Center(
-                                      child: commonText(
-                                        color: provider.getStatusColor(
-                                          data.status,
-                                        ),
-                                        text: data.status,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Container(
-                              margin: EdgeInsets.only(left: 5),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  commonText(
-                                    text: data.name,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  commonText(
-                                    color: Colors.blueAccent,
-                                    text: '$rupeeIcon${data.price}',
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 12,
-                                  ),
-                                  SizedBox(height: 3),
-                                  RichText(
-                                    text: TextSpan(
-                                      children: [
-                                        TextSpan(
-                                          text: "$left ", // first part
-                                          style: commonTextStyle(
-                                            fontSize: 10,
-                                            color: colorSale,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          text: right, // second part
-                                          style: commonTextStyle(
-                                            fontSize: 10,
-                                            color: themeProvider.isDark
-                                                ? Colors.white
-                                                : colorText,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                    return commonProductListView(
+
+                      margin: EdgeInsetsGeometry.only(right: 10),
+                      imageMargin: EdgeInsetsGeometry.only(left: 10),
+
+                      width: provider.filteredProducts != null && provider.filteredProducts!.length == 1
+                          ? MediaQuery.sizeOf(context).width-30
+                          : MediaQuery.sizeOf(context).width - 80,
+                      image: data?.image?.src ?? '',
+                      onTap: () {
+
+                      },
+                      price: data?.variants?.isNotEmpty == true?'$rupeeIcon${data?.variants?.first.price}':'$rupeeIcon 0',
+                      textInventory1: "$totalInventory in stock",
+                      textInventory2: ' for $totalVariants variants',
+                      productName: data?.title ?? '',
+                      status:
+                      data?.status.toString().toCapitalize() ?? '',
+                      colorStatusColor: data?.status?.isNotEmpty == true
+                          ? provider.getStatusColor(
+                        data!.status.toString().toCapitalize(),
+                      )
+                          : Colors.grey,
+                      decoration: commonBoxDecoration(
+                        borderRadius: 8,
+                        borderWidth: 0.5,
+
                       ),
                     );
                   },
                 );
               },
             ),
-          ),*/
+          ),
         ],
       );
     },
@@ -496,133 +431,54 @@ commonTopOrderListView({void Function()? onTap}) {
           ),
 
           SizedBox(
-            height: 210,
+            height: 130,
+            width:  MediaQuery.sizeOf(context).width,
+
             child: Consumer<OrdersProvider>(
               builder: (context, provider, child) {
                 return commonListViewBuilder(
+
                   padding: EdgeInsetsGeometry.zero,
                   shrinkWrap: true,
-                  items: provider.orders,
+                  physics: BouncingScrollPhysics(),
+                  items: provider.filterOrderList??[],
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index, data) {
-                    return Center(
-                      child: Container(
-                        decoration: commonBoxDecoration(
-                          borderColor: colorBorder,
-                        ),
-                        margin: EdgeInsets.only(right: 8),
-                        padding: EdgeInsets.all(2),
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  width: double.infinity,
+                    var data=provider.filterOrderList?[index];
+                    return commonOrderView(
+                      margin: EdgeInsetsGeometry.only(right: 10),
 
-                                  height: 140,
-                                  clipBehavior: Clip.antiAlias,
-                                  decoration: commonBoxDecoration(
-                                    borderRadius: 10,
-                                  ),
-                                  child: commonNetworkImage(
-                                    fit: BoxFit.cover,
-                                    data.products.first.icon,
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 5,
-                                  right: 6,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 2,
-                                    ),
-                                    decoration: commonBoxDecoration(
-                                      borderRadius: 5,
-
-                                      color: Colors.white.withValues(
-                                        alpha: 0.9,
-                                      ),
-                                      borderColor: provider
-                                          .getStatusColor(data.status)
-                                          .withValues(alpha: 1),
-                                    ),
-                                    height: 30,
-                                    child: Center(
-                                      child: commonText(
-                                        color: provider.getStatusColor(
-                                          data.status,
-                                        ),
-                                        text: data.status,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Container(
-                              margin: EdgeInsets.only(left: 5),
-                              child: Column(
-                                spacing: 5,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: commonText(
-                                          text: '#${data.orderId}',
-                                          fontWeight: FontWeight.w600,
-                                          color: themeProvider.isDark
-                                              ? Colors.white
-                                              : colorLogo,
-                                        ),
-                                      ),
-
-                                      commonText(
-                                        text: '\$${data.price}',
-                                        color: Colors.blueAccent,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 13,
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: commonText(
-                                          text: data.customerName,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                      commonText(
-                                        text: data.date
-                                            .toLocal()
-                                            .toString()
-                                            .split(' ')[0],
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 10,
-                                        color: themeProvider.isDark
-                                            ? Colors.white
-                                            : colorTextDesc,
-                                      ),
-                                      SizedBox(width: 5),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                      errorImageView: Container(
+                        margin: EdgeInsets.only(left: 5),
+                        child: commonErrorBoxView(text: data?.name??''),
                       ),
+                      width: provider.filterOrderList != null && provider.filterOrderList!.length == 1
+                          ? MediaQuery.sizeOf(context).width-30
+                          : MediaQuery.sizeOf(context).width - 80,
+                      onTap: () {
+                        navigatorKey.currentState?.pushNamed(
+                          RouteName.orderDetailsScreen,
+                          arguments: data,
+                        );
+                      },
+                      colorTextStatus: provider.getPaymentStatusColor('${data?.financialStatus.toString().toCapitalize()}'),
+                      decoration: commonBoxDecoration(
+                        borderRadius: 4,
+
+                        color: provider
+                            .getPaymentStatusColor('${data?.financialStatus.toString().toCapitalize()}')
+                            .withValues(alpha: 0.1),
+                      ),
+
+                      orderID:'${ data?.customer?.firstName}  ${ data?.customer?.lastName}',
+                      image: '',
+
+                      productName:'Items:${data?.lineItems?.length}',
+                      status: '${data?.financialStatus.toString().toCapitalize()}',
+                      price: double.parse(data?.subtotalPrice?.toString() ?? '0'),
+                      date: formatDateTime(data?.createdAt??''), //data.date.toLocal().toString(),
                     );
+
                   },
                 );
               },

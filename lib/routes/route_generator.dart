@@ -16,6 +16,7 @@ import '../feature/login/login_screen.dart';
 import '../feature/splash/splash_screen.dart';
 import '../feature/total_customer_screen.dart';
 import '../feature/total_product_screen.dart';
+import '../models/order_model.dart';
 import 'app_routes.dart';
 
 class RouteGenerate {

@@ -1045,11 +1045,13 @@ Widget commonCircleNetworkImage(
 Widget commonNetworkImage(
   String? imageUrl, {
   double size = 60,
+
   double borderWidth = 0,
   Color borderColor = Colors.white,
   BoxFit fit = BoxFit.cover,
   Widget? placeholder,
   Widget? errorWidget,
+      String ? text,
   BoxShape shape = BoxShape.circle, // 👈 Circle ya Rectangle
   double borderRadius = 8, // 👈 Rect ke liye radius
 }) {
@@ -1110,6 +1112,17 @@ commonBoxView({required Widget contentView, required String title}) {
         // Content
         Padding(padding: const EdgeInsets.all(12.0), child: contentView),
       ],
+    ),
+  );
+}
+commonErrorBoxView({required String text}) {
+  return Container(
+    decoration: commonBoxDecoration(
+        borderColor: colorBorder,
+        color: colorBorder.withValues(alpha: 0.1), borderRadius: 8),
+    margin: const EdgeInsets.all(0),
+    child: Center(
+      child: commonText(text: text,fontWeight: FontWeight.w700,fontSize: 14,color: colorLogo),
     ),
   );
 }

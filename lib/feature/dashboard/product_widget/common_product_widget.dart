@@ -8,9 +8,12 @@ commonProductListView({
   required String image,
   String? textInventory1,
   String? textInventory2,
+  double ? width,
   void Function()? onTap,
   String? price,
+  EdgeInsetsGeometry? imageMargin,
   Color? colorStatusColor,
+  EdgeInsetsGeometry? margin,
   required String productName,
   Decoration? decoration,
   required String status,
@@ -18,8 +21,10 @@ commonProductListView({
   return Consumer<ThemeProvider>(
     builder: (context, provider, child) {
       return Container(
+        width: width,
+
         decoration: commonBoxDecoration(borderColor: colorBorder),
-        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+        margin: margin??const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         child: commonInkWell(
           onTap: onTap,
           child: Padding(
@@ -31,6 +36,7 @@ commonProductListView({
                   width: 100,
                   height: 100,
 
+                  margin: imageMargin,
                   clipBehavior: Clip.antiAlias,
                   decoration: commonBoxDecoration(borderRadius: 10),
                   child: commonNetworkImage(

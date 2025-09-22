@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/color/color_utils.dart';
 import '../../main.dart';
+import '../../models/order_model.dart';
 
 productInfo() {
   return Container(
@@ -151,7 +152,8 @@ orderInfo({required Order order}) {
               _buildRow(
                 colorText: themeProvider.isDark ? Colors.white : colorLogo,
                 title: "Order No",
-                value: '#${order.orderId}',
+                value: '',
+               // value: '#${order.orderId}',
                 fontWeight: FontWeight.w600,
               ),
               _buildRow(
@@ -159,16 +161,17 @@ orderInfo({required Order order}) {
 
                 fontWeight: FontWeight.w600,
                 title: "Order Status",
-                value: order.status,
-                colorText: orderProvider.getStatusColor(order.status),
+                value: '',
+              //  colorText: orderProvider.getStatusColor(order.status),
               ),
               _buildRow(
                 title: "Payment Status",
-                value: order.paymentStatus ?? '',
+                value: '',
+             //   value: order.paymentStatus ?? '',
                 fontWeight: FontWeight.w600,
-                colorText: orderProvider.getPaymentStatusColor(
+              /*  colorText: orderProvider.getPaymentStatusColor(
                   order.paymentStatus ?? '',
-                ),
+                ),*/
               ),
             ],
           ),

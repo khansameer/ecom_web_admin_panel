@@ -8,6 +8,10 @@ commonOrderView({
   required String image,
   String? date,
   String? orderID,
+  double ? width,
+  Widget? errorImageView,
+
+  EdgeInsetsGeometry? margin,
   Color? colorTextStatus,
   void Function()? onTap,
   required String productName,
@@ -18,8 +22,9 @@ commonOrderView({
   return Consumer<ThemeProvider>(
     builder: (context, provider, child) {
       return Container(
+        width: width, // 👈 fix width for horizontal card
         decoration: commonBoxDecoration(borderColor: colorBorder),
-        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+        margin:margin?? const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
         child: commonInkWell(
           onTap: onTap,
           child: Padding(
@@ -33,7 +38,10 @@ commonOrderView({
                   height: 100,
                   clipBehavior: Clip.antiAliasWithSaveLayer,
                   decoration: commonBoxDecoration(borderRadius: 8),
-                  child: commonNetworkImage(fit: BoxFit.cover, image),
+                  child: commonNetworkImage(
+
+                    errorWidget: errorImageView,
+                      fit: BoxFit.cover, image),
                 ),
                 Expanded(
                   child: Column(
@@ -42,7 +50,7 @@ commonOrderView({
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       commonText(
-                        text: '#$orderID',
+                        text: '$orderID',
                         fontWeight: FontWeight.w600,
                         fontSize: 14,
                         color: provider.isDark ? Colors.white : colorLogo,

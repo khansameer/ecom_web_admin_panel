@@ -1,5 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:neeknots/models/order_model.dart';
+
+import '../main.dart';
+import '../service/api_config.dart';
+import '../service/api_services.dart';
 
 class Product {
   final String name;
@@ -15,33 +21,6 @@ class Product {
     required this.inventory,
     required this.category,
   });
-}
-
-class Order {
-  final String orderId;
-  final String customerName;
-  final List<Product> products;
-  final double totalAmount;
-  final String status;
-  final String? paymentStatus;
-  final DateTime date;
-  final double price;
-
-  Order({
-    required this.orderId,
-    required this.customerName,
-    required this.products,
-    required this.totalAmount,
-    required this.status,
-    required this.price,
-    this.paymentStatus,
-    required this.date,
-  });
-
-  // ✅ Format date when needed
-  String get formattedDate {
-    return DateFormat("dd-MMM-yyyy hh:mm a").format(date);
-  }
 }
 
 class OrderDetails {
@@ -129,20 +108,8 @@ class OrdersProvider with ChangeNotifier {
     ),
   ];
 
-  List<Order> _orders = [];
 
-  List<Order> _filteredOrders = [];
 
-  List<Order> get orders => _filteredOrders;
-
-  //List<Order> get orders => _orders;
-
-  OrdersProvider() {
-    _loadOrders();
-  }
-
-  String _searchQuery = "";
-  String _statusFilter = "All";
 
   Color getStatusColor(String status) {
     switch (status) {
@@ -213,169 +180,76 @@ class OrdersProvider with ChangeNotifier {
     ),
   ];
 
-  void _loadOrders() {
-    _orders = [
-      Order(
-        orderId: "ORD001",
-        customerName: "Rahul Sharma",
-        products: [products[0], products[2]],
-        totalAmount: 1200.0,
-        price: 750.00,
-        paymentStatus: "Paid",
-        status: "Pending",
-        date: DateTime.now().subtract(Duration(days: 1)),
-      ),
-      Order(
-        orderId: "ORD002",
-        customerName: "Neha Verma",
-        products: [products[1]],
-        totalAmount: 650.0,
-        paymentStatus: "Pending",
-        price: 650.00,
-        status: "Shipped",
-        date: DateTime.now().subtract(Duration(days: 2)),
-      ),
-      Order(
-        orderId: "ORD003",
-        customerName: "Amit Singh",
-        paymentStatus: "Pending",
-        products: [products[3], products[2]],
-        totalAmount: 1800.0,
-        price: 300.00,
-        status: "Delivered",
-        date: DateTime.now().subtract(Duration(days: 5)),
-      ),
-      Order(
-        orderId: "ORD001",
-        customerName: "Rahul Sharma",
-        paymentStatus: "Pending",
-        products: [products[0], products[2]],
-        totalAmount: 1200.0,
-        status: "Pending",
-        price: 800.00,
-        date: DateTime.now().subtract(Duration(days: 1)),
-      ),
-      Order(
-        orderId: "ORD002",
-        customerName: "Neha Verma",
-        products: [products[1]],
-        paymentStatus: "Paid",
-        totalAmount: 650.0,
-        status: "Shipped",
-        price: 180.00,
-        date: DateTime.now().subtract(Duration(days: 2)),
-      ),
-      Order(
-        orderId: "ORD003",
-        customerName: "Amit Singh",
-        paymentStatus: "Paid",
-        products: [products[3], products[2]],
-        totalAmount: 1800.0,
-        price: 1800.00,
-        status: "Delivered",
-        date: DateTime.now().subtract(Duration(days: 5)),
-      ),
-      Order(
-        orderId: "ORD001",
-        customerName: "Rahul Sharma",
-        paymentStatus: "Paid",
-        products: [products[0], products[2]],
-        totalAmount: 1200.0,
-        price: 980.00,
-        status: "Pending",
-        date: DateTime.now().subtract(Duration(days: 1)),
-      ),
-      Order(
-        orderId: "ORD002",
-        paymentStatus: "Paid",
-        customerName: "Neha Verma",
-        products: [products[1]],
-        totalAmount: 650.0,
-        price: 853.00,
-        status: "Shipped",
-        date: DateTime.now().subtract(Duration(days: 2)),
-      ),
-      Order(
-        orderId: "ORD003",
-        customerName: "Amit Singh",
-        paymentStatus: "Paid",
-        products: [products[3], products[2]],
-        totalAmount: 1800.0,
-        price: 150.00,
-        status: "Delivered",
-        date: DateTime.now().subtract(Duration(days: 5)),
-      ),
-      Order(
-        orderId: "ORD001",
-        customerName: "Rahul Sharma",
-        products: [products[0], products[2]],
-        totalAmount: 1200.0,
-        paymentStatus: "Paid",
-        status: "Pending",
-        price: 180.00,
-        date: DateTime.now().subtract(Duration(days: 1)),
-      ),
-      Order(
-        orderId: "ORD002",
-        customerName: "Neha Verma",
-        products: [products[1]],
-        price: 1050.00,
-        totalAmount: 650.0,
-        paymentStatus: "Paid",
-        status: "Shipped",
-        date: DateTime.now().subtract(Duration(days: 2)),
-      ),
-      Order(
-        orderId: "ORD003",
-        customerName: "Amit Singh",
-        products: [products[3], products[2]],
-        totalAmount: 1800.0,
-        price: 1890.00,
-        paymentStatus: "Paid",
-        status: "Delivered",
-        date: DateTime.now().subtract(Duration(days: 5)),
-      ),
-    ];
-    _applyFilters();
-    notifyListeners();
-  }
-
-  void searchOrders(String query) {
-    _searchQuery = query.toLowerCase();
-    _applyFilters();
-  }
-
   String _selectedStatus = "All";
-
+  String _statusFilter = "All";
   String get selectedStatus => _selectedStatus;
-
-  /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
-  void filterByStatus(String status) {
-    _statusFilter = status;
-    _selectedStatus = status;
-    _applyFilters();
-  }
-
-  void _applyFilters() {
-    _filteredOrders = _orders.where((order) {
-      bool matchesSearch =
-          _searchQuery.isEmpty ||
-          order.orderId.toLowerCase().contains(_searchQuery) ||
-          order.customerName.toLowerCase().contains(_searchQuery) ||
-          order.date.toString().toLowerCase().contains(_searchQuery);
-
-      bool matchesStatus =
-          _statusFilter == "All" || order.status == _statusFilter;
-
-      return matchesSearch && matchesStatus;
-    }).toList();
-
-    notifyListeners();
-  }
-
   void resetFilters() {
     _searchQuery = "";
     _statusFilter = "All";
-    _applyFilters();
+ //   _applyFilters();
+  }
+  /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
+
+  void filterByStatus(String status) {
+    _statusFilter = status;
+    _selectedStatus = status;
+    notifyListeners();
+    //_applyFilters();
+  }
+
+
+
+  final _service = ApiService();
+  bool _isFetching = false;
+
+  bool get isFetching => _isFetching;
+  OrderModel? _orderModel;
+
+  OrderModel? get orderModel => _orderModel;
+  String _searchQuery = "";
+  //for filter
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+
+  }
+
+
+  List<Order>? get filterOrderList {
+    return orderModel?.orders?.where((p) {
+      final matchesSearch = p.name.toString().toLowerCase().contains(
+        _searchQuery.toLowerCase(),
+      );
+
+
+      final matchesStatus =
+          _selectedStatus == "All" || p.financialStatus == _selectedStatus;
+
+      //return matchesSearch && matchesCategory && matchesStatus;
+      return matchesSearch  && matchesStatus;
+    }).toList();
+  }
+
+  Future<void> getOrderList() async {
+    _isFetching = true;
+    notifyListeners();
+
+    try {
+      final response = await _service.callGetMethod(
+        context: navigatorKey.currentContext!,
+        url: ApiConfig.ordersUrl,
+      );
+
+      _orderModel = OrderModel.fromJson(json.decode(response));
+      _isFetching = false;
+
+      debugPrint('Orders count: ${_orderModel?.orders?.length}');
+    } catch (e) {
+      debugPrint('Error fetching orders: $e');
+      _orderModel = OrderModel(orders: []); // fallback empty list
+    } finally {
+      _isFetching = false;
+      notifyListeners();
+    }
   }
 }
