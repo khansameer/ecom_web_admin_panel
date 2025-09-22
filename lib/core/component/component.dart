@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:html/parser.dart' as html_parser;
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/core/string/string_utils.dart';
@@ -14,9 +16,10 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../feature/order_details/order_common_widget.dart';
+import '../../service/api_config.dart';
+import '../../service/api_services.dart';
+import '../../service/gloable_status_code.dart';
 import 'common_dropdown.dart';
-
-import 'package:html/parser.dart' as html_parser;
 
 String generateUniqueId() {
   final random = Random();
@@ -1044,7 +1047,7 @@ Widget commonNetworkImage(
   BoxFit fit = BoxFit.cover,
   Widget? placeholder,
   Widget? errorWidget,
-      String ? text,
+  String? text,
   BoxShape shape = BoxShape.circle, // 👈 Circle ya Rectangle
   double borderRadius = 8, // 👈 Rect ke liye radius
 }) {
@@ -1108,14 +1111,22 @@ commonBoxView({required Widget contentView, required String title}) {
     ),
   );
 }
+
 commonErrorBoxView({required String text}) {
   return Container(
     decoration: commonBoxDecoration(
-        borderColor: colorBorder,
-        color: colorBorder.withValues(alpha: 0.1), borderRadius: 8),
+      borderColor: colorBorder,
+      color: colorBorder.withValues(alpha: 0.1),
+      borderRadius: 8,
+    ),
     margin: const EdgeInsets.all(0),
     child: Center(
-      child: commonText(text: text,fontWeight: FontWeight.w700,fontSize: 14,color: colorLogo),
+      child: commonText(
+        text: text,
+        fontWeight: FontWeight.w700,
+        fontSize: 14,
+        color: colorLogo,
+      ),
     ),
   );
 }
@@ -1123,4 +1134,81 @@ commonErrorBoxView({required String text}) {
 String removeHtmlTags(String htmlString) {
   final document = html_parser.parse(htmlString);
   return document.body?.text ?? '';
+}
+
+Future<String?> fetchProductImage({
+  required int productId,
+  required int variantId,
+  required ApiService service,
+}) async {
+  final url = '${ApiConfig.getImageUrl}/$productId.json';
+  final response = await service.callGetMethod(
+    context: navigatorKey.currentContext!,
+    url: url,
+  );
+  if (globalStatusCode == 200) {
+    final data = json.decode(response);
+    final images = data['product']['images'] as List;
+    final variants = data['product']['variants'] as List;
+
+    // Try to find variant image
+    final variant = variants.firstWhere(
+      (v) => v['id'] == variantId,
+      orElse: () => null,
+    );
+
+    if (variant != null && variant['image_id'] != null) {
+      final image = images.firstWhere(
+        (img) => img['id'] == variant['image_id'],
+        orElse: () => null,
+      );
+      return image != null
+          ? image['src']
+          : images.isNotEmpty
+          ? images[0]['src']
+          : null;
+    }
+
+    return images.isNotEmpty ? images[0]['src'] : null;
+  } else {
+    return null;
+  }
+}
+
+Future<String?> fetchCustomerImage({
+  required int customerID,
+  required ApiService service,
+}) async {
+  final url = '${ApiConfig.getCustomerImage}/$customerID.json';
+  final response = await service.callGetMethod(
+    context: navigatorKey.currentContext!,
+    url: url,
+  );
+  if (globalStatusCode == 200) {
+    final data = json.decode(response);
+
+    print('-----------------${data}');
+    final customer = data['customer'];
+    if (customer != null && customer['avatar'] != null) {
+      return customer['avatar'] as String;
+    } else {
+      // return placeholder if no avatar exists
+      return '';
+    }
+  } else {
+    return null;
+  }
+}
+
+commonRefreshIndicator({
+  required final Future<void> Function() onRefresh,
+  required final Widget child,
+}) {
+  return RefreshIndicator(
+    color: colorButton,
+    backgroundColor: Colors.white,
+    strokeWidth: 2,
+    onRefresh: onRefresh,
+    child: child,
+  );
 }

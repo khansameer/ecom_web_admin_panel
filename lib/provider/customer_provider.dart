@@ -1,116 +1,102 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:neeknots/models/customer_model.dart';
 
-class Customer {
-  final String id;
-  final String name;
-  final String email;
-  final String phone;
-  final String status; // Active / Inactive
-  final String avatar; // Profile image
-
-  Customer({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.status,
-    required this.avatar,
-  });
-}
+import '../core/component/component.dart';
+import '../main.dart';
+import '../service/api_config.dart';
+import '../service/api_services.dart';
+import '../service/gloable_status_code.dart';
 
 class CustomerProvider with ChangeNotifier {
-  final List<Customer> _customers = [
-    Customer(
-      id: "1",
-      name: "John Doe",
-      email: "john@example.com",
-      phone: "9876543210",
-      status: "Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=1",
-    ),
-    Customer(
-      id: "2",
-      name: "Jane Smith",
-      email: "jane@example.com",
-      phone: "8765432109",
-      status: "Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=2",
-    ),
-    Customer(
-      id: "3",
-      name: "Michael Johnson",
-      email: "michael@example.com",
-      phone: "7654321098",
-      status: "Not Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=3",
-    ),
-    Customer(
-      id: "4",
-      name: "Emily Davis",
-      email: "emily@example.com",
-      phone: "6543210987",
-      status: "Not Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=4",
-    ),
-    Customer(
-      id: "5",
-      name: "David Wilson",
-      email: "david@example.com",
-      phone: "5432109876",
-      status: "Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=5",
-    ),
-    Customer(
-      id: "6",
-      name: "Sophia Taylor",
-      email: "sophia@example.com",
-      phone: "4321098765",
-      status: "Not Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=6",
-    ),
-    Customer(
-      id: "7",
-      name: "James Anderson",
-      email: "james@example.com",
-      phone: "3210987654",
-      status: "Not Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=7",
-    ),
-    Customer(
-      id: "8",
-      name: "Olivia Thomas",
-      email: "olivia@example.com",
-      phone: "2109876543",
-      status: "Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=8",
-    ),
-    Customer(
-      id: "9",
-      name: "Daniel Martinez",
-      email: "daniel@example.com",
-      phone: "1098765432",
-      status: "Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=9",
-    ),
-    Customer(
-      id: "10",
-      name: "Emma Garcia",
-      email: "emma@example.com",
-      phone: "9988776655",
-      status: "Subscribed",
-      avatar: "https://i.pravatar.cc/150?img=10",
-    ),
-  ];
+  Color getStatusColor(String status) {
+    switch (status) {
+      case "Subscribed":
+        return Colors.green;
+
+      default:
+        return Colors.red;
+    }
+  }
+
+  void reset() {
+    _searchQuery = "";
+    _statusFilter = "All";
+    notifyListeners();
+  }
+
+  final _service = ApiService();
+  bool _isFetching = false;
+
+  bool get isFetching => _isFetching;
+  int _totalCustomerCount = 0;
+
+  int get totalCustomerCount => _totalCustomerCount;
+
+  Future<void> getTotalCustomerCount() async {
+    _isFetching = true;
+    notifyListeners();
+    final response = await _service.callGetMethod(
+      context: navigatorKey.currentContext!,
+      url: ApiConfig.totalCustomerUrl,
+    );
+
+    if (globalStatusCode == 200) {
+
+      final data = json.decode(response);
+
+      _totalCustomerCount = data["count"] ?? 0;
+      _isFetching = false;
+      notifyListeners();
+    }
+
+    _isFetching = false;
+    notifyListeners();
+  }
+
+  CustomerModel? _customerModel;
+
+  CustomerModel? get customerModel => _customerModel;
+
+  Future<void> getCustomerList() async {
+    _isFetching = true;
+    notifyListeners();
+    final response = await _service.callGetMethod(
+      context: navigatorKey.currentContext!,
+      url: ApiConfig.customerUrl,
+    );
+
+    if (globalStatusCode == 200) {
+
+      _customerModel = CustomerModel.fromJson(json.decode(response));
+      //final customer = _customerModel?.customers ?? [];
+
+     /* await Future.wait(customer.map((customer) async {
+        customer.avatarUrl ??= await fetchCustomerImage(
+            customerID: customer.id ?? 0,
+            service: _service,
+          );
+      }));*/
+      _isFetching = false;
+      notifyListeners();
+    }
+
+    _isFetching = false;
+    notifyListeners();
+  }
 
   String _searchQuery = "";
   String _statusFilter = "All"; // All, Active, Inactive
 
-  List<Customer> get customers {
-    return _customers.where((c) {
-      final matchesSearch = c.name.toLowerCase().contains(
+  List<Customer>? get customers {
+    return _customerModel?.customers?.where((c) {
+      final matchesSearch = c.firstName.toString().toLowerCase().contains(
         _searchQuery.toLowerCase(),
       );
-      final matchesStatus = _statusFilter == "All" || c.status == _statusFilter;
+      final matchesStatus =
+          _statusFilter == "All" ||
+          c.emailMarketingConsent?.state == _statusFilter;
       return matchesSearch && matchesStatus;
     }).toList();
   }
@@ -127,22 +113,6 @@ class CustomerProvider with ChangeNotifier {
   void setStatusFilter(String status) {
     _selectedStatusFilter = status;
     _statusFilter = status;
-    notifyListeners();
-  }
-
-  Color getStatusColor(String status) {
-    switch (status) {
-      case "Subscribed":
-        return Colors.green;
-
-      default:
-        return Colors.red;
-    }
-  }
-
-  void reset() {
-    _searchQuery = "";
-    _statusFilter = "All";
     notifyListeners();
   }
 }

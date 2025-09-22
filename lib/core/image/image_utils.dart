@@ -30,6 +30,7 @@ const String icProductFilter="$iconProductPath/ic_filter.png";
 const String icProductSearch="$iconProductPath/ic_search.png";
 const String icUpload="$iconProductPath/ic_upload.png";
 const String icErrorImage="$iconProductPath/ic_error_user_image.jpg";
+const String icDot="$iconProductPath/drag.png";
 //==============================Profile=============================
 const String iconProfilePath="$basePath/profile";
 const String icInfo="$iconProfilePath/info.png";

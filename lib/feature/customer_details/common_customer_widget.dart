@@ -6,7 +6,10 @@ import 'package:neeknots/feature/order_details/order_common_widget.dart';
 import 'package:neeknots/provider/order_provider.dart';
 import 'package:provider/provider.dart';
 
-customerDetailsInfo() {
+import '../../core/component/date_utils.dart';
+import '../../models/customer_model.dart';
+
+customerDetailsInfo({required Customer customer}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -20,9 +23,21 @@ customerDetailsInfo() {
           padding: const EdgeInsets.all(12.0),
           child: Column(
             children: [
-              _buildRow(title: "Name", value: "Sameer Khan"),
-              _buildRow(title: "email", value: "sameer@gmail.com  "),
-              _buildRow(title: "Customer Since", value: "7 Month"),
+              _buildRow(
+                title: "Name",
+                value: "${customer.firstName} ${customer.lastName}",
+              ),
+              _buildRow(title: "email", value: "${customer.email}"),
+              _buildRow(
+                title: "Customer Since",
+                value: timeAgo(customer.createdAt ?? DateTime.now().toString()),
+              ),
+
+              _buildRow(
+                title: "Amount Spent",
+                value: "$rupeeIcon${"${customer.totalSpent}"}",
+              ),
+              _buildRow(title: "Order", value: '${customer.ordersCount}'),
               _buildRow(title: "RFM Group", value: "Needs Attentions"),
             ],
           ),
@@ -34,17 +49,17 @@ customerDetailsInfo() {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              commonText(text: "Shipping address", fontWeight: FontWeight.w600),
+              commonText(text: "Default  address", fontWeight: FontWeight.w600),
               commonText(
                 text:
-                    "Turquoise 3, BLOCK-A, 501, Gala Gymkhana Rd, South Bopal, Bopal, Ahmedabad, Gujarat 380058",
+                    '${customer.defaultAddress?.company ?? ''}\n${customer.defaultAddress?.address1 ?? ''} ${customer.defaultAddress?.address2 ?? ''}\n${customer.defaultAddress?.zip ?? ''} ${customer.defaultAddress?.city ?? ''} ${customer.defaultAddress?.province ?? ''}\n${customer.defaultAddress?.country ?? ''}\n${customer.defaultAddress?.phone ?? ''}',
 
                 fontSize: 12,
               ),
             ],
           ),
         ),
-        Padding(
+        /* Padding(
           padding: EdgeInsets.all(12.0),
           child: Column(
             spacing: 5,
@@ -54,13 +69,13 @@ customerDetailsInfo() {
               commonText(text: "Billing address", fontWeight: FontWeight.w600),
               commonText(
                 text:
-                    "Turquoise 3, BLOCK-A, 501, Gala Gymkhana Rd, South Bopal, Bopal, Ahmedabad, Gujarat 380058",
+                '${customer.defaultAddress?.company ?? ''}\n${customer.defaultAddress?.address1 ?? ''} ${customer.defaultAddress?.address2 ?? ''}\n${customer.defaultAddress?.zip ?? ''} ${customer.defaultAddress?.city ?? ''} ${customer.defaultAddress?.province ?? ''}\n${customer.defaultAddress?.country ?? ''}\n${customer.defaultAddress?.phone ?? ''}',
 
                 fontSize: 12,
               ),
             ],
           ),
-        ),
+        ),*/
 
         // Content
       ],
@@ -68,7 +83,7 @@ customerDetailsInfo() {
   );
 }
 
-customerOrderDetailsInfo() {
+customerOrderDetailsInfo({required Customer customer}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -84,8 +99,6 @@ customerOrderDetailsInfo() {
           padding: const EdgeInsets.all(12.0),
           child: Column(
             children: [
-              _buildRow(title: "Amount Spent", value: "$rupeeIcon${"1500.00"}"),
-              _buildRow(title: "Order", value: "1"),
               _buildRow(title: "Customer Since", value: "7 Month"),
               _buildRow(title: "RFM Group", value: "Needs Attentions"),
             ],
@@ -100,148 +113,229 @@ customerOrderDetailsInfo() {
   );
 }
 
-customerProductInfo() {
-  return Container(
-    decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
-    margin: const EdgeInsets.all(16),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Title
-        commonHeadingView(isPayment: false, title: "Last Order Placed"),
+customerProductInfo({required Customer customer}) {
+  return Consumer<OrdersProvider>(
+    builder: (context,provider,child) {
+      return Container(
+        decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
+        margin: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title
+            commonHeadingView(isPayment: false, title: "Last Order Placed"),
 
-        const Divider(height: 1),
+            const Divider(height: 1),
 
-        SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Row(
-                  spacing: 20,
-                  children: [
-                    commonText(text: "#1014", fontWeight: FontWeight.w600),
-                    Container(
-                      decoration: commonBoxDecoration(color: colorBorder),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
-                          vertical: 3,
-                        ),
-                        child: commonText(
-                          text: "Paid",
-                          fontSize: 10,
-
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      spacing: 20,
+                      children: [
+                        commonText(
+                          text: '${customer.lastOrderName}',
                           fontWeight: FontWeight.w600,
                         ),
-                      ),
-                    ),
-                    Container(
-                      decoration: commonBoxDecoration(color: colorBorder),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0,
-                        vertical: 3,
-                      ),
-                      child: commonText(
-                        text: "Fulfilled",
-                        fontSize: 10,
+                        Container(
+                          decoration: commonBoxDecoration(color: colorBorder),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                              vertical: 3,
+                            ),
+                            child: commonText(
+                              text: "Paid",
+                              fontSize: 10,
 
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                children: [
-                  commonText(
-                    text: "$rupeeIcon${"1050.00"}",
-                    color: Colors.blueAccent,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: commonText(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            text: "13 Sept 2025 at 7:19 pm from  Draft Orders",
-          ),
-        ),
-        SizedBox(height: 10),
-        const Divider(height: 1),
-        // Content
-        Consumer<OrdersProvider>(
-          builder: (context, provider, child) {
-            return Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: commonListViewBuilder(
-                shrinkWrap: true,
-                padding: EdgeInsetsGeometry.zero,
-                items: provider.ordersDetails,
-                itemBuilder: (context, index, data) {
-                  return Container(
-                    decoration: commonBoxDecoration(borderColor: colorBorder),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 16,
-                    ),
-                    margin: const EdgeInsets.all(5.0),
-                    child: Row(
-                      spacing: 10,
-                      children: [
-                        commonNetworkImage(
-                          borderRadius: 10,
-                          fit: BoxFit.cover,
-                          shape: BoxShape.rectangle,
-                          data.image,
-                          size: 50,
-                        ),
-                        Expanded(
-                          child: Column(
-                            spacing: 5,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              commonText(
-                                text: data.title,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                              ),
-                              commonText(text: data.desc, fontSize: 12),
-                              commonText(
-                                text: 'Qty:${data.qty}',
-                                fontSize: 12,
-                                color: Colors.blueAccent,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ],
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 0.0),
+                        Container(
+                          decoration: commonBoxDecoration(color: colorBorder),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0,
+                            vertical: 3,
+                          ),
                           child: commonText(
-                            text: '\$${data.price}',
+                            text: "Fulfilled",
+                            fontSize: 10,
+
                             fontWeight: FontWeight.w600,
-                            fontSize: 13,
                           ),
                         ),
                       ],
                     ),
-                  );
-                },
+                  ),
+                  Row(
+                    children: [
+                      commonText(
+                        text: "$rupeeIcon${provider.orderDetailsModel?.orderData?.currentTotalPrice}",
+                        color: Colors.blueAccent,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            );
-          },
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: commonText(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                text:  formatCreatedAt(provider.orderDetailsModel?.orderData?.createdAt??DateTime.now().toString(), source: "Orders")
+                //text: "13 Sept 2025 at 7:19 pm from  Draft Orders",
+              ),
+            ),
+            SizedBox(height: 10),
+            const Divider(height: 1),
+            // Content
+            Consumer<OrdersProvider>(
+              builder: (context, provider, child) {
+              return  Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: commonListViewBuilder(
+                    shrinkWrap: true,
+                    padding: EdgeInsetsGeometry.zero,
+                    items: provider.orderDetailsModel?.orderData?.lineItems ?? [],
+                    itemBuilder: (context, index, data1) {
+                      var data = provider.orderDetailsModel?.orderData?.lineItems?[index];
+                      //final parts = data?.name?.split('-');
+                      final parts =
+                          data?.name?.split('-').map((e) => e.trim()).toList() ??
+                          [];
+
+                      // first part
+                      final firstText = parts.isNotEmpty ? parts[0] : '';
+
+                      // second part (rest join back if multiple parts)
+                      final secondText = parts.length > 1
+                          ? parts.sublist(1).join(' - ')
+                          : '';
+
+                      return Container(
+                        decoration: commonBoxDecoration(borderColor: colorBorder),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
+                        margin: const EdgeInsets.all(3.0),
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            commonNetworkImage(
+                              borderRadius: 10,
+                              fit: BoxFit.cover,
+                              shape: BoxShape.rectangle,
+                              data?.imageUrl,
+                              size: 90,
+                            ),
+                            Expanded(
+                              child: Column(
+                                spacing: 5,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  commonText(
+                                    text: firstText,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                  Container(
+                                    decoration: commonBoxDecoration(
+                                      color: colorBorder.withValues(alpha: 0.1),
+                                      borderRadius: 5,
+                                    ),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 3,
+                                      vertical: 1,
+                                    ),
+                                    child: commonText(
+                                      fontWeight: FontWeight.w500,
+                                      text: secondText,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  Row(
+                                    spacing: 3,
+                                    children: [
+                                      commonText(
+                                        text: 'Qty:',
+                                        fontSize: 12,
+                                        color: Colors.blueAccent,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      Container(
+                                        decoration: commonBoxDecoration(
+                                          borderRadius: 5,
+                                          color: colorBorder.withValues(alpha: 0.1),
+                                        ),
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 2,
+                                          horizontal: 5,
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          // important to shrink row
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          // ensures vertical center
+                                          children: [
+                                            commonText(
+                                              text:
+                                                  '$rupeeIcon${data?.price ?? ''} ',
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            SizedBox(width: 3),
+                                            // spacing instead of Row.spacing
+                                            commonText(
+                                              text: "*",
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            SizedBox(width: 3),
+                                            commonText(
+                                              text: '${data?.quantity}',
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 0.0),
+                              child: commonText(
+                                text: '$rupeeIcon${data?.price ?? ''}',
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ],
         ),
-      ],
-    ),
+      );
+    }
   );
 }
 

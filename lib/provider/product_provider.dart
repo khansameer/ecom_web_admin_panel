@@ -5,31 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:neeknots/main.dart';
 import 'package:neeknots/models/product_model.dart';
 
+import '../core/component/component.dart';
 import '../service/api_config.dart';
 import '../service/api_services.dart';
 import '../service/gloable_status_code.dart';
 
-class Product {
-  final String name;
-  final String status;
-  final String icon;
-  final String inventory;
-  final String? desc;
-  final String? qty;
-  final String category;
-  final double price; // ✅ Added price
-  Product({
-    required this.name,
-    required this.status,
-    required this.icon,
-    this.desc,
-    this.qty,
-
-    required this.inventory,
-    required this.category,
-    required this.price, // ✅ Constructor
-  });
-}
 
 class ProductProvider with ChangeNotifier {
   var tetName = TextEditingController();
@@ -37,62 +17,10 @@ class ProductProvider with ChangeNotifier {
   var tetQty = TextEditingController();
   var tetPrice = TextEditingController();
 
-  List<Product> productsVariants = [
-    Product(
-      icon: "https://www.neeknots.com/cdn/shop/files/NEEK002.jpg",
-      name: "Other",
-      status: "Handbag",
-      inventory: "14 in stock for 7 variants",
-      category: "Dresses",
-      price: 499.0,
-    ),
-    Product(
-      icon: "https://www.neeknots.com/cdn/shop/files/NEEK002.jpg",
-      name: "Size",
-      status: "OS",
-      inventory: "14 in stock for 7 variants",
-      category: "Dresses",
-      price: 499.0,
-    ),
-  ];
-  List<Product> productsDetails = [
-    Product(
-      icon: "https://www.neeknots.com/cdn/shop/files/NEEK002.jpg",
-      name: "Alligator Soft Toy",
-      status: "Draft",
-      inventory: "14 in stock for 7 variants",
-      category: "Dresses",
-      price: 499.0,
-    ),
-    Product(
-      icon: "https://www.neeknots.com/cdn/shop/files/NEEK012.jpg",
-      name: "Bat Soft Toy",
-      status: "Draft",
-      inventory: "10 in stock for 5 variants",
-      category: "Dresses",
-      price: 399.0,
-    ),
-    Product(
-      icon: "https://www.neeknots.com/cdn/shop/files/NEEK018.jpg",
-      name: "Bee Soft Toy",
-      status: "Active",
-      inventory: "1 in stock for 1 variant",
-      category: "Tops",
-      price: 299.0,
-    ),
-    Product(
-      icon: "https://www.neeknots.com/cdn/shop/files/NEEK047.jpg",
-      name: "Cheetah Soft Toy",
-      status: "Active",
-      inventory: "0 in stock for 5 variants",
-      category: "Shirts",
-      price: 599.0,
-    ),
-  ];
 
   int _currentIndex = 0;
 
-  List<Product> get images => productsDetails;
+
 
   int get currentIndex => _currentIndex;
 
@@ -233,16 +161,21 @@ class ProductProvider with ChangeNotifier {
 
   ProductModel? get productModel => _productModel;
 
-  Future<void> getProductList() async {
+  Future<void> getProductList({int? limit}) async {
     _isFetching = true;
     notifyListeners();
+    final url = limit != null
+        ? '${ApiConfig.productsUrl}?limit=$limit'
+        : ApiConfig.productsUrl;
+
     final response = await _service.callGetMethod(
       context: navigatorKey.currentContext!,
-      url: ApiConfig.productsUrl,
+      url: url,
     );
 
     if (globalStatusCode == 200) {
       _productModel = ProductModel.fromJson(json.decode(response));
+
       _isFetching = false;
       notifyListeners();
     }
@@ -250,4 +183,71 @@ class ProductProvider with ChangeNotifier {
     _isFetching = false;
     notifyListeners();
   }
+  Future<void> getProductList11({int? limit}) async {
+    _isFetching = true;
+    notifyListeners();
+    final url = limit != null
+        ? '${ApiConfig.productsUrl}?limit=$limit'
+        : ApiConfig.productsUrl;
+
+    final response = await _service.callGetMethod(
+      context: navigatorKey.currentContext!,
+      url: url,
+    );
+
+    if (globalStatusCode == 200) {
+     /* _productModel = ProductModel.fromJson(json.decode(response));
+      _isFetching = false;*/
+      notifyListeners();
+    }
+
+    _isFetching = false;
+    notifyListeners();
+  }
+
+  int _totalProductCount = 0;
+
+  int get totalProductCount => _totalProductCount;
+
+  Future<void> getTotalProductCount() async {
+    _isFetching = true;
+    notifyListeners();
+    final response = await _service.callGetMethod(
+      context: navigatorKey.currentContext!,
+      url: ApiConfig.totalProductUrl,
+    );
+
+    if (globalStatusCode == 200) {
+
+      final data = json.decode(response);
+
+      _totalProductCount = data["count"] ?? 0;
+      _isFetching = false;
+      notifyListeners();
+    }
+
+    _isFetching = false;
+    notifyListeners();
+  }
+  Future<void> fetchImagesForProduct(Products product) async {
+    if (product.variants == null) return;
+
+    _isFetching = true;
+    notifyListeners();
+
+    await Future.wait(
+      product.variants!.map((item) async {
+        item.imageUrl = await fetchProductImage(
+          productId: item.productId ?? 0,
+          variantId: item.id ?? 0,
+          service: _service, // if your fetchProductImage needs the service instance
+        );
+      }),
+    );
+
+    _isFetching = false;
+    notifyListeners();
+  }
 }
+
+

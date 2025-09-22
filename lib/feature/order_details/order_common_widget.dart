@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/component/context_extension.dart';
+import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/provider/order_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +10,7 @@ import '../../core/color/color_utils.dart';
 import '../../main.dart';
 import '../../models/order_model.dart';
 
-productInfo() {
+productInfo({required Order order}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -28,15 +30,29 @@ productInfo() {
               child: commonListViewBuilder(
                 shrinkWrap: true,
                 padding: EdgeInsetsGeometry.zero,
-                items: provider.ordersDetails,
-                itemBuilder: (context, index, data) {
+                items: order.lineItems ?? [],
+                itemBuilder: (context, index, data1) {
+                  var data = order.lineItems?[index];
+                  //final parts = data?.name?.split('-');
+                  final parts =
+                      data?.name?.split('-').map((e) => e.trim()).toList() ??
+                      [];
+
+                  // first part
+                  final firstText = parts.isNotEmpty ? parts[0] : '';
+
+                  // second part (rest join back if multiple parts)
+                  final secondText = parts.length > 1
+                      ? parts.sublist(1).join(' - ')
+                      : '';
+
                   return Container(
                     decoration: commonBoxDecoration(borderColor: colorBorder),
                     padding: const EdgeInsets.symmetric(
                       vertical: 12,
                       horizontal: 16,
                     ),
-                    margin: const EdgeInsets.all(5.0),
+                    margin: const EdgeInsets.all(3.0),
                     child: Row(
                       spacing: 10,
                       children: [
@@ -44,8 +60,8 @@ productInfo() {
                           borderRadius: 10,
                           fit: BoxFit.cover,
                           shape: BoxShape.rectangle,
-                          data.image,
-                          size: 50,
+                          data?.imageUrl,
+                          size: 90,
                         ),
                         Expanded(
                           child: Column(
@@ -54,16 +70,64 @@ productInfo() {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               commonText(
-                                text: data.title,
+                                text: firstText,
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
                               ),
-                              commonText(text: data.desc, fontSize: 12),
-                              commonText(
-                                text: 'Qty:${data.qty}',
-                                fontSize: 12,
-                                color: Colors.blueAccent,
-                                fontWeight: FontWeight.w500,
+                              Container(
+                                decoration: commonBoxDecoration(
+                                  color: colorBorder.withValues(alpha: 0.1),
+                                  borderRadius: 5
+                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 3,vertical: 1),
+                                child: commonText(
+                                  fontWeight: FontWeight.w500,
+                                  text: secondText,
+                                  fontSize: 10,
+                                ),
+                              ),
+                              Row(
+                                spacing: 3,
+                                children: [
+                                  commonText(
+                                    text:
+                                        'Qty:',
+                                    fontSize: 12,
+                                    color: Colors.blueAccent,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  Container(
+                                    decoration: commonBoxDecoration(
+                                      borderRadius: 5,
+                                      color: colorBorder.withValues(alpha: 0.1),
+                                    ),
+                                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min, // important to shrink row
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center, // ensures vertical center
+                                      children: [
+                                        commonText(
+                                          text: '$rupeeIcon${data?.price ?? ''} ',
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        SizedBox(width: 3), // spacing instead of Row.spacing
+                                        commonText(
+                                          text: "*",
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        SizedBox(width: 3),
+                                        commonText(
+                                          text: '${data?.quantity}',
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -71,7 +135,7 @@ productInfo() {
                         Padding(
                           padding: const EdgeInsets.only(right: 0.0),
                           child: commonText(
-                            text: '\$${data.price}',
+                            text: '$rupeeIcon${data?.price ?? ''}',
                             fontWeight: FontWeight.w600,
                             fontSize: 13,
                           ),
@@ -127,9 +191,6 @@ commonHeadingView({String? title, required bool isPayment}) {
 }
 
 orderInfo({required Order order}) {
-  final orderProvider = Provider.of<OrdersProvider>(
-    navigatorKey.currentContext!,
-  );
   final themeProvider = Provider.of<ThemeProvider>(
     navigatorKey.currentContext!,
   );
@@ -152,8 +213,8 @@ orderInfo({required Order order}) {
               _buildRow(
                 colorText: themeProvider.isDark ? Colors.white : colorLogo,
                 title: "Order No",
-                value: '',
-               // value: '#${order.orderId}',
+                value: order.name ?? '',
+                // value: '#${order.orderId}',
                 fontWeight: FontWeight.w600,
               ),
               _buildRow(
@@ -161,15 +222,15 @@ orderInfo({required Order order}) {
 
                 fontWeight: FontWeight.w600,
                 title: "Order Status",
-                value: '',
-              //  colorText: orderProvider.getStatusColor(order.status),
+                value: order.financialStatus.toString().toCapitalize(),
+                //colorText: orderProvider.getStatusColor(order.status),
               ),
               _buildRow(
                 title: "Payment Status",
                 value: '',
-             //   value: order.paymentStatus ?? '',
+                //   value: order.paymentStatus ?? '',
                 fontWeight: FontWeight.w600,
-              /*  colorText: orderProvider.getPaymentStatusColor(
+                /*  colorText: orderProvider.getPaymentStatusColor(
                   order.paymentStatus ?? '',
                 ),*/
               ),
@@ -181,7 +242,7 @@ orderInfo({required Order order}) {
   );
 }
 
-customerInfo() {
+customerInfo({required Order order}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -189,7 +250,7 @@ customerInfo() {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Title
-        commonHeadingView(title: "Customer Information", isPayment: false),
+        commonHeadingView(title: "Contact information", isPayment: false),
 
         const Divider(height: 1),
 
@@ -198,9 +259,13 @@ customerInfo() {
           padding: const EdgeInsets.all(12.0),
           child: Column(
             children: [
-              _buildRow(title: "Name", value: "Sameer Khan"),
-              _buildRow(title: "Email", value: "pathansameerahmed@gmail.com"),
-              _buildRow(title: "Mobile", value: "+917984512507"),
+              _buildRow(
+                title: "Name",
+                value:
+                    '${order.customer?.firstName} ${order.customer?.lastName}',
+              ),
+              _buildRow(title: "Email", value: '${order.customer?.email}'),
+              _buildRow(title: "Mobile", value: '${order.customer?.phone}'),
             ],
           ),
         ),
@@ -218,7 +283,7 @@ customerInfo() {
               commonText(text: "Shipping address", fontWeight: FontWeight.w600),
               commonText(
                 text:
-                    "Turquoise 3, BLOCK-A, 501, Gala Gymkhana Rd, South Bopal, Bopal, Ahmedabad, Gujarat 380058",
+                    '${order.customer?.defaultAddress?.company ?? ''}\n${order.customer?.defaultAddress?.address1 ?? ''} ${order.customer?.defaultAddress?.address2 ?? ''}\n${order.customer?.defaultAddress?.zip ?? ''} ${order.customer?.defaultAddress?.city ?? ''} ${order.customer?.defaultAddress?.province ?? ''}\n${order.customer?.defaultAddress?.country ?? ''}\n${order.customer?.defaultAddress?.phone ?? ''}',
 
                 fontSize: 12,
               ),
@@ -235,8 +300,18 @@ customerInfo() {
               commonText(text: "Billing address", fontWeight: FontWeight.w600),
               commonText(
                 text:
-                    "Turquoise 3, BLOCK-A, 501, Gala Gymkhana Rd, South Bopal, Bopal, Ahmedabad, Gujarat 380058",
-
+                    [
+                          order.billingAddress?.address1,
+                          order.billingAddress?.address2,
+                          order.billingAddress?.zip,
+                          order.billingAddress?.city,
+                          order.billingAddress?.province,
+                          order.billingAddress?.country,
+                        ]
+                        .where(
+                          (e) => e != null && e.trim().isNotEmpty,
+                        ) // null/empty remove
+                        .join(' '), // single line with space
                 fontSize: 12,
               ),
             ],
@@ -247,7 +322,7 @@ customerInfo() {
   );
 }
 
-paymentSummery() {
+paymentSummery({required Order order}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -266,30 +341,36 @@ paymentSummery() {
             children: [
               _buildRowPayment(
                 title: "Subtotal",
-                amount: "\$750.00",
-                value: "5 items",
+                amount: "$rupeeIcon${order.currentSubtotalPrice}",
+                value: "${order.lineItems?.length} items",
               ),
-              _buildRowPayment(
+              /*_buildRowPayment(
                 title: "Add discount",
                 amount: "\$0.00",
                 value: "-",
-              ),
-              _buildRowPayment(
+              ),*/
+             /* _buildRowPayment(
                 title: "Add shipping or delivery",
                 amount: "\$0.00",
                 value: '-',
-              ),
-              _buildRowPayment(
+              ),*/
+             /* _buildRowPayment(
                 title: "Estimated tax",
                 value: "Not calculated",
                 amount: "",
-              ),
+              ),*/
               const SizedBox(height: 8),
               const Divider(),
               _buildRowPayment(
                 title: "Total",
                 fontWeight: FontWeight.w600,
-                amount: "\$750.00",
+                amount: "$rupeeIcon${order.currentSubtotalPrice}",
+                fontSize: 14,
+              ),
+              _buildRowPayment(
+                title: "Paid",
+                fontWeight: FontWeight.w400,
+                amount: "$rupeeIcon${order.currentSubtotalPrice}",
                 fontSize: 14,
               ),
             ],

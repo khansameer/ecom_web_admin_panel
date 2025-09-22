@@ -19,7 +19,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    init();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      init();
+    });
   }
 
   Future<void> init() async {
@@ -29,17 +32,23 @@ class _HomePageState extends State<HomePage> {
         listen: false,
       );
       final orderProvider = Provider.of<OrdersProvider>(context, listen: false);
-      //final customerProvider = Provider.of<CustomerProvider>(context, listen: false);
+      final customerProvider = Provider.of<CustomerProvider>(
+        context,
+        listen: false,
+      );
 
       await Future.wait([
-        productProvider.getProductList(),
-        orderProvider.getOrderList(),
-        //  customerProvider.getCustomerList(),
+        productProvider.getProductList(limit: 5),
+        productProvider.getTotalProductCount(),
+        orderProvider.getOrderList(limit: 5),
+        customerProvider.getTotalCustomerCount(),
+        orderProvider.getTotalOrderCount(),
       ]);
     } catch (e) {
       print("Error: $e");
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +62,7 @@ class _HomePageState extends State<HomePage> {
               physics: BouncingScrollPhysics(),
               padding: EdgeInsets.all(12),
               children: [
-                homeTopView(totalOrder: orderProvider.filterOrderList?.length??0,totalProduct: productProvider.filteredProducts?.length??0),
+                homeTopView(totalOrder: orderProvider.totalOrderCount,totalProduct: productProvider.totalProductCount,totalCustomer: customerProvider.totalCustomerCount),
                 SizedBox(height: 24),
                 SizedBox(height: 300, child: homeGraphView()),
                 SizedBox(height: 24),

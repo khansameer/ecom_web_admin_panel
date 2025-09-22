@@ -49,16 +49,13 @@ class ApiService {
       );
       return "No internet connection";
     }
-    final stopwatch = Stopwatch()..start();
+
     var response = await callPostMethodWithToken(
       url: url,
       params: body,
       headers: headers,
     );
-    stopwatch.stop();
-    final responseTime = stopwatch.elapsedMilliseconds;
 
-    debugPrint("API Response Time for $url → $responseTime ms");
     return response;
   }
 
@@ -112,14 +109,10 @@ class ApiService {
       return "No internet connection";
     }
     // Start stopwatch before API call
-    final stopwatch = Stopwatch()..start();
 
     var response = await callGETMethod(url: url, key: key);
     // Stop stopwatch after API call
-    stopwatch.stop();
-    final responseTime = stopwatch.elapsedMilliseconds;
 
-    debugPrint("API Response Time for $url → $responseTime ms");
     return response;
   }
 

@@ -134,6 +134,7 @@ class Variants {
   int? productId;
   String? title;
   String? price;
+  String? imageUrl;
   int? position;
   String? inventoryPolicy;
   String? compareAtPrice;
@@ -177,6 +178,7 @@ class Variants {
         this.inventoryManagement,
         this.requiresShipping,
         this.sku,
+        this.imageUrl,
         this.weight,
         this.weightUnit,
         this.inventoryItemId,

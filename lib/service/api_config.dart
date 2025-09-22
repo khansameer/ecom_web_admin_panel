@@ -6,4 +6,11 @@ class ApiConfig {
       "https://$storeName.myshopify.com/admin/api/$versionCode";
   static const productsUrl = '$baseUrl/products.json';
   static const ordersUrl = '$baseUrl/orders.json';
+  static const customerUrl = '$baseUrl/customers.json';
+  static const totalCustomerUrl = '$baseUrl/customers/count.json';
+  static const totalProductUrl = '$baseUrl/products/count.json';
+  static const totalOrderUrl = '$baseUrl/orders/count.json';
+  static const getImageUrl = '$baseUrl/products';
+  static const getCustomerImage = '$baseUrl/customers';
+  static const getOrderById= '$baseUrl/orders';
 }

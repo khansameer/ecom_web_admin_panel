@@ -37,6 +37,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       provider.tetDesc.text = widget.products.bodyHtml ?? '';
       provider.tetQty.text = '${widget.products.variants?.length ?? 0}';
       provider.tetPrice.text = widget.products.variants?.first.price ?? "0";
+
+      provider.fetchImagesForProduct(widget.products);
     });
   }
 
@@ -46,6 +48,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     final themeProvider = Provider.of<ThemeProvider>(
       navigatorKey.currentContext!,
     );
+
     final stockInfo = _stockCalculation();
     final inventory = stockInfo["inventory"];
     final variants = stockInfo["variants"];
@@ -186,7 +189,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                   // commonFormView(provider: provider),
                   SizedBox(height: 15),
-                  commonVariants(provider: provider),
+                  commonOtherVariants(provider: provider,products: widget.products),
+                  commonVariants(provider: provider,products: widget.products),
                   SizedBox(height: 30),
 
                   commonButton(

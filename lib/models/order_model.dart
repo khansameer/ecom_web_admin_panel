@@ -34,6 +34,7 @@ class Order {
   String? totalTax;
   String? orderStatusUrl;
   String? confirmationNumber;
+  String? currentSubtotalPrice;
   String? phone;
   String? fulfillmentStatus;
   Customer? customer;
@@ -60,6 +61,7 @@ class Order {
     this.billingAddress,
     this.shippingAddress,
     this.lineItems,
+    this.currentSubtotalPrice,
   });
 
   Order.fromJson(Map<String, dynamic> json) {
@@ -69,6 +71,7 @@ class Order {
     financialStatus = json['financial_status'];
     name = json['name'];
     createdAt = json['created_at'];
+    currentSubtotalPrice = json['current_subtotal_price'];
     updatedAt = json['updated_at'];
     totalPrice = json['total_price'];
     subtotalPrice = json['subtotal_price'];
@@ -105,6 +108,7 @@ class Order {
     data['total_price'] = totalPrice;
     data['subtotal_price'] = subtotalPrice;
     data['total_tax'] = totalTax;
+    data['current_subtotal_price'] = currentSubtotalPrice;
     data['order_status_url'] = orderStatusUrl;
     data['confirmation_number'] = confirmationNumber;
     data['phone'] = phone;
@@ -132,9 +136,10 @@ class Customer {
   String? email;
   String? phone;
   String? state;
+  DefaultAddress? defaultAddress; // ✅ Add this
 
   Customer(
-      {this.id, this.firstName, this.lastName, this.email, this.phone, this.state});
+      {this.id, this.firstName, this.lastName, this.email, this.phone, this.state,this.defaultAddress,});
 
   Customer.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -143,6 +148,9 @@ class Customer {
     email = json['email'];
     phone = json['phone'];
     state = json['state'];
+    defaultAddress = json['default_address'] != null
+        ? DefaultAddress.fromJson(json['default_address'])
+        : null; // ✅ Parse nested object
   }
 
   Map<String, dynamic> toJson() {
@@ -153,10 +161,93 @@ class Customer {
     data['email'] = email;
     data['phone'] = phone;
     data['state'] = state;
+    if (defaultAddress != null) {
+      data['default_address'] = defaultAddress!.toJson();
+    }
     return data;
   }
 }
+class DefaultAddress {
+  int? id;
+  int? customerId;
+  String? firstName;
+  String? lastName;
+  String? company;
+  String? address1;
+  String? address2;
+  String? city;
+  String? province;
+  String? country;
+  String? zip;
+  String? phone;
+  String? name;
+  String? provinceCode;
+  String? countryCode;
+  String? countryName;
+  bool? isDefault;
 
+  DefaultAddress({
+    this.id,
+    this.customerId,
+    this.firstName,
+    this.lastName,
+    this.company,
+    this.address1,
+    this.address2,
+    this.city,
+    this.province,
+    this.country,
+    this.zip,
+    this.phone,
+    this.name,
+    this.provinceCode,
+    this.countryCode,
+    this.countryName,
+    this.isDefault,
+  });
+
+  DefaultAddress.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    customerId = json['customer_id'];
+    firstName = json['first_name'];
+    lastName = json['last_name'];
+    company = json['company'];
+    address1 = json['address1'];
+    address2 = json['address2'];
+    city = json['city'];
+    province = json['province'];
+    country = json['country'];
+    zip = json['zip'];
+    phone = json['phone'];
+    name = json['name'];
+    provinceCode = json['province_code'];
+    countryCode = json['country_code'];
+    countryName = json['country_name'];
+    isDefault = json['default'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['id'] = id;
+    data['customer_id'] = customerId;
+    data['first_name'] = firstName;
+    data['last_name'] = lastName;
+    data['company'] = company;
+    data['address1'] = address1;
+    data['address2'] = address2;
+    data['city'] = city;
+    data['province'] = province;
+    data['country'] = country;
+    data['zip'] = zip;
+    data['phone'] = phone;
+    data['name'] = name;
+    data['province_code'] = provinceCode;
+    data['country_code'] = countryCode;
+    data['country_name'] = countryName;
+    data['default'] = isDefault;
+    return data;
+  }
+}
 class Address {
   String? firstName;
   String? lastName;
@@ -210,6 +301,9 @@ class LineItem {
   int? quantity;
   String? vendor;
   String? variantTitle;
+  String? imageUrl;
+  dynamic productId;
+  dynamic  variantId;
 
   LineItem(
       {this.id,
@@ -218,6 +312,9 @@ class LineItem {
         this.price,
         this.quantity,
         this.vendor,
+        this.imageUrl,
+        this.variantId,
+        this.productId,
         this.variantTitle});
 
   LineItem.fromJson(Map<String, dynamic> json) {
@@ -226,7 +323,9 @@ class LineItem {
     title = json['title'];
     price = json['price'];
     quantity = json['quantity'];
+    productId = json['product_id'];
     vendor = json['vendor'];
+    variantId = json['variant_id'];
     variantTitle = json['variant_title'];
   }
 
@@ -238,7 +337,9 @@ class LineItem {
     data['price'] = price;
     data['quantity'] = quantity;
     data['vendor'] = vendor;
+    data['product_id'] = productId;
     data['variant_title'] = variantTitle;
+    data['variant_id'] = variantId;
     return data;
   }
 }

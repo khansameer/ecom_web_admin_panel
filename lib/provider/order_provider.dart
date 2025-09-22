@@ -1,116 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/models/order_details_model.dart';
 import 'package:neeknots/models/order_model.dart';
+import 'package:neeknots/service/gloable_status_code.dart';
 
 import '../main.dart';
+import '../models/order_details_model.dart' as orderDetails;
 import '../service/api_config.dart';
 import '../service/api_services.dart';
 
-class Product {
-  final String name;
-  final String status;
-  final String icon;
-  final String inventory;
-  final String category;
-
-  Product({
-    required this.name,
-    required this.status,
-    required this.icon,
-    required this.inventory,
-    required this.category,
-  });
-}
-
-class OrderDetails {
-  final String title;
-  final String desc;
-  final String image;
-
-  final double qty;
-  final double price;
-
-  OrderDetails({
-    required this.title,
-    required this.desc,
-    required this.image,
-    required this.qty,
-    required this.price,
-  });
-}
-
 class OrdersProvider with ChangeNotifier {
-  List<Product> products = [
-    Product(
-      name: "Alligator Soft Toy",
-      status: "Draft",
-      icon:
-          "https://www.neeknots.com/cdn/shop/files/NEEK002_7c4febb4-278c-4b0a-9e83-ad482c0fb5ab.jpg?v=1730814932&width=1240",
-      inventory: "14 in stock for 7 variants",
-      category: "Dresses",
-    ),
-    Product(
-      name: "Bat Soft Toy",
-      status: "Draft",
-      icon:
-          "https://www.neeknots.com/cdn/shop/files/NEEK012_7b7f38dd-fba0-41b0-a8c5-06280866eb5a.jpg?v=1730814935&width=1240",
-      inventory: "10 in stock for 5 variants",
-      category: "Dresses",
-    ),
-    Product(
-      name: "Bee Soft Toy",
-      status: "Active",
-      icon:
-          "https://www.neeknots.com/cdn/shop/files/NEEK018_07e92d11-3b8f-4c56-8e1f-aa4318efc2a0.jpg?v=1730814939&width=1240",
-      inventory: "1 in stock for 1 variant",
-      category: "Tops",
-    ),
-    Product(
-      name: "Cheetah Soft Toy",
-      status: "Active",
-      icon:
-          "https://www.neeknots.com/cdn/shop/files/NEEK047_8006c9ce-49c4-4e2b-9cc0-4d9ddc1ed6f4.jpg?v=1730814956&width=1240",
-      inventory: "0 in stock for 5 variants",
-      category: "Shirts",
-    ),
-    Product(
-      name: "Alligator Soft Toy",
-      status: "Draft",
-      icon:
-          "https://www.neeknots.com/cdn/shop/files/NEEK002_7c4febb4-278c-4b0a-9e83-ad482c0fb5ab.jpg?v=1730814932&width=1240",
-      inventory: "14 in stock for 7 variants",
-      category: "Dresses",
-    ),
-    Product(
-      name: "Bat Soft Toy",
-      status: "Draft",
-      icon:
-          "https://www.neeknots.com/cdn/shop/files/NEEK012_7b7f38dd-fba0-41b0-a8c5-06280866eb5a.jpg?v=1730814935&width=1240",
-      inventory: "10 in stock for 5 variants",
-      category: "Dresses",
-    ),
-    Product(
-      name: "Bee Soft Toy",
-      status: "Active",
-      icon:
-          "https://www.neeknots.com/cdn/shop/files/NEEK018_07e92d11-3b8f-4c56-8e1f-aa4318efc2a0.jpg?v=1730814939&width=1240",
-      inventory: "1 in stock for 1 variant",
-      category: "Tops",
-    ),
-    Product(
-      name: "Cheetah Soft Toy",
-      status: "Active",
-      icon:
-          "https://www.neeknots.com/cdn/shop/files/NEEK047_8006c9ce-49c4-4e2b-9cc0-4d9ddc1ed6f4.jpg?v=1730814956&width=1240",
-      inventory: "0 in stock for 5 variants",
-      category: "Shirts",
-    ),
-  ];
-
-
-
-
   Color getStatusColor(String status) {
     switch (status) {
       case "Pending":
@@ -123,6 +24,7 @@ class OrdersProvider with ChangeNotifier {
         return Colors.grey;
     }
   }
+
 
   Color getPaymentStatusColor(String status) {
     switch (status) {
@@ -137,57 +39,17 @@ class OrdersProvider with ChangeNotifier {
     }
   }
 
-  List<OrderDetails> ordersDetails = [
-    OrderDetails(
-      title: "Addison Sweater Dress-Black",
-      desc: "Black / Knit Dress / …",
-      image:
-          "https://cdn.shopify.com/s/files/1/0619/0216/0063/products/85K06C_BLACK_011revised_900x_a235d253-c8c1-4d63-aa8f-0749d908d125_40x40@3x.jpg?v=1659447430",
-      qty: 1,
-      price: 150,
-    ),
-    OrderDetails(
-      title: "Addison Sweater Dress-Black",
-      desc: "Black / Knit Dress / …",
-      image:
-          "https://cdn.shopify.com/s/files/1/0619/0216/0063/products/85K06C_BLACK_011revised_900x_a235d253-c8c1-4d63-aa8f-0749d908d125_40x40@3x.jpg?v=1659447430",
-      qty: 1,
-      price: 150,
-    ),
-    OrderDetails(
-      title: "Addison Sweater Dress-Black",
-      desc: "Black / Knit Dress / …",
-      image:
-          "https://cdn.shopify.com/s/files/1/0619/0216/0063/products/85K06C_BLACK_011revised_900x_a235d253-c8c1-4d63-aa8f-0749d908d125_40x40@3x.jpg?v=1659447430",
-      qty: 1,
-      price: 150,
-    ),
-    OrderDetails(
-      title: "Addison Sweater Dress-Black",
-      desc: "Black / Knit Dress / …",
-      image:
-          "https://cdn.shopify.com/s/files/1/0619/0216/0063/products/85K06C_BLACK_011revised_900x_a235d253-c8c1-4d63-aa8f-0749d908d125_40x40@3x.jpg?v=1659447430",
-      qty: 1,
-      price: 150,
-    ),
-    OrderDetails(
-      title: "Addison Sweater Dress-Black",
-      desc: "Black / Knit Dress / …",
-      image:
-          "https://cdn.shopify.com/s/files/1/0619/0216/0063/products/85K06C_BLACK_011revised_900x_a235d253-c8c1-4d63-aa8f-0749d908d125_40x40@3x.jpg?v=1659447430",
-      qty: 1,
-      price: 150,
-    ),
-  ];
-
   String _selectedStatus = "All";
   String _statusFilter = "All";
+
   String get selectedStatus => _selectedStatus;
+
   void resetFilters() {
     _searchQuery = "";
     _statusFilter = "All";
- //   _applyFilters();
+    //   _applyFilters();
   }
+
   /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
 
   void filterByStatus(String status) {
@@ -197,8 +59,6 @@ class OrdersProvider with ChangeNotifier {
     //_applyFilters();
   }
 
-
-
   final _service = ApiService();
   bool _isFetching = false;
 
@@ -207,13 +67,12 @@ class OrdersProvider with ChangeNotifier {
 
   OrderModel? get orderModel => _orderModel;
   String _searchQuery = "";
+
   //for filter
   void setSearchQuery(String query) {
     _searchQuery = query;
     notifyListeners();
-
   }
-
 
   List<Order>? get filterOrderList {
     return orderModel?.orders?.where((p) {
@@ -221,29 +80,47 @@ class OrdersProvider with ChangeNotifier {
         _searchQuery.toLowerCase(),
       );
 
-
       final matchesStatus =
           _selectedStatus == "All" || p.financialStatus == _selectedStatus;
 
       //return matchesSearch && matchesCategory && matchesStatus;
-      return matchesSearch  && matchesStatus;
+      return matchesSearch && matchesStatus;
     }).toList();
   }
 
-  Future<void> getOrderList() async {
+  Future<void> getOrderList({int? limit}) async {
     _isFetching = true;
     notifyListeners();
 
     try {
+      final url = limit != null
+          ? '${ApiConfig.ordersUrl}?limit=$limit'
+          : ApiConfig.ordersUrl;
+
       final response = await _service.callGetMethod(
         context: navigatorKey.currentContext!,
-        url: ApiConfig.ordersUrl,
+        url: url,
+      );
+      _orderModel = OrderModel.fromJson(json.decode(response));
+
+      final orders = _orderModel?.orders ?? [];
+
+      await Future.wait(
+        orders.map(
+          (order) => Future.wait(
+            (order.lineItems ?? []).map((item) async {
+              item.imageUrl = await fetchProductImage(
+              productId:   item.productId ?? 0,
+               variantId:  item.variantId ?? 0,
+                service: _service
+              );
+            }),
+          ),
+        ),
       );
 
-      _orderModel = OrderModel.fromJson(json.decode(response));
       _isFetching = false;
 
-      debugPrint('Orders count: ${_orderModel?.orders?.length}');
     } catch (e) {
       debugPrint('Error fetching orders: $e');
       _orderModel = OrderModel(orders: []); // fallback empty list
@@ -251,5 +128,85 @@ class OrdersProvider with ChangeNotifier {
       _isFetching = false;
       notifyListeners();
     }
+  }
+
+  int _totalOrderCount = 0;
+
+  int get totalOrderCount => _totalOrderCount;
+
+  Future<void> getTotalOrderCount() async {
+    _isFetching = true;
+    notifyListeners();
+    final response = await _service.callGetMethod(
+      context: navigatorKey.currentContext!,
+      url: ApiConfig.totalOrderUrl,
+    );
+
+    if (globalStatusCode == 200) {
+
+      final data = json.decode(response);
+
+      _totalOrderCount = data["count"] ?? 0;
+      _isFetching = false;
+      notifyListeners();
+    }
+
+    _isFetching = false;
+    notifyListeners();
+  }
+
+
+  OrderDetailsModel? _orderDetailsModel;
+
+OrderDetailsModel? get orderDetailsModel => _orderDetailsModel;
+  Future<void> getOrderBYID({int  ?orderID}) async {
+    _isFetching = true;
+    notifyListeners();
+
+    try {
+      final url = '${ ApiConfig.getOrderById}/$orderID.json';
+
+      final response = await _service.callGetMethod(
+        context: navigatorKey.currentContext!,
+        url: url,
+      );
+
+      print('======================${json.decode(response)}');
+      _orderDetailsModel = orderDetails. OrderDetailsModel.fromJson(json.decode(response));
+
+      final orderData = _orderDetailsModel?.orderData;
+      if (orderData != null && orderData.lineItems != null) {
+        fetchImagesForProduct(product: orderData);
+      }
+
+
+      _isFetching = false;
+
+    } catch (e) {
+      debugPrint('Error fetching orders: $e');
+      _orderDetailsModel = OrderDetailsModel(); // fallback empty list
+    } finally {
+      _isFetching = false;
+      notifyListeners();
+    }
+  }
+  Future<void> fetchImagesForProduct({required OrderData product}) async {
+    if (product.lineItems == null) return;
+
+    _isFetching = true;
+    notifyListeners();
+
+    await Future.wait(
+      product.lineItems!.map((item) async {
+        item.imageUrl = await fetchProductImage(
+          productId: item.productId ?? 0,
+          variantId: item.id ?? 0,
+          service: _service, // if your fetchProductImage needs the service instance
+        );
+      }),
+    );
+
+    _isFetching = false;
+    notifyListeners();
   }
 }

@@ -19,7 +19,7 @@ import '../../../core/string/string_utils.dart';
 import '../order_widget/common_order_widget.dart';
 import '../product_widget/common_product_widget.dart';
 
-homeTopView({required int  totalProduct,required int totalOrder, }) {
+homeTopView({required int  totalProduct,required int totalOrder,required  int totalCustomer }) {
   return Consumer<ThemeProvider>(
     builder: (context, provider, child) {
       return Column(
@@ -94,10 +94,10 @@ homeTopView({required int  totalProduct,required int totalOrder, }) {
                   },
                   provider: provider,
                   icon: icTotalUser,
-                  leftText: rupeeIcon,
+                  leftText: '',
                   title: "Total Customer",
                   subtitle: "+48% New User",
-                  value: 4215,
+                  value: totalCustomer,
                 ),
               ),
             ],

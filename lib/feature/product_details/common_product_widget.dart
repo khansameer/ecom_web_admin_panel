@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:neeknots/core/component/price_input_format.dart';
 import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/models/product_model.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
@@ -230,7 +231,7 @@ commonFormView({required ProductProvider provider}) {
   );
 }
 
-commonVariants({required ProductProvider provider}) {
+commonOtherVariants({required ProductProvider provider,   required Products products}) {
   return Column(
     spacing: 0,
     mainAxisAlignment: MainAxisAlignment.start,
@@ -241,8 +242,9 @@ commonVariants({required ProductProvider provider}) {
       commonListViewBuilder(
         shrinkWrap: true,
         padding: EdgeInsetsGeometry.zero,
-        items: provider.productsVariants,
-        itemBuilder: (context, index, data) {
+        items: products.options??[],
+        itemBuilder: (context, index, data1) {
+          var  data=products.options?[index];
           return Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return Container(
@@ -252,7 +254,7 @@ commonVariants({required ProductProvider provider}) {
                 child: commonListTile(
                   textColor: themeProvider.isDark ? Colors.white : colorLogo,
                   contentPadding: EdgeInsetsGeometry.zero,
-                  leadingIcon: Container(
+                  leadingIcon: commonAssetImage(icDot,width: 24,height: 24,color: Colors.grey)/*Container(
                     width: 40,
                     margin: EdgeInsets.only(left: 5),
                     height: 40,
@@ -264,17 +266,17 @@ commonVariants({required ProductProvider provider}) {
                         color: themeProvider.isDark
                             ? Colors.black
                             : Colors.white,
-                        fontWeight: FontWeight.w700,
-                        text: data.name[0],
+                        fontWeight: FontWeight.w500,
+                        text: '${data?.name?[0]}',
                       ),
                     ),
-                  ),
+                  )*/,
                   subtitleView: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         decoration: commonBoxDecoration(
-                          color: colorBorder,
+                          color: colorBorder.withValues(alpha: 0.1),
                           borderRadius: 5,
                         ),
                         child: Padding(
@@ -283,15 +285,15 @@ commonVariants({required ProductProvider provider}) {
                             horizontal: 10,
                           ),
                           child: commonText(
-                            text: data.status,
-                            fontSize: 12,
+                            text:data?.values?.join(", ") ?? "",
+                            fontSize: 10,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  title: data.name,
+                  title: data?.name??'',
                 ),
               );
             },
@@ -301,7 +303,62 @@ commonVariants({required ProductProvider provider}) {
     ],
   );
 }
-
+commonVariants({required ProductProvider provider,   required Products products}) {
+  return Column(
+    spacing: 0,
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _commonHeading(text: "Variants"),
+      SizedBox(height: 8),
+      commonListViewBuilder(
+        shrinkWrap: true,
+        padding: EdgeInsetsGeometry.zero,
+        items: products.variants??[],
+        itemBuilder: (context, index, data1) {
+          var  data=products.variants?[index];
+          return Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return Container(
+                decoration: commonBoxDecoration(borderColor: colorBorder),
+                margin: EdgeInsets.all(5),
+                padding: EdgeInsets.all(5),
+                child: commonListTile(
+                  textColor: themeProvider.isDark ? Colors.white : colorLogo,
+                  contentPadding: EdgeInsetsGeometry.zero,
+                  leadingIcon:commonNetworkImage(data?.imageUrl??'') ,
+                  subtitleView: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        decoration: commonBoxDecoration(
+                          color: colorBorder.withValues(alpha: 0.1),
+                          borderRadius: 5,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 4.0,
+                            horizontal: 10,
+                          ),
+                          child: commonText(
+                            text:'$rupeeIcon${data?.price}',
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  title: data?.title??'',
+                ),
+              );
+            },
+          );
+        },
+      ),
+    ],
+  );
+}
 _commonHeading({String? text}) {
   return commonText(
     text: text ?? "Product Description",

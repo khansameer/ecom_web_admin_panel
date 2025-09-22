@@ -17,7 +17,6 @@ Widget buildAvatar({
 }) {
   final path = imageProvider.imagePath;
 
-  print('=====path======${path}');
   final fileExists = path != null && File(path).existsSync();
 
   return Container(
@@ -82,7 +81,7 @@ profileView({
                   themeProvider,
                 );
                 if (path != null) {
-                  print('=======$path');
+
                   imageProvider.setImagePath(path);
 
                   provider.setImageFilePath(

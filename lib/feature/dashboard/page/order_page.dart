@@ -44,7 +44,11 @@ class _OrderPageState extends State<OrderPage> {
             Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 18.0, left: 18, right: 18),
+                  padding: const EdgeInsets.only(
+                    top: 18.0,
+                    left: 18,
+                    right: 18,
+                  ),
                   child: commonTextField(
                     hintText: "Search by Order ID",
                     prefixIcon: commonPrefixIcon(
@@ -64,8 +68,9 @@ class _OrderPageState extends State<OrderPage> {
                           FilterItem(
                             label: "Status",
                             options: ["All", "Paid", "Shipped", "Delivered"],
-                            selectedValue:
-                            provider.selectedStatus.toString().toCapitalize(), // 👈 provider से लो
+                            selectedValue: provider.selectedStatus
+                                .toString()
+                                .toCapitalize(), // 👈 provider से लो
                           ),
                         ];
 
@@ -77,7 +82,8 @@ class _OrderPageState extends State<OrderPage> {
                             provider.filterByStatus("All"); // reset
                           },
                           onApply: () {
-                            final selectedStatus = filters.first.selectedValue.toLowerCase();
+                            final selectedStatus = filters.first.selectedValue
+                                .toLowerCase();
                             print('-=----$selectedStatus');
                             provider.filterByStatus(selectedStatus);
                           },
@@ -92,36 +98,52 @@ class _OrderPageState extends State<OrderPage> {
                     shrinkWrap: true,
 
                     padding: const EdgeInsets.all(12),
-                    itemCount: provider.filterOrderList?.length ??0, // null to [] convert
-                    itemBuilder: (context, index,) {
-                      print('================asaassa');
-                      var data=provider.filterOrderList?[index];
+                    itemCount: provider.filterOrderList?.length ?? 0,
+                    // null to [] convert
+                    itemBuilder: (context, index) {
+                      var data = provider.filterOrderList?[index];
                       return commonOrderView(
+                        errorImageView: Container(
+                          margin: EdgeInsets.only(left: 5, top: 5, bottom: 5),
+                          child: commonErrorBoxView(text: data?.name ?? ''),
+                        ),
 
-
-
-                        margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 12,
+                        ),
                         onTap: () {
                           navigatorKey.currentState?.pushNamed(
                             RouteName.orderDetailsScreen,
                             arguments: data,
                           );
                         },
-                       colorTextStatus: provider.getPaymentStatusColor('${data?.financialStatus.toString().toCapitalize()}'),
+                        colorTextStatus: provider.getPaymentStatusColor(
+                          '${data?.financialStatus.toString().toCapitalize()}',
+                        ),
                         decoration: commonBoxDecoration(
                           borderRadius: 4,
 
                           color: provider
-                              .getPaymentStatusColor('${data?.financialStatus.toString().toCapitalize()}')
+                              .getPaymentStatusColor(
+                                '${data?.financialStatus.toString().toCapitalize()}',
+                              )
                               .withValues(alpha: 0.1),
                         ),
 
-                        orderID:'${data?.name}',
+                        orderID:
+                            '${data?.customer?.firstName}  ${data?.customer?.lastName}',
                         image: 'sdsasas',
-                        productName:'${ data?.customer?.firstName}  ${ data?.customer?.lastName}',
-                        status: '${data?.financialStatus.toString().toCapitalize()}',
-                        price: double.parse(data?.subtotalPrice?.toString() ?? '0'),
-                        date: formatDateTime(data?.createdAt??''), //data.date.toLocal().toString(),
+                        //productName:'${ data?.customer?.firstName}  ${ data?.customer?.lastName}',
+                        productName: 'Items:${data?.lineItems?.length}',
+                        status:
+                            '${data?.financialStatus.toString().toCapitalize()}',
+                        price: double.parse(
+                          data?.subtotalPrice?.toString() ?? '0',
+                        ),
+                        date: formatDateTime(
+                          data?.createdAt ?? '',
+                        ), //data.date.toLocal().toString(),
                       );
                     },
                   ),
