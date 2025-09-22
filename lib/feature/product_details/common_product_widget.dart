@@ -2,6 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:neeknots/core/component/price_input_format.dart';
+import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/models/product_model.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -10,133 +12,149 @@ import '../../core/component/component.dart';
 import '../../main.dart';
 import '../../provider/theme_provider.dart';
 
-commonBannerView({required ProductProvider provider, void Function()? onTap}) {
+commonBannerView({
+  required ProductProvider provider,
+  required List<Images> images,
+  void Function()? onTap,
+}) {
   final themeProvider = Provider.of<ThemeProvider>(
     navigatorKey.currentContext!,
   );
-  return Column(
-    children: [
-      CarouselSlider(
-        options: CarouselOptions(
-          height: 360.0,
-          enlargeCenterPage: false,
-          autoPlay: true,
-          aspectRatio: 16 / 9,
-          autoPlayCurve: Curves.fastOutSlowIn,
-          enableInfiniteScroll: true,
-          autoPlayAnimationDuration: const Duration(milliseconds: 800),
-          viewportFraction: 0.7,
-          onPageChanged: (index, reason) {
-            provider.setCurrentIndex(index); // update provider
-          },
-        ),
-        items: provider.productsDetails.map((img) {
-          return Builder(
-            builder: (BuildContext context) {
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.grey.shade200,
-                ),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: commonNetworkImage(img.icon, fit: BoxFit.cover),
-                    ),
-                    Positioned(
-                      right: 5,
-                      bottom: 5,
-                      child: commonInkWell(
-                        onTap: () {
-                          showCommonDialog(
-                            confirmText: "Remove",
-                            title: "Remove",
-                            context: context,
-                            content:
-                                "Do you want to remove this image from our product.",
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: commonBoxDecoration(
-                            shape: BoxShape.circle,
-                            color: colorLogo.withValues(alpha: 0.5),
-                          ),
-                          child: Icon(
-                            Icons.delete_outline,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        }).toList(),
-      ),
-
-      /// Dots Indicator
-      SizedBox(height: 15),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: provider.images.asMap().entries.map((entry) {
-          return GestureDetector(
-            onTap: () {
-              // optionally jump to slide using controller
-            },
-            child: Container(
-              width: 10.0,
-              height: 10.0,
-              margin: const EdgeInsets.symmetric(horizontal: 4.0),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color:
-                    (provider.currentIndex == entry.key
-                            ? colorLogo
-                            : Colors.grey)
-                        .withValues(alpha: 0.9),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-
-      Align(
-        alignment: Alignment.centerRight,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.end,
+  return images.isNotEmpty
+      ? Column(
           children: [
-            commonInkWell(
-              onTap: onTap,
-              child: Container(
-                margin: EdgeInsets.only(right: 10),
-                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),
-                decoration: commonBoxDecoration(
-                  borderWidth: 0.5,
-                  borderColor: themeProvider.isDark ? Colors.white : colorLogo,
-                ),
-                child: Center(
-                  child: commonText(
-                    text: "Add Image",
-                    color: themeProvider.isDark ? Colors.white : colorLogo,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 10,
-                  ),
-                ),
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 360.0,
+                enlargeCenterPage: false,
+                autoPlay: true,
+                aspectRatio: 16 / 9,
+                autoPlayCurve: Curves.fastOutSlowIn,
+                enableInfiniteScroll: true,
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                viewportFraction: 0.7,
+                onPageChanged: (index, reason) {
+                  provider.setCurrentIndex(index); // update provider
+                },
               ),
+              items: images.map((img) {
+                return Builder(
+                  builder: (BuildContext context) {
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.grey.shade200,
+                      ),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: commonNetworkImage(
+                              img.src,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          Positioned(
+                            right: 5,
+                            bottom: 5,
+                            child: commonInkWell(
+                              onTap: () {
+                                showCommonDialog(
+                                  confirmText: "Remove",
+                                  title: "Remove",
+                                  context: context,
+                                  content:
+                                      "Do you want to remove this image from our product.",
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: commonBoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: colorLogo.withValues(alpha: 0.5),
+                                ),
+                                child: Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }).toList(),
+            ),
+
+            /// Dots Indicator
+            SizedBox(height: 15),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: images.asMap().entries.map((entry) {
+                return GestureDetector(
+                  onTap: () {
+                    // optionally jump to slide using controller
+                  },
+                  child: Container(
+                    width: 10.0,
+                    height: 10.0,
+                    margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color:
+                          (provider.currentIndex == entry.key
+                                  ? colorLogo
+                                  : Colors.grey)
+                              .withValues(alpha: 0.9),
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
           ],
+        )
+      : SizedBox(
+          width: double.infinity,
+          height: 360,
+
+          child: commonAssetImage(icErrorImage),
+        );
+}
+
+_addImageButton({required ThemeProvider themeProvider}) {
+  return Align(
+    alignment: Alignment.centerRight,
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        commonInkWell(
+          // onTap: onTap,
+          child: Container(
+            margin: EdgeInsets.only(right: 10),
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),
+            decoration: commonBoxDecoration(
+              borderWidth: 0.5,
+              borderColor: themeProvider.isDark ? Colors.white : colorLogo,
+            ),
+            child: Center(
+              child: commonText(
+                text: "Add Image",
+                color: themeProvider.isDark ? Colors.white : colorLogo,
+                fontWeight: FontWeight.w500,
+                fontSize: 10,
+              ),
+            ),
+          ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }
 

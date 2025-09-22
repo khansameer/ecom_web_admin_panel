@@ -116,14 +116,14 @@ class ProductProvider with ChangeNotifier {
         _searchQuery.toLowerCase(),
       );
 
-  /*    final matchesCategory =
+      /*    final matchesCategory =
           _selectedCategory == "All" || p.status == _selectedCategory;
 */
       final matchesStatus =
           _selectedStatus == "All" || p.status == _selectedStatus;
 
       //return matchesSearch && matchesCategory && matchesStatus;
-      return matchesSearch  && matchesStatus;
+      return matchesSearch && matchesStatus;
     }).toList();
   }
 
@@ -229,9 +229,9 @@ class ProductProvider with ChangeNotifier {
   bool _isFetching = false;
 
   bool get isFetching => _isFetching;
-  ProductModel ? _productModel;
+  ProductModel? _productModel;
 
-  ProductModel ? get productModel => _productModel;
+  ProductModel? get productModel => _productModel;
 
   Future<void> getProductList() async {
     _isFetching = true;
@@ -242,8 +242,6 @@ class ProductProvider with ChangeNotifier {
     );
 
     if (globalStatusCode == 200) {
-      debugPrint('=======decode==${json.decode(response)}');
-
       _productModel = ProductModel.fromJson(json.decode(response));
       _isFetching = false;
       notifyListeners();

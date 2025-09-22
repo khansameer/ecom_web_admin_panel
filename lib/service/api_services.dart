@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:neeknots/service/network_repository.dart';
 
-
 import '../main.dart';
 
 class ApiService {
@@ -15,7 +14,6 @@ class ApiService {
     }
     return await InternetConnectionChecker().hasConnection;
   }
-
 
   Future<String> callPostMethodApi({
     required Map<String, dynamic> body,
@@ -52,7 +50,11 @@ class ApiService {
       return "No internet connection";
     }
     final stopwatch = Stopwatch()..start();
-    var response = await callPostMethodWithToken(url: url,params:  body,headers: headers);
+    var response = await callPostMethodWithToken(
+      url: url,
+      params: body,
+      headers: headers,
+    );
     stopwatch.stop();
     final responseTime = stopwatch.elapsedMilliseconds;
 
@@ -92,12 +94,15 @@ class ApiService {
       return "No internet connection";
     }
 
-    var response = await callPatchMethod(url, body,);
+    var response = await callPatchMethod(url, body);
     return response;
   }
 
-  Future<String> callGetMethod({required String url, String? key,  required BuildContext context,}) async {
-    debugPrint('====url$url');
+  Future<String> callGetMethod({
+    required String url,
+    String? key,
+    required BuildContext context,
+  }) async {
     bool isConnected = await checkInternetConnection();
 
     if (!isConnected) {
@@ -118,7 +123,11 @@ class ApiService {
     return response;
   }
 
-  Future<String> callDeleteMethods({required String url, String? key,  required BuildContext context,}) async {
+  Future<String> callDeleteMethods({
+    required String url,
+    String? key,
+    required BuildContext context,
+  }) async {
     debugPrint('callDeleteMethods  $url');
     bool isConnected = await checkInternetConnection();
 

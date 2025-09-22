@@ -4,6 +4,7 @@ import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/feature/dashboard/product_widget/common_product_widget.dart';
 import 'package:neeknots/provider/product_provider.dart';
+import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/string/string_utils.dart';
@@ -73,8 +74,9 @@ class _ProductPageState extends State<ProductPage> {
                           FilterItem(
                             label: "Status",
                             options: ["All", "Active", "Draft"],
-                            selectedValue:
-                                provider.selectedStatus.toString().toCapitalize(), // 👈 provider से लो
+                            selectedValue: provider.selectedStatus
+                                .toString()
+                                .toCapitalize(), // 👈 provider से लो
                           ),
                         ];
                         showCommonFilterDialog(
@@ -86,12 +88,9 @@ class _ProductPageState extends State<ProductPage> {
                             provider.setStatus("All");
                           },
                           onApply: () {
-
-
                             final selectedStatus = filters
                                 .firstWhere((f) => f.label == "Status")
                                 .selectedValue;
-
 
                             provider.setStatus(selectedStatus.toLowerCase());
                           },
@@ -111,8 +110,7 @@ class _ProductPageState extends State<ProductPage> {
                             top: 12,
                             bottom: 12,
                           ),
-                          itemCount:
-                              provider.filteredProducts?.length ?? 0,
+                          itemCount: provider.filteredProducts?.length ?? 0,
                           itemBuilder: (context, index) {
                             var data = provider.filteredProducts?[index];
                             final totalVariants = data?.variants?.length;
@@ -129,12 +127,14 @@ class _ProductPageState extends State<ProductPage> {
                             return commonProductListView(
                               image: data?.image?.src ?? '',
                               onTap: () {
-                                /*  navigatorKey.currentState?.pushNamed(
+                                navigatorKey.currentState?.pushNamed(
                                   RouteName.productDetailsScreen,
                                   arguments: data,
-                                );*/
+                                );
                               },
-                              price: data?.variants?.isNotEmpty == true?'$rupeeIcon${data?.variants?.first.price}':'$rupeeIcon 0',
+                              price: data?.variants?.isNotEmpty == true
+                                  ? '$rupeeIcon${data?.variants?.first.price}'
+                                  : '$rupeeIcon 0',
                               textInventory1: "$totalInventory in stock",
                               textInventory2: ' for $totalVariants variants',
                               productName: data?.title ?? '',

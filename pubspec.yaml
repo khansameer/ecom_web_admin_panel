@@ -51,6 +51,7 @@ dependencies:
   connectivity_plus: ^7.0.0
   internet_connection_checker: any
   http: ^1.5.0
+  html: ^0.15.6
 
 dev_dependencies:
   flutter_test:
