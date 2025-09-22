@@ -116,6 +116,7 @@ commonBannerView({
                 );
               }).toList(),
             ),
+            _addImageButton(themeProvider: themeProvider, onTap: onTap),
           ],
         )
       : SizedBox(
@@ -126,7 +127,7 @@ commonBannerView({
         );
 }
 
-_addImageButton({required ThemeProvider themeProvider}) {
+_addImageButton({required ThemeProvider themeProvider, VoidCallback? onTap}) {
   return Align(
     alignment: Alignment.centerRight,
     child: Row(
@@ -135,7 +136,7 @@ _addImageButton({required ThemeProvider themeProvider}) {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         commonInkWell(
-          // onTap: onTap,
+          onTap: onTap,
           child: Container(
             margin: EdgeInsets.only(right: 10),
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 7),

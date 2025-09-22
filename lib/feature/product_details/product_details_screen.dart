@@ -74,6 +74,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   /*  provider.setImageFilePath(
                   img: File(imageProvider.imagePath!),
                 );*/
+                  provider.uploadProductImage(imagePath: path);
                 }
               },
             ),

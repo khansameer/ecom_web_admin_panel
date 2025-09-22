@@ -250,4 +250,24 @@ class ProductProvider with ChangeNotifier {
     _isFetching = false;
     notifyListeners();
   }
+
+  Future<void> uploadProductImage({required String imagePath}) async {
+    final urlString = "${ApiConfig.baseUrl}/products/7313811701951/images.json";
+    // read as bytes
+    final bytes = await File(imagePath).readAsBytes();
+
+    // convert to base64
+    final base64Image = base64Encode(bytes);
+
+    //Acapulco Dress-Navy
+    final response = await _service.callPostMethodApiWithToken(
+      body: {
+        "image": {"attachment": base64Image},
+      },
+      url: urlString,
+      context: navigatorKey.currentContext!,
+    );
+
+    print("Upload response:- $response");
+  }
 }
