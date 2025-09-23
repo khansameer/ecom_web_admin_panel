@@ -261,8 +261,8 @@ customerInfo({required Order order}) {
             children: [
               _buildRow(
                 title: "Name",
-                value:
-                    '${order.customer?.firstName} ${order.customer?.lastName}',
+                value:order.customer?.firstName!=null?
+                    '${order.customer?.firstName} ${order.customer?.lastName}':noCustomer,
               ),
               _buildRow(title: "Email", value: '${order.customer?.email}'),
               _buildRow(title: "Mobile", value: '${order.customer?.phone}'),

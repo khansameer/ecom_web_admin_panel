@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:neeknots/provider/InternetProvider.dart';
 import 'package:neeknots/provider/customer_provider.dart';
 import 'package:neeknots/provider/image_picker_provider.dart';
 import 'package:neeknots/provider/login_provider.dart';
@@ -47,6 +48,8 @@ List<SingleChildWidget> providers = [
   ChangeNotifierProvider<NotificationProvider>(
     create: (_) => NotificationProvider(),
   ),
+
+  ChangeNotifierProvider<InternetProvider>(create: (_) => InternetProvider()),
 ];
 
 Future<void> main() async {

@@ -7,7 +7,8 @@ import '../../models/customer_model.dart';
 import 'common_customer_widget.dart';
 
 class CustomerDetailPage extends StatefulWidget {
-  const CustomerDetailPage({super.key,required this.customer});
+  const CustomerDetailPage({super.key, required this.customer});
+
   final Customer customer;
 
   @override
@@ -15,7 +16,6 @@ class CustomerDetailPage extends StatefulWidget {
 }
 
 class _CustomerDetailPageState extends State<CustomerDetailPage> {
-
   @override
   @override
   void initState() {
@@ -27,16 +27,16 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   }
 
   Future<void> init() async {
-    try {
-      final customerProvider = Provider.of<OrdersProvider>(context, listen: false);
-      await customerProvider.getOrderBYID(orderID: widget.customer.lastOrderId);
-    } catch (e) {
-      print("Error: $e");
-    }
+    final customerProvider = Provider.of<OrdersProvider>(
+      context,
+      listen: false,
+    );
+    await customerProvider.getOrderBYID(orderID: widget.customer.lastOrderId);
   }
+
   @override
   Widget build(BuildContext context) {
-    print('============${widget.customer.id}');
+
     return commonScaffold(
       appBar: commonAppBar(
         title: "Customer Detail",
@@ -47,7 +47,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
         child: ListView(
           children: [
             customerDetailsInfo(customer: widget.customer),
-          //  customerOrderDetailsInfo(customer: customer),
+
             customerProductInfo(customer: widget.customer),
           ],
         ),

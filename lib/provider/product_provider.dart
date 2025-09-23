@@ -155,8 +155,9 @@ class ProductProvider with ChangeNotifier {
 
   final _service = ApiService();
   bool _isFetching = false;
-
   bool get isFetching => _isFetching;
+
+
   ProductModel? _productModel;
 
   ProductModel? get productModel => _productModel;

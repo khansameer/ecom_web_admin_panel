@@ -36,62 +36,76 @@ class _HomePageState extends State<HomePage> {
         context,
         listen: false,
       );
+      DateTime now = DateTime.now();
 
+      DateTime startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
+      DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
       await Future.wait([
         productProvider.getProductList(limit: 5),
         productProvider.getTotalProductCount(),
         orderProvider.getOrderList(limit: 5),
         customerProvider.getTotalCustomerCount(),
         orderProvider.getTotalOrderCount(),
+
+        orderProvider.getTotalSaleOrder(startDate: startDate, endDate: endDate),
+        orderProvider.getOrderByDate(startDate: startDate, endDate: endDate),
       ]);
+      orderProvider.fetchTodayOrders();
     } catch (e) {
       print("Error: $e");
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-
-    return Consumer3<OrdersProvider,ProductProvider,CustomerProvider>(
-      builder: (context,orderProvider,productProvider,customerProvider,child) {
-        return Stack(
-          children: [
-            ListView(
-              shrinkWrap: true,
-              physics: BouncingScrollPhysics(),
-              padding: EdgeInsets.all(12),
+    return Consumer3<OrdersProvider, ProductProvider, CustomerProvider>(
+      builder:
+          (context, orderProvider, productProvider, customerProvider, child) {
+            return Stack(
               children: [
-                homeTopView(totalOrder: orderProvider.totalOrderCount,totalProduct: productProvider.totalProductCount,totalCustomer: customerProvider.totalCustomerCount),
-                SizedBox(height: 24),
-                SizedBox(height: 300, child: homeGraphView()),
-                SizedBox(height: 24),
-                Consumer<DashboardProvider>(
-                  builder: (context, provider, child) {
-                    return commonTopProductListView(
-                      onTap: () {
-                        provider.setIndex(0);
+                ListView(
+                  shrinkWrap: true,
+                  physics: BouncingScrollPhysics(),
+                  padding: EdgeInsets.all(12),
+                  children: [
+                    homeTopView(
+                      totalOrderPrice: orderProvider.totalOrderPrice,
+                      totalOrder: orderProvider.totalOrderCount,
+                      totalProduct: productProvider.totalProductCount,
+                      totalCustomer: customerProvider.totalCustomerCount,
+                      totalSaleOrder: orderProvider.totalOrderSaleCount,
+                    ),
+                    SizedBox(height: 24),
+                    SizedBox(height: 300, child: homeGraphView()),
+                    SizedBox(height: 24),
+                    Consumer<DashboardProvider>(
+                      builder: (context, provider, child) {
+                        return commonTopProductListView(
+                          onTap: () {
+                            provider.setIndex(0);
+                          },
+                        );
                       },
-                    );
-                  },
-                ),
+                    ),
 
-                SizedBox(height: 24),
-                Consumer<DashboardProvider>(
-                  builder: (context, provider, child) {
-                    return commonTopOrderListView(
-                      onTap: () {
-                        provider.setIndex(1);
+                    SizedBox(height: 24),
+                    Consumer<DashboardProvider>(
+                      builder: (context, provider, child) {
+                        return commonTopOrderListView(
+                          onTap: () {
+                            provider.setIndex(1);
+                          },
+                        );
                       },
-                    );
-                  },
+                    ),
+                  ],
                 ),
+                orderProvider.isFetching || productProvider.isFetching
+                    ? showLoaderList()
+                    : SizedBox.shrink(),
               ],
-            ),
-            orderProvider.isFetching || productProvider.isFetching?showLoaderList():SizedBox.shrink()
-          ],
-        );
-      }
+            );
+          },
     );
   }
 }

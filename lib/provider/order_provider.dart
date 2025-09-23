@@ -25,7 +25,6 @@ class OrdersProvider with ChangeNotifier {
     }
   }
 
-
   Color getPaymentStatusColor(String status) {
     switch (status) {
       case "Pending":
@@ -110,9 +109,9 @@ class OrdersProvider with ChangeNotifier {
           (order) => Future.wait(
             (order.lineItems ?? []).map((item) async {
               item.imageUrl = await fetchProductImage(
-              productId:   item.productId ?? 0,
-               variantId:  item.variantId ?? 0,
-                service: _service
+                productId: item.productId ?? 0,
+                variantId: item.variantId ?? 0,
+                service: _service,
               );
             }),
           ),
@@ -120,7 +119,6 @@ class OrdersProvider with ChangeNotifier {
       );
 
       _isFetching = false;
-
     } catch (e) {
       debugPrint('Error fetching orders: $e');
       _orderModel = OrderModel(orders: []); // fallback empty list
@@ -134,16 +132,19 @@ class OrdersProvider with ChangeNotifier {
 
   int get totalOrderCount => _totalOrderCount;
 
-  Future<void> getTotalOrderCount() async {
+  Future<void> getTotalOrderCount({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     _isFetching = true;
     notifyListeners();
+
     final response = await _service.callGetMethod(
       context: navigatorKey.currentContext!,
       url: ApiConfig.totalOrderUrl,
     );
 
     if (globalStatusCode == 200) {
-
       final data = json.decode(response);
 
       _totalOrderCount = data["count"] ?? 0;
@@ -155,33 +156,68 @@ class OrdersProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  int _totalOrderSaleCount = 0;
+
+  int get totalOrderSaleCount => _totalOrderSaleCount;
+
+  Future<void> getTotalSaleOrder({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    _isFetching = true;
+    notifyListeners();
+
+    final utcStart = startDate.toUtc();
+    final utcEnd = endDate.toUtc();
+
+    // Format as ISO 8601
+    final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
+    final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
+
+    final response = await _service.callGetMethod(
+      context: navigatorKey.currentContext!,
+      url:
+          '${ApiConfig.totalOrderUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax',
+    );
+
+    if (globalStatusCode == 200) {
+      final data = json.decode(response);
+
+      _totalOrderSaleCount = data["count"] ?? 0;
+      _isFetching = false;
+      notifyListeners();
+    }
+
+    _isFetching = false;
+    notifyListeners();
+  }
 
   OrderDetailsModel? _orderDetailsModel;
 
-OrderDetailsModel? get orderDetailsModel => _orderDetailsModel;
-  Future<void> getOrderBYID({int  ?orderID}) async {
+  OrderDetailsModel? get orderDetailsModel => _orderDetailsModel;
+
+  Future<void> getOrderBYID({int? orderID}) async {
     _isFetching = true;
     notifyListeners();
 
     try {
-      final url = '${ ApiConfig.getOrderById}/$orderID.json';
+      final url = '${ApiConfig.getOrderById}/$orderID.json';
 
       final response = await _service.callGetMethod(
         context: navigatorKey.currentContext!,
         url: url,
       );
 
-      print('======================${json.decode(response)}');
-      _orderDetailsModel = orderDetails. OrderDetailsModel.fromJson(json.decode(response));
+      _orderDetailsModel = orderDetails.OrderDetailsModel.fromJson(
+        json.decode(response),
+      );
 
       final orderData = _orderDetailsModel?.orderData;
       if (orderData != null && orderData.lineItems != null) {
         fetchImagesForProduct(product: orderData);
       }
 
-
       _isFetching = false;
-
     } catch (e) {
       debugPrint('Error fetching orders: $e');
       _orderDetailsModel = OrderDetailsModel(); // fallback empty list
@@ -190,6 +226,7 @@ OrderDetailsModel? get orderDetailsModel => _orderDetailsModel;
       notifyListeners();
     }
   }
+
   Future<void> fetchImagesForProduct({required OrderData product}) async {
     if (product.lineItems == null) return;
 
@@ -201,7 +238,8 @@ OrderDetailsModel? get orderDetailsModel => _orderDetailsModel;
         item.imageUrl = await fetchProductImage(
           productId: item.productId ?? 0,
           variantId: item.id ?? 0,
-          service: _service, // if your fetchProductImage needs the service instance
+          service:
+              _service, // if your fetchProductImage needs the service instance
         );
       }),
     );
@@ -209,4 +247,109 @@ OrderDetailsModel? get orderDetailsModel => _orderDetailsModel;
     _isFetching = false;
     notifyListeners();
   }
+
+  OrderModel? _orderModelByDate;
+
+  OrderModel? get orderModelByDate => _orderModelByDate;
+  double _totalOrderPrice = 0.0;
+
+  double get totalOrderPrice => _totalOrderPrice;
+
+  Future<void> getOrderByDate({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    _isFetching = true;
+    _orderModelByDate = null;
+    _totalOrderPrice = 0;
+    notifyListeners();
+
+    final utcStart = startDate.toUtc();
+    final utcEnd = endDate.toUtc();
+
+    // Format as ISO 8601
+    final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
+    final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
+
+    final response = await _service.callGetMethod(
+      context: navigatorKey.currentContext!,
+      url:
+          '${ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax',
+    );
+
+    if (globalStatusCode == 200) {
+      _orderModelByDate = OrderModel.fromJson(json.decode(response));
+      _totalOrderPrice = getTotalOrderPrice(_orderModelByDate ?? OrderModel());
+      _isFetching = false;
+      notifyListeners();
+    }
+
+    _isFetching = false;
+    notifyListeners();
+  }
+
+  double getTotalOrderPrice(OrderModel orderModel) {
+    double total = 0;
+
+    if (orderModel.orders != null) {
+      for (var order in orderModel.orders!) {
+        // totalPrice String hai, so double me convert karo
+        final price = double.tryParse(order.totalPrice ?? "0") ?? 0;
+        total += price;
+      }
+    }
+
+    return total;
+  }
+
+
+  //===============================================Graph
+  String _selectedRange = "Today";
+
+  String get selectedRange => _selectedRange;
+
+  void setRange(String range) {
+    _selectedRange = range;
+    notifyListeners();
+  }
+
+  void fetchTodayOrders() {
+    final today = DateTime.now();
+
+    getOrderByDate(
+      startDate: DateTime(today.year, today.month, today.day),
+      endDate: DateTime(today.year, today.month, today.day, 23, 59, 59),
+    );
+  }
+
+  void fetchByRange(String range) {
+    final now = DateTime.now();
+    DateTime startDate;
+    DateTime endDate = now;
+
+    if (range == "Week") {
+      startDate = now.subtract(
+        Duration(days: now.weekday - 1),
+      ); // start of week
+    } else if (range == "Month") {
+      startDate = DateTime(now.year, now.month, 1); // start of month
+    } else {
+      DateTime now = DateTime.now();
+
+      // Aaj ka start (00:00:00)
+      startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
+
+      // Aaj ka end (23:59:59)
+      endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+      //startDate = now; // default today
+    }
+
+    getOrderByDate(startDate: startDate, endDate: endDate);
+  }
+}
+class SalesData {
+  final String orderNumber;
+  final double totalPrice;
+
+  SalesData({required this.orderNumber, required this.totalPrice});
 }

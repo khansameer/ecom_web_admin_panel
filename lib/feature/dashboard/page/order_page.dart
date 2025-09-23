@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/component/context_extension.dart';
+import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/provider/order_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -131,8 +132,8 @@ class _OrderPageState extends State<OrderPage> {
                               .withValues(alpha: 0.1),
                         ),
 
-                        orderID:
-                            '${data?.customer?.firstName}  ${data?.customer?.lastName}',
+                        orderID: data?.customer?.firstName!=null?
+                            '${data?.customer?.firstName}  ${data?.customer?.lastName}':noCustomer,
                         image: 'sdsasas',
                         //productName:'${ data?.customer?.firstName}  ${ data?.customer?.lastName}',
                         productName: 'Items:${data?.lineItems?.length}',

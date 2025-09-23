@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/string/string_utils.dart';
 import '../../../main.dart';
+import '../../../provider/InternetProvider.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -36,8 +37,8 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ProductProvider>(
-      builder: (context, provider, child) {
+    return Consumer2<ProductProvider,InternetProvider>(
+      builder: (context, provider,internetProvider, child) {
         return Stack(
           children: [
             Column(
@@ -147,7 +148,6 @@ class _ProductPageState extends State<ProductPage> {
                               decoration: commonBoxDecoration(
                                 borderRadius: 8,
                                 borderWidth: 0.5,
-
                               ),
                             );
                           },
