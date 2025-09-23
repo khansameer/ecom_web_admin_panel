@@ -264,8 +264,8 @@ customerInfo({required Order order}) {
                 value:order.customer?.firstName!=null?
                     '${order.customer?.firstName} ${order.customer?.lastName}':noCustomer,
               ),
-              _buildRow(title: "Email", value: '${order.customer?.email}'),
-              _buildRow(title: "Mobile", value: '${order.customer?.phone}'),
+              _buildRow(title: "Email", value: order.customer?.email!=null ?'${order.customer?.email}':"-"),
+              _buildRow(title: "Mobile", value:order.customer?.phone!=null? '${order.customer?.phone}':"-"),
             ],
           ),
         ),
@@ -273,7 +273,7 @@ customerInfo({required Order order}) {
         const Divider(height: 1),
 
         // Footer text
-        Padding(
+        order.customer?.defaultAddress!=null?  Padding(
           padding: EdgeInsets.all(12.0),
           child: Column(
             spacing: 5,
@@ -289,8 +289,8 @@ customerInfo({required Order order}) {
               ),
             ],
           ),
-        ),
-        Padding(
+        ):SizedBox.shrink(),
+        order.billingAddress!=null?  Padding(
           padding: EdgeInsets.all(12.0),
           child: Column(
             spacing: 5,
@@ -316,7 +316,7 @@ customerInfo({required Order order}) {
               ),
             ],
           ),
-        ),
+        ):SizedBox.shrink(),
       ],
     ),
   );

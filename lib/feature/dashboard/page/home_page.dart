@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
         orderProvider.getTotalSaleOrder(startDate: startDate, endDate: endDate),
         orderProvider.getOrderByDate(startDate: startDate, endDate: endDate),
       ]);
-      orderProvider.fetchTodayOrders();
+      //orderProvider.fetchTodayOrders();
     } catch (e) {
       print("Error: $e");
     }

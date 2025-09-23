@@ -261,7 +261,7 @@ class OrdersProvider with ChangeNotifier {
   }) async {
     _isFetching = true;
     _orderModelByDate = null;
-    _totalOrderPrice = 0;
+
     notifyListeners();
 
     final utcStart = startDate.toUtc();

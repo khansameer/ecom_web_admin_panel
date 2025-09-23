@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/feature/order_details/order_common_widget.dart';
+import 'package:neeknots/main.dart';
 import 'package:neeknots/provider/order_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/component/date_utils.dart';
 import '../../models/customer_model.dart';
+import '../../provider/customer_provider.dart';
 
 customerDetailsInfo({required Customer customer}) {
+  final provider = Provider.of<CustomerProvider>(navigatorKey.currentContext!);
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -38,7 +42,18 @@ customerDetailsInfo({required Customer customer}) {
                 value: "$rupeeIcon${"${customer.totalSpent}"}",
               ),
               _buildRow(title: "Order", value: '${customer.ordersCount}'),
-              _buildRow(title: "RFM Group", value: "Needs Attentions"),
+              _buildRow(
+                padding: EdgeInsets.symmetric(vertical: 5,horizontal: 10),
+                colorText:provider
+                    .getStatusColor(customer.emailMarketingConsent?.state??'') ,
+                fontSize: 10,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: provider
+                        .getStatusColor(customer.emailMarketingConsent?.state??'')
+                        .withValues(alpha: 0.1),
+                  ),
+                  title: "Status", value: '${customer.emailMarketingConsent?.state.toString().toCapitalize().replaceAll("_", " ")}'),
             ],
           ),
         ),
@@ -59,23 +74,7 @@ customerDetailsInfo({required Customer customer}) {
             ],
           ),
         ),
-        /* Padding(
-          padding: EdgeInsets.all(12.0),
-          child: Column(
-            spacing: 5,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              commonText(text: "Billing address", fontWeight: FontWeight.w600),
-              commonText(
-                text:
-                '${customer.defaultAddress?.company ?? ''}\n${customer.defaultAddress?.address1 ?? ''} ${customer.defaultAddress?.address2 ?? ''}\n${customer.defaultAddress?.zip ?? ''} ${customer.defaultAddress?.city ?? ''} ${customer.defaultAddress?.province ?? ''}\n${customer.defaultAddress?.country ?? ''}\n${customer.defaultAddress?.phone ?? ''}',
 
-                fontSize: 12,
-              ),
-            ],
-          ),
-        ),*/
 
         // Content
       ],
