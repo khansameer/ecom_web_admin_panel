@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:neeknots/service/api_config.dart';
@@ -70,22 +69,39 @@ Future callPutMethodWithToken(String url, Map<String, dynamic> params) async {
   return getResponse(response);
 }
 
+// Future callDeleteMethod({
+//   required String url,
+//   Map<String, dynamic>? params,
+// }) async {
+//   return await http
+//       .delete(
+//         Uri.parse(url),
+//         body: utf8.encode(json.encode(params)),
+//         headers: commonHeadersToken,
+//       )
+//       .then((http.Response response) {
+//         return getResponse(response);
+//       });
+// }
 Future callDeleteMethod({
   required String url,
   Map<String, dynamic>? params,
 }) async {
-  return await http
-      .delete(
-        Uri.parse(url),
-        body: utf8.encode(json.encode(params)),
-        headers: commonHeadersToken,
-      )
-      .then((http.Response response) {
-        return getResponse(response);
-      });
+  final request = http.Request("DELETE", Uri.parse(url));
+  request.headers.addAll(commonHeadersToken);
+  if (params != null) {
+    request.body = json.encode(params);
+  }
+
+  final streamedResponse = await request.send();
+  final response = await http.Response.fromStream(streamedResponse);
+
+  return getResponse(response);
 }
 
 Future callGETMethod({required String url, String? key}) async {
+
+  
   return await http.get(Uri.parse(url), headers: commonHeadersToken).then((
     http.Response response,
   ) {

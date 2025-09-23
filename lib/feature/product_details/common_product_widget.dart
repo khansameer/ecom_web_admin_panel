@@ -35,7 +35,7 @@ commonBannerView({
                 autoPlayAnimationDuration: const Duration(milliseconds: 800),
                 viewportFraction: 0.7,
                 onPageChanged: (index, reason) {
-                  provider.setCurrentIndex(index); // update provider
+                  provider.setCurrentIndex(index); // update providercdvs
                 },
               ),
               items: images.map((img) {
@@ -63,6 +63,15 @@ commonBannerView({
                             child: commonInkWell(
                               onTap: () {
                                 showCommonDialog(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    
+                                    provider.deleteProductImage(
+                                      imageId: img.id ?? 0,
+                                      productId: img.productId ?? 0,
+                                      provider: provider,
+                                    );
+                                  },
                                   confirmText: "Remove",
                                   title: "Remove",
                                   context: context,
@@ -93,7 +102,7 @@ commonBannerView({
             ),
 
             /// Dots Indicator
-            SizedBox(height: 15),
+            SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: images.asMap().entries.map((entry) {
@@ -120,13 +129,20 @@ commonBannerView({
             _addImageButton(themeProvider: themeProvider, onTap: onTap),
           ],
         )
-      : SizedBox(
-          width: double.infinity,
-          height: 360,
-
-          child: commonAssetImage(icErrorImage),
+      : Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: double.infinity,
+              height: 360,
+              child: commonAssetImage(icErrorImage),
+            ),
+            SizedBox(height: 16),
+            _addImageButton(themeProvider: themeProvider, onTap: onTap),
+          ],
         );
 }
+//:39910815269055
 
 _addImageButton({required ThemeProvider themeProvider, VoidCallback? onTap}) {
   return Align(
@@ -232,7 +248,10 @@ commonFormView({required ProductProvider provider}) {
   );
 }
 
-commonOtherVariants({required ProductProvider provider,   required Products products}) {
+commonOtherVariants({
+  required ProductProvider provider,
+  required Products products,
+}) {
   return Column(
     spacing: 0,
     mainAxisAlignment: MainAxisAlignment.start,
@@ -243,9 +262,9 @@ commonOtherVariants({required ProductProvider provider,   required Products prod
       commonListViewBuilder(
         shrinkWrap: true,
         padding: EdgeInsetsGeometry.zero,
-        items: products.options??[],
+        items: products.options ?? [],
         itemBuilder: (context, index, data1) {
-          var  data=products.options?[index];
+          var data = products.options?[index];
           return Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return Container(
@@ -255,7 +274,12 @@ commonOtherVariants({required ProductProvider provider,   required Products prod
                 child: commonListTile(
                   textColor: themeProvider.isDark ? Colors.white : colorLogo,
                   contentPadding: EdgeInsetsGeometry.zero,
-                  leadingIcon: commonAssetImage(icDot,width: 24,height: 24,color: Colors.grey)/*Container(
+                  leadingIcon: commonAssetImage(
+                    icDot,
+                    width: 24,
+                    height: 24,
+                    color: Colors.grey,
+                  ) /*Container(
                     width: 40,
                     margin: EdgeInsets.only(left: 5),
                     height: 40,
@@ -286,7 +310,7 @@ commonOtherVariants({required ProductProvider provider,   required Products prod
                             horizontal: 10,
                           ),
                           child: commonText(
-                            text:data?.values?.join(", ") ?? "",
+                            text: data?.values?.join(", ") ?? "",
                             fontSize: 10,
                             fontWeight: FontWeight.w600,
                           ),
@@ -294,7 +318,7 @@ commonOtherVariants({required ProductProvider provider,   required Products prod
                       ),
                     ],
                   ),
-                  title: data?.name??'',
+                  title: data?.name ?? '',
                 ),
               );
             },
@@ -304,7 +328,11 @@ commonOtherVariants({required ProductProvider provider,   required Products prod
     ],
   );
 }
-commonVariants({required ProductProvider provider,   required Products products}) {
+
+commonVariants({
+  required ProductProvider provider,
+  required Products products,
+}) {
   return Column(
     spacing: 0,
     mainAxisAlignment: MainAxisAlignment.start,
@@ -315,9 +343,9 @@ commonVariants({required ProductProvider provider,   required Products products}
       commonListViewBuilder(
         shrinkWrap: true,
         padding: EdgeInsetsGeometry.zero,
-        items: products.variants??[],
+        items: products.variants ?? [],
         itemBuilder: (context, index, data1) {
-          var  data=products.variants?[index];
+          var data = products.variants?[index];
           return Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return Container(
@@ -327,7 +355,7 @@ commonVariants({required ProductProvider provider,   required Products products}
                 child: commonListTile(
                   textColor: themeProvider.isDark ? Colors.white : colorLogo,
                   contentPadding: EdgeInsetsGeometry.zero,
-                  leadingIcon:commonNetworkImage(data?.imageUrl??'') ,
+                  leadingIcon: commonNetworkImage(data?.imageUrl ?? ''),
                   subtitleView: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -342,7 +370,7 @@ commonVariants({required ProductProvider provider,   required Products products}
                             horizontal: 10,
                           ),
                           child: commonText(
-                            text:'$rupeeIcon${data?.price}',
+                            text: '$rupeeIcon${data?.price}',
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -350,7 +378,7 @@ commonVariants({required ProductProvider provider,   required Products products}
                       ),
                     ],
                   ),
-                  title: data?.title??'',
+                  title: data?.title ?? '',
                 ),
               );
             },
@@ -360,6 +388,7 @@ commonVariants({required ProductProvider provider,   required Products products}
     ],
   );
 }
+
 _commonHeading({String? text}) {
   return commonText(
     text: text ?? "Product Description",
