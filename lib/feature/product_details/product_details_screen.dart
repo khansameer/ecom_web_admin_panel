@@ -39,6 +39,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       provider.tetPrice.text = widget.products.variants?.first.price ?? "0";
       provider.fetchImagesForProduct(widget.products);
       provider.productImages = widget.products.images ?? [];
+
+      if (widget.products.id != null) {
+        provider.getProductDetail(productId: "${widget.products.id}");
+
+        print("product model:- ${provider.product?.id ?? 0}");
+      }
     });
   }
 

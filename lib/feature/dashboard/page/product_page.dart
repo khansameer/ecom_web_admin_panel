@@ -30,7 +30,7 @@ class _ProductPageState extends State<ProductPage> {
         navigatorKey.currentContext!,
         listen: false,
       );
-      
+
       postMdl.getProductList();
     });
   }
@@ -148,7 +148,6 @@ class _ProductPageState extends State<ProductPage> {
                               decoration: commonBoxDecoration(
                                 borderRadius: 8,
                                 borderWidth: 0.5,
-
                               ),
                             );
                           },
