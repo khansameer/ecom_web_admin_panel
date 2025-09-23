@@ -189,6 +189,31 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
+  Products? _product;
+
+  Products? get product => _product;
+
+  Future<void> getProductDetail({required String productId}) async {
+    _isFetching = true;
+    notifyListeners();
+    try {
+      final url = "${ApiConfig.productsUrl}/$productId.json";
+
+      final response = await _service.callGetMethod(
+        context: navigatorKey.currentContext!,
+        url: url,
+      );
+      if (globalStatusCode == 200) {
+        _product = Products.fromJson(json.decode(response));
+      }
+    } catch (e) {
+      debugPrint("⚠️ Unexpected Error: $e");
+    } finally {
+      _isFetching = false;
+      notifyListeners();
+    }
+  }
+
   int _totalProductCount = 0;
 
   int get totalProductCount => _totalProductCount;
