@@ -173,7 +173,7 @@ class ProductProvider with ChangeNotifier {
 
     try {
       final url = limit != null
-          ? '${ApiConfig.productsUrl}?limit=$limit'
+          ? '${ApiConfig.productsUrl}?limit=$limit&order=updated_at+desc'
           :'${ApiConfig.productsUrl}?order=created_at+desc';
 
       final response = await callGETMethod(url: url);

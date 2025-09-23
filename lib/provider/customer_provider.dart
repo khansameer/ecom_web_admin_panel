@@ -67,14 +67,7 @@ class CustomerProvider with ChangeNotifier {
     if (globalStatusCode == 200) {
 
       _customerModel = CustomerModel.fromJson(json.decode(response));
-      //final customer = _customerModel?.customers ?? [];
 
-     /* await Future.wait(customer.map((customer) async {
-        customer.avatarUrl ??= await fetchCustomerImage(
-            customerID: customer.id ?? 0,
-            service: _service,
-          );
-      }));*/
       _isFetching = false;
       notifyListeners();
     }

@@ -91,7 +91,7 @@ class OrdersProvider with ChangeNotifier {
 
     try {
       final url = limit != null
-          ? '${ApiConfig.ordersUrl}?limit=$limit'
+          ? '${ApiConfig.ordersUrl}?limit=$limit&order=updated_at+desc'
           :'${ApiConfig.ordersUrl}?order=updated_at+desc';
 
       final response = await callGETMethod(url: url);

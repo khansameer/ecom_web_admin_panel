@@ -24,6 +24,7 @@ class _ProductPageState extends State<ProductPage> {
     super.initState();
     init();
   }
+  final ScrollController _scrollController = ScrollController();
 
   Future<void> init() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
