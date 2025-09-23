@@ -17,8 +17,8 @@ import 'package:provider/provider.dart';
 
 import '../../feature/order_details/order_common_widget.dart';
 import '../../service/api_config.dart';
-import '../../service/api_services.dart';
 import '../../service/gloable_status_code.dart';
+import '../../service/network_repository.dart';
 import 'common_dropdown.dart';
 
 String generateUniqueId() {
@@ -713,6 +713,28 @@ Future<bool?> showCommonDialog({
 Widget showLoaderList() {
   return Center(
     child: Container(
+
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [colorLogo, colorLogo],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+      ),
+      padding: const EdgeInsets.all(17),
+      child: SizedBox(
+        height: 40,
+        width: 40,
+        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+      ),
+    ),
+  );
+}
+Widget showLoaderList11() {
+  return Center(
+    child: Container(
+
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [colorLogo, colorLogo],
@@ -1139,11 +1161,10 @@ String removeHtmlTags(String htmlString) {
 Future<String?> fetchProductImage({
   required int productId,
   required int variantId,
-  required ApiService service,
 }) async {
   final url = '${ApiConfig.getImageUrl}/$productId.json';
-  final response = await service.callGetMethod(
-    context: navigatorKey.currentContext!,
+  final response = await callGETMethod(
+
     url: url,
   );
   if (globalStatusCode == 200) {
@@ -1177,17 +1198,14 @@ Future<String?> fetchProductImage({
 
 Future<String?> fetchCustomerImage({
   required int customerID,
-  required ApiService service,
 }) async {
   final url = '${ApiConfig.getCustomerImage}/$customerID.json';
-  final response = await service.callGetMethod(
-    context: navigatorKey.currentContext!,
+  final response = await callGETMethod(
+
     url: url,
   );
   if (globalStatusCode == 200) {
     final data = json.decode(response);
-
-    print('-----------------${data}');
     final customer = data['customer'];
     if (customer != null && customer['avatar'] != null) {
       return customer['avatar'] as String;

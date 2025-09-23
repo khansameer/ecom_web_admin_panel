@@ -31,15 +31,15 @@ class _ProductPageState extends State<ProductPage> {
         navigatorKey.currentContext!,
         listen: false,
       );
-
-      postMdl.getProductList(limit: null);
+      postMdl.clearProductData();
+      postMdl.getProductList(limit: null,context: context);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<ProductProvider,InternetProvider>(
-      builder: (context, provider,internetProvider, child) {
+    return Consumer<ProductProvider>(
+      builder: (context, provider, child) {
         return Stack(
           children: [
             Column(
@@ -66,7 +66,6 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                       onPressed: () {
                         final filters = [
-
                           FilterItem(
                             label: "Status",
                             options: ["All", "Active", "Draft"],
@@ -148,16 +147,16 @@ class _ProductPageState extends State<ProductPage> {
                             );
                           },
                         )
-                      : Container(
+                      :  provider.filteredProducts?.length==0?Container(
                           color: Colors.white12,
                           child: Center(
                             child: commonText(text: "Product not found..."),
                           ),
-                        ),
+                        ):SizedBox.shrink(),
                 ),
               ],
             ),
-            provider.isFetching ? showLoaderList() : SizedBox.shrink(),
+       //     provider.isFetching ? showLoaderList() : SizedBox.shrink(),
           ],
         );
       },

@@ -5,11 +5,10 @@ import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/models/order_details_model.dart';
 import 'package:neeknots/models/order_model.dart';
 import 'package:neeknots/service/gloable_status_code.dart';
+import 'package:neeknots/service/network_repository.dart';
 
-import '../main.dart';
 import '../models/order_details_model.dart' as orderDetails;
 import '../service/api_config.dart';
-import '../service/api_services.dart';
 
 class OrdersProvider with ChangeNotifier {
   Color getStatusColor(String status) {
@@ -58,7 +57,6 @@ class OrdersProvider with ChangeNotifier {
     //_applyFilters();
   }
 
-  final _service = ApiService();
   bool _isFetching = false;
 
   bool get isFetching => _isFetching;
@@ -94,12 +92,9 @@ class OrdersProvider with ChangeNotifier {
     try {
       final url = limit != null
           ? '${ApiConfig.ordersUrl}?limit=$limit'
-          : ApiConfig.ordersUrl;
+          :'${ApiConfig.ordersUrl}?order=updated_at+desc';
 
-      final response = await _service.callGetMethod(
-        context: navigatorKey.currentContext!,
-        url: url,
-      );
+      final response = await callGETMethod(url: url);
       _orderModel = OrderModel.fromJson(json.decode(response));
 
       final orders = _orderModel?.orders ?? [];
@@ -111,7 +106,6 @@ class OrdersProvider with ChangeNotifier {
               item.imageUrl = await fetchProductImage(
                 productId: item.productId ?? 0,
                 variantId: item.variantId ?? 0,
-                service: _service,
               );
             }),
           ),
@@ -139,10 +133,7 @@ class OrdersProvider with ChangeNotifier {
     _isFetching = true;
     notifyListeners();
 
-    final response = await _service.callGetMethod(
-      context: navigatorKey.currentContext!,
-      url: ApiConfig.totalOrderUrl,
-    );
+    final response = await callGETMethod(url: ApiConfig.totalOrderUrl);
 
     if (globalStatusCode == 200) {
       final data = json.decode(response);
@@ -174,8 +165,7 @@ class OrdersProvider with ChangeNotifier {
     final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
 
-    final response = await _service.callGetMethod(
-      context: navigatorKey.currentContext!,
+    final response = await callGETMethod(
       url:
           '${ApiConfig.totalOrderUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax',
     );
@@ -203,10 +193,7 @@ class OrdersProvider with ChangeNotifier {
     try {
       final url = '${ApiConfig.getOrderById}/$orderID.json';
 
-      final response = await _service.callGetMethod(
-        context: navigatorKey.currentContext!,
-        url: url,
-      );
+      final response = await callGETMethod(url: url);
 
       _orderDetailsModel = orderDetails.OrderDetailsModel.fromJson(
         json.decode(response),
@@ -238,8 +225,6 @@ class OrdersProvider with ChangeNotifier {
         item.imageUrl = await fetchProductImage(
           productId: item.productId ?? 0,
           variantId: item.id ?? 0,
-          service:
-              _service, // if your fetchProductImage needs the service instance
         );
       }),
     );
@@ -271,14 +256,14 @@ class OrdersProvider with ChangeNotifier {
     final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
 
-    final response = await _service.callGetMethod(
-      context: navigatorKey.currentContext!,
+    final response = await callGETMethod(
       url:
           '${ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax',
     );
 
     if (globalStatusCode == 200) {
       _orderModelByDate = OrderModel.fromJson(json.decode(response));
+
       _totalOrderPrice = getTotalOrderPrice(_orderModelByDate ?? OrderModel());
       _isFetching = false;
       notifyListeners();
@@ -301,7 +286,6 @@ class OrdersProvider with ChangeNotifier {
 
     return total;
   }
-
 
   //===============================================Graph
   String _selectedRange = "Today";
@@ -347,6 +331,7 @@ class OrdersProvider with ChangeNotifier {
     getOrderByDate(startDate: startDate, endDate: endDate);
   }
 }
+
 class SalesData {
   final String orderNumber;
   final double totalPrice;

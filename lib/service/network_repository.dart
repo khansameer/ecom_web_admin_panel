@@ -41,13 +41,13 @@ Future callPatchMethod(String url, Map<String, dynamic> body) async {
 
 Future callPostMethodWithToken({
   required String url,
-  required Map<String, dynamic> params,
+  required Map<String, dynamic> body,
   Map<String, String>? headers,
 }) async {
   return await http
       .post(
         Uri.parse(url),
-        body: utf8.encode(json.encode(params)),
+        body: utf8.encode(json.encode(body)),
         headers: headers ?? commonHeadersToken,
       )
       .then((http.Response response) {

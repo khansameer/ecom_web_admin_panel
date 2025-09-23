@@ -181,12 +181,7 @@ _commonDashboardView({
             color: provider.isDark ? Colors.white : colorText,
           ),
 
-          /*  commonText(
-            text: subtitle,
-            fontSize: 12,
-            color: provider.isDark ? Colors.white : colorTextDesc,
-          ),
-          const SizedBox(height: 8),*/
+
           AnimatedCounter(
             leftText: leftText,
             rightText: rightText?.isNotEmpty == true ? rightText : '',
@@ -216,7 +211,7 @@ _commonDashboardView({
   );
 }
 
-homeGraphView() {
+homeGraphView({required bool isSaleDetails}) {
   return Consumer2<ThemeProvider, OrdersProvider>(
     builder: (context, themeProvider, orderProvider, child) {
       final data = orderProvider.orderModelByDate?.orders ?? [];
@@ -230,7 +225,7 @@ homeGraphView() {
         margin: EdgeInsets.all(5),
         child: Column(
           children: [
-            Row(
+            isSaleDetails?SizedBox.shrink(): Row(
               children: [
                 Expanded(
                   child: commonText(
@@ -241,7 +236,7 @@ homeGraphView() {
                 ),
 
                 Spacer(),
-                Expanded(
+             Expanded(
                   child: SizedBox(
                     height: 45,
                     child: CommonDropdown(
@@ -261,6 +256,8 @@ homeGraphView() {
                 ),
               ],
             ),
+
+
             Flexible(
               child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {
@@ -319,6 +316,13 @@ homeGraphView() {
                         color: Colors.orange.withValues(alpha: 0.3),
                         borderColor: Colors.orange,
                         borderWidth: 2,
+
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                        width: 0.5,   // bar thickness (0.5 = 50% of available slot)
+                        spacing: 0.2, // gap between bars
                         markerSettings: const MarkerSettings(
                           isVisible: true,
                           height: 6,
@@ -329,7 +333,14 @@ homeGraphView() {
                         dataSource: chartData,
                         xValueMapper: (SalesData sales, _) => sales.orderNumber,
                         yValueMapper: (SalesData sales, _) => sales.totalPrice,
-                        dataLabelSettings: DataLabelSettings(isVisible: true),
+
+                        dataLabelSettings: DataLabelSettings(isVisible: true,  textStyle: commonTextStyle(
+                          fontWeight: FontWeight.w600, // ✅ Bold
+                          fontSize: 12,               // optional size
+                          color: colorTextDesc1,        // or Colors.white in dark mode
+                        ),),
+                        dataLabelMapper: (SalesData sales, _) =>
+                        "$rupeeIcon${sales.totalPrice.toStringAsFixed(0)}",
                       ),
                     ],
                   );

@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
   redirectToIntro() {
     Timer(const Duration(seconds: 3), () async {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        RouteName.dashboardScreen,
+        RouteName.loginScreen,
         (Route<dynamic> route) => false,
       );
     });

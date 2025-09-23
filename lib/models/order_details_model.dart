@@ -21,6 +21,8 @@ class OrderData {
   String? name;
   String? email;
   String? createdAt;
+  String? financialStatus;
+  String? fulfillmentStatus;
   String? currency;
   String? currentTotalPrice;
   Customer? customer;
@@ -35,6 +37,8 @@ class OrderData {
     this.createdAt,
     this.currency,
     this.currentTotalPrice,
+    this.financialStatus,
+    this.fulfillmentStatus,
     this.customer,
     this.lineItems,
     this.shippingAddress,
@@ -46,6 +50,8 @@ class OrderData {
       id: json['id'],
       name: json['name'],
       email: json['email'],
+      financialStatus: json['financial_status'],
+      fulfillmentStatus: json['fulfillment_status'],
       createdAt: json['created_at'],
       currency: json['currency'],
       currentTotalPrice: json['current_total_price'],
@@ -64,7 +70,9 @@ class OrderData {
       'name': name,
       'email': email,
       'created_at': createdAt,
+      'financial_status': financialStatus,
       'currency': currency,
+      'fulfillment_status': fulfillmentStatus,
       'current_total_price': currentTotalPrice,
       'customer': customer?.toJson(),
       'line_items': lineItems?.map((x) => x.toJson()).toList(),

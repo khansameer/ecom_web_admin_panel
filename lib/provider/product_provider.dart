@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:neeknots/main.dart';
 import 'package:neeknots/models/product_model.dart';
 
 import '../core/component/component.dart';
 import '../service/api_config.dart';
-import '../service/api_services.dart';
+
 import '../service/gloable_status_code.dart';
+import '../service/network_repository.dart';
 
 class ProductProvider with ChangeNotifier {
   var tetName = TextEditingController();
@@ -43,13 +43,9 @@ class ProductProvider with ChangeNotifier {
         _searchQuery.toLowerCase(),
       );
 
-      /*    final matchesCategory =
-          _selectedCategory == "All" || p.status == _selectedCategory;
-*/
       final matchesStatus =
           _selectedStatus == "All" || p.status == _selectedStatus;
 
-      //return matchesSearch && matchesCategory && matchesStatus;
       return matchesSearch && matchesStatus;
     }).toList();
   }
@@ -152,7 +148,6 @@ class ProductProvider with ChangeNotifier {
 
   //--------------------------------------------------------------API Calling -----------------------------------------------------
 
-  final _service = ApiService();
   bool _isFetching = false;
   bool _isImageUpdating = false;
 
@@ -164,22 +159,29 @@ class ProductProvider with ChangeNotifier {
 
   ProductModel? get productModel => _productModel;
 
-  Future<void> getProductList({int? limit}) async {
+  clearProductData() {
+    _productModel = null;
+    notifyListeners();
+  }
+
+  Future<void> getProductList({
+    int? limit,
+    required BuildContext context,
+  }) async {
     _isFetching = true;
     notifyListeners();
 
     try {
       final url = limit != null
           ? '${ApiConfig.productsUrl}?limit=$limit'
-          : ApiConfig.productsUrl;
+          :'${ApiConfig.productsUrl}?order=created_at+desc';
 
-      final response = await _service.callGetMethod(
-        context: navigatorKey.currentContext!,
-        url: url,
-      );
+      final response = await callGETMethod(url: url);
+
       if (globalStatusCode == 200) {
         _productModel = ProductModel.fromJson(json.decode(response));
-        print('======${_productModel?.products?.length}');
+
+        notifyListeners();
       }
     } catch (e) {
       debugPrint("⚠️ Unexpected Error: $e");
@@ -199,10 +201,7 @@ class ProductProvider with ChangeNotifier {
     try {
       final url = "${ApiConfig.getImageUrl}/$productId.json";
 
-      final response = await _service.callGetMethod(
-        context: navigatorKey.currentContext!,
-        url: url,
-      );
+      final response = await callGETMethod(url: url);
       if (globalStatusCode == 200) {
         _product = Products.fromJson(json.decode(response));
       }
@@ -221,10 +220,7 @@ class ProductProvider with ChangeNotifier {
   Future<void> getTotalProductCount() async {
     _isFetching = true;
     notifyListeners();
-    final response = await _service.callGetMethod(
-      context: navigatorKey.currentContext!,
-      url: ApiConfig.totalProductUrl,
-    );
+    final response = await callGETMethod(url: ApiConfig.totalProductUrl);
 
     if (globalStatusCode == 200) {
       final data = json.decode(response);
@@ -249,8 +245,6 @@ class ProductProvider with ChangeNotifier {
         item.imageUrl = await fetchProductImage(
           productId: item.productId ?? 0,
           variantId: item.id ?? 0,
-          service:
-              _service, // if your fetchProductImage needs the service instance
         );
       }),
     );
@@ -274,17 +268,28 @@ class ProductProvider with ChangeNotifier {
     final base64Image = base64Encode(bytes);
 
     //Acapulco Dress-Navy
-    final response = await _service.callPostMethodApiWithToken(
+    final response = await callPostMethodWithToken(
       body: {
         "image": {"attachment": base64Image},
       },
       url: urlString,
-      context: navigatorKey.currentContext!,
     );
 
     if (globalStatusCode == 200) {
       final data = json.decode(response);
       final imageJson = data["image"];
+      /*   if (imageJson != null) {
+        final newImage = Images.fromJson(imageJson);
+
+        // Add to list and refresh UI
+        productImages.add(newImage);
+
+        // Optional: jump to the newly added image
+        setCurrentIndex(productImages.length - 1);
+
+        _isImageUpdating = false;
+        notifyListeners();
+      }*/
       if (imageJson != null) {
         // Convert JSON → Images model
         final newImage = Images.fromJson(imageJson);
@@ -306,15 +311,17 @@ class ProductProvider with ChangeNotifier {
   }) async {
     final urlString =
         "${ApiConfig.baseUrl}/products/$productId/images/$imageId.json";
-    print(urlString);
 
-    final response = await _service.callDeleteMethods(
-      url: urlString,
-      context: navigatorKey.currentContext!,
-    );
+      await callDeleteMethod(url: urlString);
 
     if (globalStatusCode == 200) {
-      print("delete image response:- $response");
+      // Remove image from local list
+      productImages.removeWhere((img) => img.id == imageId);
+
+      // Adjust currentIndex if needed
+      if (currentIndex >= productImages.length && currentIndex > 0) {
+        setCurrentIndex(productImages.length - 1); // ✅ Correct
+      }
     }
   }
 }

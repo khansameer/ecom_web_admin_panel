@@ -147,7 +147,7 @@ customerProductInfo({required Customer customer}) {
                               vertical: 3,
                             ),
                             child: commonText(
-                              text: "Paid",
+                              text: provider.orderDetailsModel?.orderData?.financialStatus.toString().toCapitalize()??'',
                               fontSize: 10,
 
                               fontWeight: FontWeight.w600,
@@ -155,15 +155,16 @@ customerProductInfo({required Customer customer}) {
                           ),
                         ),
                         Container(
-                          decoration: commonBoxDecoration(color: colorBorder),
+                          decoration: commonBoxDecoration(color: provider.orderDetailsModel?.orderData?.fulfillmentStatus!=null?Colors.green.withValues(alpha: 0.1):Colors.amber.withValues(alpha: 0.1)),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12.0,
                             vertical: 3,
                           ),
                           child: commonText(
-                            text: "Fulfilled",
+                            text: provider.orderDetailsModel?.orderData?.fulfillmentStatus!=null ?provider.orderDetailsModel?.orderData?.fulfillmentStatus.toString().toCapitalize()??'':"Unfulfilled",
                             fontSize: 10,
 
+                            color: provider.orderDetailsModel?.orderData?.fulfillmentStatus!=null?Colors.green:Colors.amber,
                             fontWeight: FontWeight.w600,
                           ),
                         ),

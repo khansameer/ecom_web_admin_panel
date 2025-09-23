@@ -47,81 +47,96 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Consumer2<DashboardProvider, ThemeProvider>(
       builder: (context, provider, themeProvider, child) {
-        return commonScaffold(
-          backgroundColor: themeProvider.isDark
-              ? colorDarkBgColor
-              : Colors.white,
-          appBar: commonAppBar(
-            backgroundColor: themeProvider.isDark
-                ? colorDarkBgColor
-                : colorLogo,
+        return Stack(
+          children: [
 
-            centerTitle: true,
-            actions: [notificationWidget(), SizedBox(width: 16)],
-            title: provider.appbarTitle ?? "Home",
-            context: context,
-            leading: Container(
-              padding: EdgeInsets.only(left: 16),
 
-              child: commonInkWell(
-                onTap: () => provider.setIndex(4),
-                child: Center(
-                  child: commonCircleAssetImage(
-                    borderColor: Colors.white,
-                    borderWidth: 2,
-                    icDummyUser,
-                    size: 40,
+            commonScaffold(
+
+              backgroundColor: themeProvider.isDark
+                  ? colorDarkBgColor
+                  : Colors.white,
+              appBar: commonAppBar(
+                backgroundColor: themeProvider.isDark
+                    ? colorDarkBgColor
+                    : colorLogo,
+
+                centerTitle: true,
+                actions: [notificationWidget(), SizedBox(width: 16)],
+                title: provider.appbarTitle ?? "Home",
+                context: context,
+                leading: Container(
+                  padding: EdgeInsets.only(left: 16),
+
+                  child: commonInkWell(
+                    onTap: () => provider.setIndex(4),
+                    child: Center(
+                      child: commonCircleAssetImage(
+                        borderColor: Colors.white,
+                        borderWidth: 2,
+                        icDummyUser,
+                        size: 40,
+                      ),
+                    ),
                   ),
                 ),
               ),
+
+              body: getPage(provider.currentIndex),
+
+              // 👈 only current page
+              bottomNavigationBar: CommonBottomNavBar(
+                currentIndex: provider.currentIndex,
+                onTap: (index) {
+                  provider.setIndex(index);
+
+                  switch (index) {
+                    case 0: // Product
+                      context.read<OrdersProvider>().resetFilters();
+                      context.read<CustomerProvider>().reset();
+                      context.read<ProfileProvider>().resetState();
+                      break;
+                    case 1: // Order
+                      context.read<ProductProvider>().reset();
+                      context.read<CustomerProvider>().reset();
+                      context.read<ProfileProvider>().resetState();
+                      break;
+                    case 2: // Home
+                      context.read<ProductProvider>().reset();
+                      context.read<OrdersProvider>().resetFilters();
+                      context.read<CustomerProvider>().reset();
+                      context.read<ProfileProvider>().resetState();
+                      break;
+                    case 3: // Customer
+                      context.read<ProductProvider>().reset();
+                      context.read<OrdersProvider>().resetFilters();
+                      context.read<ProfileProvider>().resetState();
+                      break;
+                    case 4: // Account
+                      context.read<ProductProvider>().reset();
+                      context.read<OrdersProvider>().resetFilters();
+                      context.read<CustomerProvider>().reset();
+                      break;
+                  }
+
+                  if (index == 0) provider.setAppBarTitle("Products");
+                  if (index == 1) provider.setAppBarTitle("Orders");
+                  if (index == 2) provider.setAppBarTitle("Home");
+                  if (index == 3) provider.setAppBarTitle("Customers");
+                  if (index == 4) provider.setAppBarTitle("Account");
+                },
+                items: BottomNavItems.items,
+              ),
             ),
-          ),
 
-          body: getPage(provider.currentIndex),
-
-          // 👈 only current page
-          bottomNavigationBar: CommonBottomNavBar(
-            currentIndex: provider.currentIndex,
-            onTap: (index) {
-              provider.setIndex(index);
-
-              switch (index) {
-                case 0: // Product
-                  context.read<OrdersProvider>().resetFilters();
-                  context.read<CustomerProvider>().reset();
-                  context.read<ProfileProvider>().resetState();
-                  break;
-                case 1: // Order
-                  context.read<ProductProvider>().reset();
-                  context.read<CustomerProvider>().reset();
-                  context.read<ProfileProvider>().resetState();
-                  break;
-                case 2: // Home
-                  context.read<ProductProvider>().reset();
-                  context.read<OrdersProvider>().resetFilters();
-                  context.read<CustomerProvider>().reset();
-                  context.read<ProfileProvider>().resetState();
-                  break;
-                case 3: // Customer
-                  context.read<ProductProvider>().reset();
-                  context.read<OrdersProvider>().resetFilters();
-                  context.read<ProfileProvider>().resetState();
-                  break;
-                case 4: // Account
-                  context.read<ProductProvider>().reset();
-                  context.read<OrdersProvider>().resetFilters();
-                  context.read<CustomerProvider>().reset();
-                  break;
-              }
-
-              if (index == 0) provider.setAppBarTitle("Products");
-              if (index == 1) provider.setAppBarTitle("Orders");
-              if (index == 2) provider.setAppBarTitle("Home");
-              if (index == 3) provider.setAppBarTitle("Customers");
-              if (index == 4) provider.setAppBarTitle("Account");
-            },
-            items: BottomNavItems.items,
-          ),
+            context.watch<ProductProvider>().isFetching ||   context.watch<OrdersProvider>().isFetching
+                ? Container(
+               color:  Colors.black.withValues(alpha: 0.01),
+                width: MediaQuery.sizeOf(context).width,
+                height: MediaQuery.sizeOf(context).height,
+                child: showLoaderList11())
+                : SizedBox.shrink(),
+          ],
         );
       },
     );

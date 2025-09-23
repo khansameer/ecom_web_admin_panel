@@ -151,7 +151,7 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ],
             ),
-            provider.isFetching ? showLoaderList() : SizedBox.shrink(),
+         //   provider.isFetching ? showLoaderList() : SizedBox.shrink(),
           ],
         );
       },

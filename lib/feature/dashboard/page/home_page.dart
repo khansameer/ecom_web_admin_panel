@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
       DateTime startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
       DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
       await Future.wait([
-        productProvider.getProductList(limit: 5),
+        productProvider.getProductList(limit: 5,context: context),
         productProvider.getTotalProductCount(),
         orderProvider.getOrderList(limit: 5),
         customerProvider.getTotalCustomerCount(),
@@ -50,7 +50,6 @@ class _HomePageState extends State<HomePage> {
         orderProvider.getTotalSaleOrder(startDate: startDate, endDate: endDate),
         orderProvider.getOrderByDate(startDate: startDate, endDate: endDate),
       ]);
-      //orderProvider.fetchTodayOrders();
     } catch (e) {
       print("Error: $e");
     }
@@ -76,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                       totalSaleOrder: orderProvider.totalOrderSaleCount,
                     ),
                     SizedBox(height: 24),
-                    SizedBox(height: 300, child: homeGraphView()),
+                    SizedBox(height: 300, child: homeGraphView(isSaleDetails: false)),
                     SizedBox(height: 24),
                     Consumer<DashboardProvider>(
                       builder: (context, provider, child) {
@@ -100,9 +99,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                orderProvider.isFetching || productProvider.isFetching
+               // showLoaderList11(),
+               /* orderProvider.isFetching || productProvider.isFetching
                     ? showLoaderList()
-                    : SizedBox.shrink(),
+                    : SizedBox.shrink(),*/
               ],
             );
           },

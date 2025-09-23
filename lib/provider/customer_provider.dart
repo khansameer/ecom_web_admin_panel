@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:neeknots/models/customer_model.dart';
 
-import '../core/component/component.dart';
-import '../main.dart';
 import '../service/api_config.dart';
-import '../service/api_services.dart';
 import '../service/gloable_status_code.dart';
+import '../service/network_repository.dart';
 
 class CustomerProvider with ChangeNotifier {
   Color getStatusColor(String status) {
@@ -26,7 +24,6 @@ class CustomerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  final _service = ApiService();
   bool _isFetching = false;
 
   bool get isFetching => _isFetching;
@@ -37,8 +34,8 @@ class CustomerProvider with ChangeNotifier {
   Future<void> getTotalCustomerCount() async {
     _isFetching = true;
     notifyListeners();
-    final response = await _service.callGetMethod(
-      context: navigatorKey.currentContext!,
+    final response = await callGETMethod(
+
       url: ApiConfig.totalCustomerUrl,
     );
 
@@ -62,9 +59,9 @@ class CustomerProvider with ChangeNotifier {
   Future<void> getCustomerList() async {
     _isFetching = true;
     notifyListeners();
-    final response = await _service.callGetMethod(
-      context: navigatorKey.currentContext!,
-      url: ApiConfig.customerUrl,
+    final response = await callGETMethod(
+
+      url: '${ApiConfig.customerUrl}?order=updated_at+desc',
     );
 
     if (globalStatusCode == 200) {
