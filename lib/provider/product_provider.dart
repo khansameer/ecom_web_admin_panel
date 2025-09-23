@@ -157,9 +157,8 @@ class ProductProvider with ChangeNotifier {
   bool _isImageUpdating = false;
 
   bool get isFetching => _isFetching;
+
   bool get isImageUpdating => _isImageUpdating;
-
-
 
   ProductModel? _productModel;
 
@@ -180,6 +179,7 @@ class ProductProvider with ChangeNotifier {
       );
       if (globalStatusCode == 200) {
         _productModel = ProductModel.fromJson(json.decode(response));
+        print('======${_productModel?.products?.length}');
       }
     } catch (e) {
       debugPrint("⚠️ Unexpected Error: $e");
@@ -197,7 +197,7 @@ class ProductProvider with ChangeNotifier {
     _isFetching = true;
     notifyListeners();
     try {
-      final url = "${ApiConfig.productsUrl}/$productId.json";
+      final url = "${ApiConfig.getImageUrl}/$productId.json";
 
       final response = await _service.callGetMethod(
         context: navigatorKey.currentContext!,

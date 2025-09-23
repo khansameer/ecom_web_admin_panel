@@ -32,7 +32,7 @@ class _ProductPageState extends State<ProductPage> {
         listen: false,
       );
 
-      postMdl.getProductList();
+      postMdl.getProductList(limit: null);
     });
   }
 
@@ -66,12 +66,7 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                       onPressed: () {
                         final filters = [
-                          /*FilterItem(
-                            label: "Category",
-                            options: ["All", "Dresses", "Tops", "Shirts"],
-                            selectedValue:
-                                provider.selectedCategory, // 👈 provider से लो
-                          ),*/
+
                           FilterItem(
                             label: "Status",
                             options: ["All", "Active", "Draft"],

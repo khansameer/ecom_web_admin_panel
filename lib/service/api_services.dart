@@ -6,6 +6,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:neeknots/service/network_repository.dart';
 
 import '../main.dart';
+import 'api_config.dart';
 
 class ApiService {
   Future<bool> checkInternetConnection() async {
@@ -95,7 +96,11 @@ class ApiService {
     var response = await callPatchMethod(url, body);
     return response;
   }
-
+  Map<String, String> commonHeadersToken = {
+    'Content-Type': 'application/json',
+    'accept': '*/*',
+    "X-Shopify-Access-Token": ApiConfig.accessToken,
+  };
   Future<String> callGetMethod({
     required String url,
     String? key,
