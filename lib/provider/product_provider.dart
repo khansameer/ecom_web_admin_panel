@@ -196,14 +196,16 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
     try {
       final url = "${ApiConfig.productsUrl}/$productId.json";
+      print("detail url:- $url");
 
       final response = await _service.callGetMethod(
         context: navigatorKey.currentContext!,
         url: url,
       );
       if (globalStatusCode == 200) {
-        _product = Products.fromJson(json.decode(response));
+        ///_product = Products.fromJson(json.decode(response));
       }
+      print("detail response:-  $response");
     } catch (e) {
       debugPrint("⚠️ Unexpected Error: $e");
     } finally {
