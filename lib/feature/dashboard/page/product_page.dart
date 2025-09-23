@@ -30,6 +30,7 @@ class _ProductPageState extends State<ProductPage> {
         navigatorKey.currentContext!,
         listen: false,
       );
+      
       postMdl.getProductList();
     });
   }

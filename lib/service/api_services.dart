@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -8,7 +10,6 @@ import '../main.dart';
 class ApiService {
   Future<bool> checkInternetConnection() async {
     var connectivityResults = await Connectivity().checkConnectivity();
-
     if (connectivityResults.contains(ConnectivityResult.none)) {
       return false;
     }
@@ -100,20 +101,37 @@ class ApiService {
     String? key,
     required BuildContext context,
   }) async {
-    bool isConnected = await checkInternetConnection();
+    try {
+      final isNetwork = await checkInternetConnection();
+      if (!isNetwork) {
+        rootScaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(content: Text("No internet connection")),
+        );
+        throw const SocketException("No internet connection");
+      }
+      final response = await callGETMethod(url: url, key: key);
 
-    if (!isConnected) {
-      rootScaffoldMessengerKey.currentState?.showSnackBar(
-        const SnackBar(content: Text("No internet connection")),
-      );
-      return "No internet connection";
+      return response;
+    } on SocketException catch (e) {
+      rethrow;
+    } on HttpException catch (e) {
+      rethrow;
+    } catch (e) {
+      rethrow;
     }
-    // Start stopwatch before API call
+    // bool isConnected = await checkInternetConnection();
+    // if (!isConnected) {
+    //   rootScaffoldMessengerKey.currentState?.showSnackBar(
+    //     const SnackBar(content: Text("No internet connection")),
+    //   );
+    //   return "No internet connection";
+    // }
+    // // Start stopwatch before API call
 
-    var response = await callGETMethod(url: url, key: key);
-    // Stop stopwatch after API call
+    // var response = await callGETMethod(url: url, key: key);
+    // // Stop stopwatch after API call
 
-    return response;
+    // return response;
   }
 
   Future<String> callDeleteMethods({

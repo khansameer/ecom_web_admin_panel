@@ -10,17 +10,16 @@ import '../service/api_config.dart';
 import '../service/api_services.dart';
 import '../service/gloable_status_code.dart';
 
-
 class ProductProvider with ChangeNotifier {
   var tetName = TextEditingController();
   var tetDesc = TextEditingController();
   var tetQty = TextEditingController();
   var tetPrice = TextEditingController();
 
+  //Girish - 23-sept
+  List<Images> productImages = [];
 
   int _currentIndex = 0;
-
-
 
   int get currentIndex => _currentIndex;
 
@@ -155,8 +154,11 @@ class ProductProvider with ChangeNotifier {
 
   final _service = ApiService();
   bool _isFetching = false;
+  bool _isImageUpdating = false;
 
   bool get isFetching => _isFetching;
+  bool get isImageUpdating => _isImageUpdating;
+
   ProductModel? _productModel;
 
   ProductModel? get productModel => _productModel;
@@ -164,45 +166,25 @@ class ProductProvider with ChangeNotifier {
   Future<void> getProductList({int? limit}) async {
     _isFetching = true;
     notifyListeners();
-    final url = limit != null
-        ? '${ApiConfig.productsUrl}?limit=$limit'
-        : ApiConfig.productsUrl;
 
-    final response = await _service.callGetMethod(
-      context: navigatorKey.currentContext!,
-      url: url,
-    );
+    try {
+      final url = limit != null
+          ? '${ApiConfig.productsUrl}?limit=$limit'
+          : ApiConfig.productsUrl;
 
-    if (globalStatusCode == 200) {
-      _productModel = ProductModel.fromJson(json.decode(response));
-
+      final response = await _service.callGetMethod(
+        context: navigatorKey.currentContext!,
+        url: url,
+      );
+      if (globalStatusCode == 200) {
+        _productModel = ProductModel.fromJson(json.decode(response));
+      }
+    } catch (e) {
+      debugPrint("⚠️ Unexpected Error: $e");
+    } finally {
       _isFetching = false;
       notifyListeners();
     }
-
-    _isFetching = false;
-    notifyListeners();
-  }
-  Future<void> getProductList11({int? limit}) async {
-    _isFetching = true;
-    notifyListeners();
-    final url = limit != null
-        ? '${ApiConfig.productsUrl}?limit=$limit'
-        : ApiConfig.productsUrl;
-
-    final response = await _service.callGetMethod(
-      context: navigatorKey.currentContext!,
-      url: url,
-    );
-
-    if (globalStatusCode == 200) {
-     /* _productModel = ProductModel.fromJson(json.decode(response));
-      _isFetching = false;*/
-      notifyListeners();
-    }
-
-    _isFetching = false;
-    notifyListeners();
   }
 
   int _totalProductCount = 0;
@@ -218,7 +200,6 @@ class ProductProvider with ChangeNotifier {
     );
 
     if (globalStatusCode == 200) {
-
       final data = json.decode(response);
 
       _totalProductCount = data["count"] ?? 0;
@@ -229,6 +210,7 @@ class ProductProvider with ChangeNotifier {
     _isFetching = false;
     notifyListeners();
   }
+
   Future<void> fetchImagesForProduct(Products product) async {
     if (product.variants == null) return;
 
@@ -240,7 +222,8 @@ class ProductProvider with ChangeNotifier {
         item.imageUrl = await fetchProductImage(
           productId: item.productId ?? 0,
           variantId: item.id ?? 0,
-          service: _service, // if your fetchProductImage needs the service instance
+          service:
+              _service, // if your fetchProductImage needs the service instance
         );
       }),
     );
@@ -249,8 +232,14 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> uploadProductImage({required String imagePath}) async {
-    final urlString = "${ApiConfig.baseUrl}/products/7313811701951/images.json";
+  Future<void> uploadProductImage({
+    required String imagePath,
+    required int productId,
+  }) async {
+    _isImageUpdating = true;
+    notifyListeners();
+
+    final urlString = "${ApiConfig.baseUrl}/products/$productId/images.json";
     // read as bytes
     final bytes = await File(imagePath).readAsBytes();
 
@@ -266,8 +255,39 @@ class ProductProvider with ChangeNotifier {
       context: navigatorKey.currentContext!,
     );
 
-    print("Upload response:- $response");
+    if (globalStatusCode == 200) {
+      final data = json.decode(response);
+      final imageJson = data["image"];
+      if (imageJson != null) {
+        // Convert JSON → Images model
+        final newImage = Images.fromJson(imageJson);
+
+        productImages.add(newImage);
+        _isImageUpdating = false;
+        notifyListeners(); // ✅ UI refresh
+      }
+    } else {
+      _isImageUpdating = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteProductImage({
+    required int imageId,
+    required int productId,
+    required ProductProvider provider,
+  }) async {
+    final urlString =
+        "${ApiConfig.baseUrl}/products/$productId/images/$imageId.json";
+    print(urlString);
+
+    final response = await _service.callDeleteMethods(
+      url: urlString,
+      context: navigatorKey.currentContext!,
+    );
+
+    if (globalStatusCode == 200) {
+      print("delete image response:- $response");
+    }
   }
 }
-
-
