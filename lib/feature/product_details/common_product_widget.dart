@@ -21,6 +21,8 @@ commonBannerView({
   final themeProvider = Provider.of<ThemeProvider>(
     navigatorKey.currentContext!,
   );
+  print("image ${images.length}");
+
   return images.isNotEmpty
       ? Column(
           children: [
@@ -28,7 +30,7 @@ commonBannerView({
               options: CarouselOptions(
                 height: 360.0,
                 enlargeCenterPage: false,
-                autoPlay: true,
+                autoPlay: false,
                 aspectRatio: 16 / 9,
                 autoPlayCurve: Curves.fastOutSlowIn,
                 enableInfiniteScroll: true,
@@ -65,7 +67,7 @@ commonBannerView({
                                 showCommonDialog(
                                   onPressed: () {
                                     Navigator.pop(context);
-                                    
+
                                     provider.deleteProductImage(
                                       imageId: img.id ?? 0,
                                       productId: img.productId ?? 0,
@@ -279,42 +281,35 @@ commonOtherVariants({
                     width: 24,
                     height: 24,
                     color: Colors.grey,
-                  ) /*Container(
-                    width: 40,
-                    margin: EdgeInsets.only(left: 5),
-                    height: 40,
-                    decoration: commonBoxDecoration(
-                      color: themeProvider.isDark ? Colors.white : colorLogo,
-                    ),
-                    child: Center(
-                      child: commonText(
-                        color: themeProvider.isDark
-                            ? Colors.black
-                            : Colors.white,
-                        fontWeight: FontWeight.w500,
-                        text: '${data?.name?[0]}',
-                      ),
-                    ),
-                  )*/,
-                  subtitleView: Row(
+                  ),
+                  subtitleView: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        decoration: commonBoxDecoration(
-                          color: colorBorder.withValues(alpha: 0.1),
-                          borderRadius: 5,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 4.0,
-                            horizontal: 10,
+                      SizedBox(height: 8),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Container(
+                              decoration: commonBoxDecoration(
+                                color: colorBorder.withValues(alpha: 0.1),
+                                borderRadius: 5,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4.0,
+                                  horizontal: 10,
+                                ),
+                                child: commonText(
+                                  text: data?.values?.join(", ") ?? "",
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                           ),
-                          child: commonText(
-                            text: data?.values?.join(", ") ?? "",
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),
@@ -356,25 +351,32 @@ commonVariants({
                   textColor: themeProvider.isDark ? Colors.white : colorLogo,
                   contentPadding: EdgeInsetsGeometry.zero,
                   leadingIcon: commonNetworkImage(data?.imageUrl ?? ''),
-                  subtitleView: Row(
+                  subtitleView: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        decoration: commonBoxDecoration(
-                          color: colorBorder.withValues(alpha: 0.1),
-                          borderRadius: 5,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 4.0,
-                            horizontal: 10,
+                      SizedBox(height: 8),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            decoration: commonBoxDecoration(
+                              color: colorBorder.withValues(alpha: 0.1),
+                              borderRadius: 5,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 4.0,
+                                horizontal: 10,
+                              ),
+                              child: commonText(
+                                text: '$rupeeIcon${data?.price}',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
-                          child: commonText(
-                            text: '$rupeeIcon${data?.price}',
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        ],
                       ),
                     ],
                   ),

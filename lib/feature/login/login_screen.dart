@@ -65,16 +65,21 @@ class LoginScreen extends StatelessWidget {
                               provider: provider,
                               onPressed: () {
                                 hideKeyboard(context);
-                                if (formLoginKey.currentState?.validate() ==
-                                    true) {
-                                  //put valid logic
+                                // if (formLoginKey.currentState?.validate() ==
+                                //     true) {
+                                //   //put valid logic
 
-                                  navigatorKey.currentState
-                                      ?.pushNamedAndRemoveUntil(
-                                        RouteName.dashboardScreen,
-                                        (Route<dynamic> route) => false,
-                                      );
-                                }
+                                //   navigatorKey.currentState
+                                //       ?.pushNamedAndRemoveUntil(
+                                //         RouteName.dashboardScreen,
+                                //         (Route<dynamic> route) => false,
+                                //       );
+                                // }
+                                navigatorKey.currentState
+                                    ?.pushNamedAndRemoveUntil(
+                                      RouteName.dashboardScreen,
+                                      (Route<dynamic> route) => false,
+                                    );
                               },
                             ),
                           ],

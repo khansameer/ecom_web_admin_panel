@@ -713,7 +713,6 @@ Future<bool?> showCommonDialog({
 Widget showLoaderList() {
   return Center(
     child: Container(
-
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [colorLogo, colorLogo],
@@ -731,10 +730,10 @@ Widget showLoaderList() {
     ),
   );
 }
+
 Widget showLoaderList11() {
   return Center(
     child: Container(
-
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [colorLogo, colorLogo],
@@ -1163,10 +1162,7 @@ Future<String?> fetchProductImage({
   required int variantId,
 }) async {
   final url = '${ApiConfig.getImageUrl}/$productId.json';
-  final response = await callGETMethod(
-
-    url: url,
-  );
+  final response = await callGETMethod(url: url);
   if (globalStatusCode == 200) {
     final data = json.decode(response);
     final images = data['product']['images'] as List;
@@ -1196,14 +1192,9 @@ Future<String?> fetchProductImage({
   }
 }
 
-Future<String?> fetchCustomerImage({
-  required int customerID,
-}) async {
+Future<String?> fetchCustomerImage({required int customerID}) async {
   final url = '${ApiConfig.getCustomerImage}/$customerID.json';
-  final response = await callGETMethod(
-
-    url: url,
-  );
+  final response = await callGETMethod(url: url);
   if (globalStatusCode == 200) {
     final data = json.decode(response);
     final customer = data['customer'];
@@ -1223,7 +1214,7 @@ commonRefreshIndicator({
   required final Widget child,
 }) {
   return RefreshIndicator(
-    color: colorButton,
+    color: colorLogo,
     backgroundColor: Colors.white,
     strokeWidth: 2,
     onRefresh: onRefresh,

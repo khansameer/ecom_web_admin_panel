@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 
 import '../../../core/string/string_utils.dart';
 import '../../../main.dart';
-import '../../../provider/InternetProvider.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -32,7 +31,7 @@ class _ProductPageState extends State<ProductPage> {
         listen: false,
       );
       postMdl.clearProductData();
-      postMdl.getProductList(limit: null,context: context);
+      postMdl.getProductList(limit: null, context: context);
     });
   }
 
@@ -122,10 +121,12 @@ class _ProductPageState extends State<ProductPage> {
                             return commonProductListView(
                               image: data?.image?.src ?? '',
                               onTap: () {
-                                navigatorKey.currentState?.pushNamed(
-                                  RouteName.productDetailsScreen,
-                                  arguments: data,
-                                );
+                                if (data?.id != null) {
+                                  navigatorKey.currentState?.pushNamed(
+                                    RouteName.productDetailsScreen,
+                                    arguments: data?.id.toString(),
+                                  );
+                                }
                               },
                               price: data?.variants?.isNotEmpty == true
                                   ? '$rupeeIcon${data?.variants?.first.price}'
@@ -147,16 +148,18 @@ class _ProductPageState extends State<ProductPage> {
                             );
                           },
                         )
-                      :  provider.filteredProducts?.length==0?Container(
+                      : provider.filteredProducts?.length == 0
+                      ? Container(
                           color: Colors.white12,
                           child: Center(
                             child: commonText(text: "Product not found..."),
                           ),
-                        ):SizedBox.shrink(),
+                        )
+                      : SizedBox.shrink(),
                 ),
               ],
             ),
-       //     provider.isFetching ? showLoaderList() : SizedBox.shrink(),
+            //     provider.isFetching ? showLoaderList() : SizedBox.shrink(),
           ],
         );
       },

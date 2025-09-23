@@ -174,7 +174,7 @@ class ProductProvider with ChangeNotifier {
     try {
       final url = limit != null
           ? '${ApiConfig.productsUrl}?limit=$limit'
-          :'${ApiConfig.productsUrl}?order=created_at+desc';
+          : '${ApiConfig.productsUrl}?order=created_at+desc';
 
       final response = await callGETMethod(url: url);
 
@@ -195,7 +195,7 @@ class ProductProvider with ChangeNotifier {
 
   Products? get product => _product;
 
-  Future<void> getProductDetail({required String productId}) async {
+  Future<void> getProductById({required String productId}) async {
     _isFetching = true;
     notifyListeners();
     try {
@@ -203,7 +203,9 @@ class ProductProvider with ChangeNotifier {
 
       final response = await callGETMethod(url: url);
       if (globalStatusCode == 200) {
-        _product = Products.fromJson(json.decode(response));
+        final jsonData = json.decode(response);
+        // Use "product" key for single product
+        _product = Products.fromJson(jsonData['product']);
       }
     } catch (e) {
       debugPrint("⚠️ Unexpected Error: $e");
@@ -278,18 +280,7 @@ class ProductProvider with ChangeNotifier {
     if (globalStatusCode == 200) {
       final data = json.decode(response);
       final imageJson = data["image"];
-      /*   if (imageJson != null) {
-        final newImage = Images.fromJson(imageJson);
 
-        // Add to list and refresh UI
-        productImages.add(newImage);
-
-        // Optional: jump to the newly added image
-        setCurrentIndex(productImages.length - 1);
-
-        _isImageUpdating = false;
-        notifyListeners();
-      }*/
       if (imageJson != null) {
         // Convert JSON → Images model
         final newImage = Images.fromJson(imageJson);
@@ -309,10 +300,12 @@ class ProductProvider with ChangeNotifier {
     required int productId,
     required ProductProvider provider,
   }) async {
+    _isImageUpdating = true;
+    notifyListeners();
     final urlString =
         "${ApiConfig.baseUrl}/products/$productId/images/$imageId.json";
 
-      await callDeleteMethod(url: urlString);
+    await callDeleteMethod(url: urlString);
 
     if (globalStatusCode == 200) {
       // Remove image from local list
@@ -322,6 +315,11 @@ class ProductProvider with ChangeNotifier {
       if (currentIndex >= productImages.length && currentIndex > 0) {
         setCurrentIndex(productImages.length - 1); // ✅ Correct
       }
+      _isImageUpdating = false;
+      notifyListeners();
+    } else {
+      _isImageUpdating = false;
+      notifyListeners();
     }
   }
 }
