@@ -640,6 +640,35 @@ void showCommonBottomSheet({
   );
 }
 
+//24-Sept-2025 Girish
+void appBottomSheetWithSafeArea({
+  required BuildContext context,
+  required Widget child,
+}) {
+  final mediaQuery = MediaQuery.of(context);
+  final statusBarHeight = mediaQuery.padding.top + mediaQuery.viewPadding.top;
+  final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: themeProvider.isDark ? colorDarkBgColor : Colors.white,
+    barrierColor: Colors.black.withValues(alpha: 0.2),
+    builder: (context) {
+      return Container(
+        constraints: BoxConstraints(
+          maxHeight:
+              MediaQuery.of(context).size.height -
+              statusBarHeight, // dynamic and safe
+        ),
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+
+        child: child,
+      );
+    },
+  );
+}
+
 Future<bool?> showCommonDialog({
   required String title,
   required BuildContext context,

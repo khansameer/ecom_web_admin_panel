@@ -34,24 +34,31 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     //Update
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<ProductProvider>(context, listen: false);
-
+      provider.setIsImageUpdating(true);
       if (widget.productId.isNotEmpty) {
-        provider.getProductById(productId: widget.productId).then((value) {
-          if (globalStatusCode == 200) {
-            //print("data = ${provider.product?.title ?? ''}");
-            provider.productImages = provider.product?.images ?? [];
-            provider.fetchImagesForProduct(provider.product ?? Products());
-            //For Update
-            provider.tetName.text = provider.product?.title ?? '';
-            provider.tetDesc.text = removeHtmlTags(
-              provider.product?.bodyHtml ?? '',
-            );
+        provider
+            .getProductById(productId: widget.productId)
+            .then((value) {
+              if (globalStatusCode == 200) {
+                //print("data = ${provider.product?.title ?? ''}");
+                provider.productImages = provider.product?.images ?? [];
+                provider.fetchImagesForProduct(provider.product ?? Products());
+                //For Update
+                provider.tetName.text = provider.product?.title ?? '';
+                provider.tetDesc.text = removeHtmlTags(
+                  provider.product?.bodyHtml ?? '',
+                );
 
-            provider.tetQty.text = '${provider.product?.variants?.length ?? 0}';
-            provider.tetPrice.text =
-                provider.product?.variants?.first.price ?? "0";
-          }
-        });
+                provider.tetQty.text =
+                    '${provider.product?.variants?.length ?? 0}';
+                provider.tetPrice.text =
+                    provider.product?.variants?.first.price ?? "0";
+              }
+              provider.setIsImageUpdating(false);
+            })
+            .catchError((onError) {
+              provider.setIsImageUpdating(false);
+            });
       }
     });
   }
@@ -104,7 +111,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         }
                       },
                     ),
-
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -206,7 +212,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               ),
                             ],
                           ),
-
                           // commonFormView(provider: provider),
                           SizedBox(height: 15),
                           commonOtherVariants(
@@ -225,69 +230,119 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             text: "Edit",
                             //text: provider.isEdit ? "Update" : "Edit",
                             onPressed: () {
-                              showCommonBottomSheet(
+                              final navigator = Navigator.of(context);
+                              appBottomSheetWithSafeArea(
                                 context: context,
-                                content: SingleChildScrollView(
-                                  physics: BouncingScrollPhysics(),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          commonInkWell(
-                                            onTap: () => Navigator.pop(context),
-                                            child: Container(
-                                              width: 24,
-                                              height: 24,
-                                              decoration: commonBoxDecoration(
-                                                color: Colors.black,
-                                                shape: BoxShape.circle,
+                                child: Consumer<ProductProvider>(
+                                  builder: (context, provider, _) {
+                                    return Stack(
+                                      children: [
+                                        SingleChildScrollView(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  commonInkWell(
+                                                    onTap: () =>
+                                                        Navigator.pop(context),
+                                                    child: Container(
+                                                      width: 24,
+                                                      height: 24,
+                                                      decoration:
+                                                          commonBoxDecoration(
+                                                            color: Colors.black,
+                                                            shape:
+                                                                BoxShape.circle,
+                                                          ),
+                                                      child: const Center(
+                                                        child: Icon(
+                                                          size: 15,
+                                                          Icons.close,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                              child: const Center(
-                                                child: Icon(
-                                                  size: 15,
-                                                  Icons.close,
-                                                  color: Colors.white,
-                                                ),
+                                              commonFormView(
+                                                provider: provider,
                                               ),
-                                            ),
+                                              SizedBox(height: 16),
+
+                                              _commonHeading(text: "Status"),
+                                              SizedBox(height: 16),
+                                              CommonDropdown(
+                                                initialValue: provider.status,
+                                                items: ["Active", "Draft"],
+                                                enabled: provider.isEdit,
+                                                onChanged: provider.isEdit
+                                                    ? (value) {
+                                                        provider.setFilter(
+                                                          value!,
+                                                        );
+                                                      }
+                                                    : (value) {},
+                                              ),
+                                              SizedBox(height: 30),
+                                              commonButton(
+                                                text: "Update",
+                                                onPressed: () {
+                                                  if (provider
+                                                      .tetDesc
+                                                      .text
+                                                      .isNotEmpty) {
+                                                    provider.setIsImageUpdating(
+                                                      true,
+                                                    );
+                                                    provider
+                                                        .updateProductById(
+                                                          description: provider
+                                                              .tetDesc
+                                                              .text,
+                                                          productId: int.parse(
+                                                            widget.productId,
+                                                          ),
+                                                        )
+                                                        .then((onValue) {
+                                                          init();
+                                                          provider
+                                                              .setIsImageUpdating(
+                                                                false,
+                                                              );
+                                                          navigator.pop();
+                                                        })
+                                                        .catchError((onError) {
+                                                          provider
+                                                              .setIsImageUpdating(
+                                                                false,
+                                                              );
+                                                        });
+                                                  }
+                                                },
+                                              ),
+                                              SizedBox(height: 30),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                      commonFormView(provider: provider),
-                                      SizedBox(height: 15),
-                                      _commonHeading(text: "Status"),
+                                        ),
 
-                                      SizedBox(height: 15),
-                                      CommonDropdown(
-                                        initialValue: provider.status,
-                                        items: ["Active", "Draft"],
-                                        enabled: provider.isEdit,
-                                        onChanged: provider.isEdit
-                                            ? (value) {
-                                                provider.setFilter(value!);
-                                              }
-                                            : (value) {},
-                                      ),
-                                      SizedBox(height: 30),
-
-                                      commonButton(
-                                        text: "Update",
-                                        onPressed: () {},
-                                      ),
-                                      SizedBox(height: 30),
-                                    ],
-                                  ),
+                                        provider.isImageUpdating
+                                            ? showLoaderList()
+                                            : SizedBox.shrink(),
+                                      ],
+                                    );
+                                  },
                                 ),
                               );
                             },
                           ),
-                          SizedBox(height: 15),
+                          SizedBox(height: 16),
                         ],
                       ),
                     ),
