@@ -104,17 +104,17 @@ class _ProductPageState extends State<ProductPage> {
               ),
 
               Expanded(
-                child: provider.products.isNotEmpty
+                child: provider.filteredProducts.isNotEmpty
                     ? ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.all(12),
                         itemCount:
                             provider.hasMore && provider.searchQuery.isEmpty
-                            ? provider.products.length + 1
-                            : provider.products.length,
+                            ? provider.filteredProducts.length + 1
+                            : provider.filteredProducts.length,
                         itemBuilder: (context, index) {
-                          if (index < provider.products.length) {
-                            var data = provider.products[index];
+                          if (index < provider.filteredProducts.length) {
+                            var data = provider.filteredProducts[index];
                             final totalVariants = data.variants?.length ?? 0;
                             num? totalInventory =
                                 data.variants?.isNotEmpty == true
@@ -155,7 +155,9 @@ class _ProductPageState extends State<ProductPage> {
                             if (provider.searchQuery.isEmpty &&
                                 provider.hasMore) {
                               // Trigger next page
-                              provider.getProductList(context: context);
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                provider.getProductList(context: context);
+                              });
 
                               return const Padding(
                                 padding: EdgeInsets.all(16),

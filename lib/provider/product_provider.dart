@@ -40,20 +40,18 @@ class ProductProvider with ChangeNotifier {
 
   String get selectedStatus => _selectedStatus;
 
-  /*
+
   List<Products> get filteredProducts {
     return _products.where((p) {
       final matchesSearch = p.title.toString().toLowerCase().contains(
         _searchQuery.toLowerCase(),
       );
 
-      final matchesStatus =
-          _selectedStatus == "All" || p.status == _selectedStatus;
 
-      return matchesSearch && matchesStatus;
+      return matchesSearch;
     }).toList();
   }
-*/
+
 
   Timer? _debounce;
 
@@ -80,7 +78,7 @@ class ProductProvider with ChangeNotifier {
 
     notifyListeners();
   }*/
-  void setSearchQuery(String query) {
+  /*void setSearchQuery(String query) {
     _searchQuery = query;
 
     // 👉 Debounce to avoid multiple API calls on every keystroke
@@ -101,6 +99,11 @@ class ProductProvider with ChangeNotifier {
       }
     });
 
+    notifyListeners();
+  }*/
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
     notifyListeners();
   }
 
@@ -224,7 +227,7 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> getProductList({
     int? limit,
-    String? searchTitle,
+
     String? status,
     required BuildContext context,
   }) async {
@@ -239,13 +242,13 @@ class ProductProvider with ChangeNotifier {
       String url =
           '${ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
 
-      // 👉 Agar title search ho to query param add karo
+    /*  // 👉 Agar title search ho to query param add karo
       if (searchTitle != null && searchTitle.isNotEmpty) {
         // remove invalid special characters for Shopify search
 
         final encodedTitle = "&title=$searchTitle";
         url += encodedTitle;
-      }
+      }*/
       if (status != null && status.isNotEmpty) {
         // remove invalid special characters for Shopify search
 
@@ -258,6 +261,8 @@ class ProductProvider with ChangeNotifier {
       }
       print('==========${url}');
       final response = await callGETMethod(url: url);
+
+      print('${json.decode(response)}');
       if (globalStatusCode == 200) {
         final fetchedProducts =
             ProductModel.fromJson(json.decode(response)).products ?? [];
@@ -267,7 +272,7 @@ class ProductProvider with ChangeNotifier {
         }
 
         if (fetchedProducts.isNotEmpty) {
-          if (_lastId == null || searchTitle != null) {
+          if (_lastId == null /*|| searchTitle != null*/) {
             // 👉 Agar search kar rahe ho to purani list clear karna better hai
             _products.clear();
           }
@@ -277,6 +282,8 @@ class ProductProvider with ChangeNotifier {
 
         notifyListeners();
       }
+      _isFetching = false;
+      notifyListeners();
     } catch (e) {
       debugPrint("⚠️ Unexpected Error: $e");
     } finally {
@@ -425,4 +432,5 @@ class ProductProvider with ChangeNotifier {
       }
     }
   }
+
 }
