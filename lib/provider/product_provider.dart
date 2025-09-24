@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -5,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:neeknots/models/product_model.dart';
 
 import '../core/component/component.dart';
+import '../main.dart';
 import '../service/api_config.dart';
-
 import '../service/gloable_status_code.dart';
 import '../service/network_repository.dart';
 
@@ -29,6 +30,8 @@ class ProductProvider with ChangeNotifier {
   }
 
   String _searchQuery = "";
+
+  String get searchQuery => _searchQuery;
   String _selectedCategory = "All";
   String _selectedStatus = "All";
 
@@ -37,8 +40,9 @@ class ProductProvider with ChangeNotifier {
 
   String get selectedStatus => _selectedStatus;
 
-  List<Products>? get filteredProducts {
-    return productModel?.products?.where((p) {
+  /*
+  List<Products> get filteredProducts {
+    return _products.where((p) {
       final matchesSearch = p.title.toString().toLowerCase().contains(
         _searchQuery.toLowerCase(),
       );
@@ -49,9 +53,54 @@ class ProductProvider with ChangeNotifier {
       return matchesSearch && matchesStatus;
     }).toList();
   }
+*/
 
+  Timer? _debounce;
+
+  /*void setSearchQuery(String query) {
+    _searchQuery = query;
+
+    // 👉 Debounce to avoid multiple API calls on every keystroke
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (_searchQuery.length >= 3) {
+        _lastId = null;
+        _products.clear();
+        getProductList(
+          context: navigatorKey.currentContext!,
+          searchTitle: query,
+        );
+      } else if (_searchQuery.isEmpty) {
+        // ✅ Agar clear kar diya, to normal list reload karo
+        _lastId = null;
+        _products.clear();
+        getProductList(context: navigatorKey.currentContext!);
+      }
+    });
+
+    notifyListeners();
+  }*/
   void setSearchQuery(String query) {
     _searchQuery = query;
+
+    // 👉 Debounce to avoid multiple API calls on every keystroke
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _lastId = null;
+      _products.clear();
+
+      // ✅ Call API even for short queries
+      if (_searchQuery.isNotEmpty) {
+        getProductList(
+          context: navigatorKey.currentContext!,
+          searchTitle: query,
+        );
+      } else {
+        // ❌ Empty query → load normal list
+        getProductList(context: navigatorKey.currentContext!);
+      }
+    });
+
     notifyListeners();
   }
 
@@ -61,7 +110,19 @@ class ProductProvider with ChangeNotifier {
   }
 
   void setStatus(String status) {
+    print('=-====${status}');
     _selectedStatus = status;
+
+    if (status == "all") {
+      _lastId = null;
+      _products.clear();
+      getProductList(context: navigatorKey.currentContext!, status: null);
+    } else {
+      _lastId = null;
+      _products.clear();
+      getProductList(context: navigatorKey.currentContext!, status: status);
+    }
+
     notifyListeners();
   }
 
@@ -147,7 +208,6 @@ class ProductProvider with ChangeNotifier {
   String category = "Category 1";
 
   //--------------------------------------------------------------API Calling -----------------------------------------------------
-
   bool _isFetching = false;
   bool _isImageUpdating = false;
 
@@ -155,31 +215,65 @@ class ProductProvider with ChangeNotifier {
 
   bool get isImageUpdating => _isImageUpdating;
 
-  ProductModel? _productModel;
-
-  ProductModel? get productModel => _productModel;
-
-  clearProductData() {
-    _productModel = null;
-    notifyListeners();
-  }
+  bool _hasMore = true;
+  final int _limit = 50; // items per page
+  bool get hasMore => _hasMore;
+  List<Products> _products = [];
+  int? _lastId; // last fetched product ID
+  List<Products> get products => _products;
 
   Future<void> getProductList({
     int? limit,
+    String? searchTitle,
+    String? status,
     required BuildContext context,
   }) async {
     _isFetching = true;
     notifyListeners();
 
     try {
-      final url = limit != null
-          ? '${ApiConfig.productsUrl}?limit=$limit&order=updated_at+desc'
-          :'${ApiConfig.productsUrl}?order=created_at+desc';
+      final effectiveLimit =
+          limit ??
+          _limit; // agar limit pass ho to use kare, warna default _limit
 
+      String url =
+          '${ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
+
+      // 👉 Agar title search ho to query param add karo
+      if (searchTitle != null && searchTitle.isNotEmpty) {
+        // remove invalid special characters for Shopify search
+
+        final encodedTitle = "&title=$searchTitle";
+        url += encodedTitle;
+      }
+      if (status != null && status.isNotEmpty) {
+        // remove invalid special characters for Shopify search
+
+        final encodedTitle = "&status=$status";
+        url += encodedTitle;
+      }
+
+      if (_lastId != null) {
+        url += '&since_id=$_lastId';
+      }
+      print('==========${url}');
       final response = await callGETMethod(url: url);
-
       if (globalStatusCode == 200) {
-        _productModel = ProductModel.fromJson(json.decode(response));
+        final fetchedProducts =
+            ProductModel.fromJson(json.decode(response)).products ?? [];
+
+        if (fetchedProducts.isEmpty || fetchedProducts.length < _limit) {
+          _hasMore = false;
+        }
+
+        if (fetchedProducts.isNotEmpty) {
+          if (_lastId == null || searchTitle != null) {
+            // 👉 Agar search kar rahe ho to purani list clear karna better hai
+            _products.clear();
+          }
+          _products.addAll(fetchedProducts);
+          _lastId = fetchedProducts.last.id; // move cursor forward
+        }
 
         notifyListeners();
       }
@@ -189,6 +283,14 @@ class ProductProvider with ChangeNotifier {
       _isFetching = false;
       notifyListeners();
     }
+  }
+
+  void resetProducts() {
+    _products = [];
+
+    _hasMore = true;
+    _lastId = null;
+    notifyListeners();
   }
 
   Products? _product;
@@ -267,7 +369,6 @@ class ProductProvider with ChangeNotifier {
     // convert to base64
     final base64Image = base64Encode(bytes);
 
-    //Acapulco Dress-Navy
     final response = await callPostMethodWithToken(
       body: {
         "image": {"attachment": base64Image},
@@ -312,7 +413,7 @@ class ProductProvider with ChangeNotifier {
     final urlString =
         "${ApiConfig.baseUrl}/products/$productId/images/$imageId.json";
 
-      await callDeleteMethod(url: urlString);
+    await callDeleteMethod(url: urlString);
 
     if (globalStatusCode == 200) {
       // Remove image from local list

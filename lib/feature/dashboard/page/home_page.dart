@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/feature/dashboard/home_widget/common_home_widget.dart';
 import 'package:neeknots/provider/customer_provider.dart';
 import 'package:neeknots/provider/dashboard_provider.dart';
@@ -40,7 +39,9 @@ class _HomePageState extends State<HomePage> {
 
       DateTime startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
       DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+      productProvider.resetProducts();
       await Future.wait([
+
         productProvider.getProductList(limit: 5,context: context),
         productProvider.getTotalProductCount(),
         orderProvider.getOrderList(limit: 5),
@@ -48,7 +49,7 @@ class _HomePageState extends State<HomePage> {
         orderProvider.getTotalOrderCount(),
 
         orderProvider.getTotalSaleOrder(startDate: startDate, endDate: endDate),
-        orderProvider.getOrderByDate(startDate: startDate, endDate: endDate),
+        orderProvider.getOrderByDate(startDate: startDate, endDate: endDate,isDashboard: true),
       ]);
     } catch (e) {
       print("Error: $e");

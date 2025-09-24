@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/component/context_extension.dart';
@@ -9,7 +10,6 @@ import 'package:provider/provider.dart';
 
 import '../../../core/string/string_utils.dart';
 import '../../../main.dart';
-import '../../../provider/InternetProvider.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({super.key});
@@ -19,101 +19,106 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     init();
   }
-  final ScrollController _scrollController = ScrollController();
 
   Future<void> init() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final postMdl = Provider.of<ProductProvider>(
-        navigatorKey.currentContext!,
-        listen: false,
-      );
-      postMdl.clearProductData();
-      postMdl.getProductList(limit: null,context: context);
+      final provider = Provider.of<ProductProvider>(context, listen: false);
+
+      provider.resetProducts();
+      provider.getProductList(context: context);
+      _scrollController.addListener(() {
+        if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 100) {
+          provider.getProductList(context: context);
+        }
+      });
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<ProductProvider>(
       builder: (context, provider, child) {
-        return Stack(
-          children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 18.0,
-                    left: 18,
-                    right: 18,
+        return SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 18.0, left: 18, right: 18),
+                child: commonTextField(
+                  hintText: "Search products by name...",
+                  prefixIcon: commonPrefixIcon(
+                    image: icProductSearch,
+                    width: 16,
+                    height: 16,
                   ),
-                  child: commonTextField(
-                    hintText: "Search products by name...",
-                    prefixIcon: commonPrefixIcon(
-                      image: icProductSearch,
-                      width: 16,
-                      height: 16,
-                    ),
 
-                    suffixIcon: IconButton(
-                      icon: commonPrefixIcon(
-                        image: icProductFilter,
-                        width: 20,
-                        height: 20,
-                      ),
-                      onPressed: () {
-                        final filters = [
-                          FilterItem(
-                            label: "Status",
-                            options: ["All", "Active", "Draft"],
-                            selectedValue: provider.selectedStatus
-                                .toString()
-                                .toCapitalize(), // 👈 provider से लो
-                          ),
-                        ];
-                        showCommonFilterDialog(
-                          context: context,
-                          title: "Filter Product",
-                          filters: filters,
-                          onReset: () {
-                            provider.setCategory("All");
-                            provider.setStatus("All");
-                          },
-                          onApply: () {
-                            final selectedStatus = filters
-                                .firstWhere((f) => f.label == "Status")
-                                .selectedValue;
-
-                            provider.setStatus(selectedStatus.toLowerCase());
-                          },
-                        );
-                      },
+                  suffixIcon: IconButton(
+                    icon: commonPrefixIcon(
+                      image: icProductFilter,
+                      width: 20,
+                      height: 20,
                     ),
-                    onChanged: (value) => provider.setSearchQuery(value),
+                    onPressed: () {
+                      final filters = [
+                        FilterItem(
+                          label: "Status",
+                          options: ["All", "Active", "Draft","Archived"],
+                          selectedValue: provider.selectedStatus
+                              .toString()
+                              .toCapitalize(), // 👈 provider से लो
+                        ),
+                      ];
+                      showCommonFilterDialog(
+                        context: context,
+                        title: "Filter Product",
+                        filters: filters,
+                        onReset: () {
+                          provider.setCategory("All");
+                          provider.setStatus("All");
+                        },
+                        onApply: () {
+                          final selectedStatus = filters
+                              .firstWhere((f) => f.label == "Status")
+                              .selectedValue;
+
+                          provider.setStatus(selectedStatus.toLowerCase());
+                        },
+                      );
+                    },
                   ),
+                  onChanged: (value) => provider.setSearchQuery(value),
                 ),
+              ),
 
-                Expanded(
-                  child: provider.filteredProducts?.isNotEmpty == true
-                      ? ListView.builder(
-                          padding: const EdgeInsets.only(
-                            left: 12,
-                            right: 12,
-                            top: 12,
-                            bottom: 12,
-                          ),
-                          itemCount: provider.filteredProducts?.length ?? 0,
-                          itemBuilder: (context, index) {
-                            var data = provider.filteredProducts?[index];
-                            final totalVariants = data?.variants?.length;
-                            //  final left = "${parts[0]}for";
+              Expanded(
+                child: provider.products.isNotEmpty
+                    ? ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(12),
+                        itemCount:
+                            provider.hasMore && provider.searchQuery.isEmpty
+                            ? provider.products.length + 1
+                            : provider.products.length,
+                        itemBuilder: (context, index) {
+                          if (index < provider.products.length) {
+                            var data = provider.products[index];
+                            final totalVariants = data.variants?.length ?? 0;
                             num? totalInventory =
-                                data?.variants?.isNotEmpty == true
-                                ? data?.variants?.fold(
+                                data.variants?.isNotEmpty == true
+                                ? data.variants?.fold(
                                     0,
                                     (sum, variant) =>
                                         sum! + (variant.inventoryQuantity ?? 0),
@@ -121,24 +126,23 @@ class _ProductPageState extends State<ProductPage> {
                                 : 0;
 
                             return commonProductListView(
-                              image: data?.image?.src ?? '',
+                              image: data.image?.src ?? '',
                               onTap: () {
                                 navigatorKey.currentState?.pushNamed(
                                   RouteName.productDetailsScreen,
                                   arguments: data,
                                 );
                               },
-                              price: data?.variants?.isNotEmpty == true
-                                  ? '$rupeeIcon${data?.variants?.first.price}'
+                              price: data.variants?.isNotEmpty == true
+                                  ? '$rupeeIcon${data.variants?.first.price}'
                                   : '$rupeeIcon 0',
                               textInventory1: "$totalInventory in stock",
                               textInventory2: ' for $totalVariants variants',
-                              productName: data?.title ?? '',
-                              status:
-                                  data?.status.toString().toCapitalize() ?? '',
-                              colorStatusColor: data?.status?.isNotEmpty == true
+                              productName: data.title ?? '',
+                              status: data.status.toString().toCapitalize(),
+                              colorStatusColor: data.status?.isNotEmpty == true
                                   ? provider.getStatusColor(
-                                      data!.status.toString().toCapitalize(),
+                                      data.status.toString().toCapitalize(),
                                     )
                                   : Colors.grey,
                               decoration: commonBoxDecoration(
@@ -146,19 +150,37 @@ class _ProductPageState extends State<ProductPage> {
                                 borderWidth: 0.5,
                               ),
                             );
-                          },
-                        )
-                      :  provider.filteredProducts?.length==0?Container(
-                          color: Colors.white12,
-                          child: Center(
-                            child: commonText(text: "Product not found..."),
-                          ),
-                        ):SizedBox.shrink(),
-                ),
-              ],
-            ),
-       //     provider.isFetching ? showLoaderList() : SizedBox.shrink(),
-          ],
+                          } else {
+                            // 🔹 Loader sirf infinite scroll (search off) me
+                            if (provider.searchQuery.isEmpty &&
+                                provider.hasMore) {
+                              // Trigger next page
+                              provider.getProductList(context: context);
+
+                              return const Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Center(
+                                  child: CupertinoActivityIndicator(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              // 🔹 Agar search ya no more data
+                              return const SizedBox.shrink();
+                            }
+                          }
+                        },
+                      )
+                    : Container(
+                        color: Colors.white12,
+                        child: Center(
+                          child: commonText(text: "Product not found..."),
+                        ),
+                      ),
+              ),
+            ],
+          ),
         );
       },
     );

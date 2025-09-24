@@ -243,6 +243,7 @@ class OrdersProvider with ChangeNotifier {
   Future<void> getOrderByDate({
     required DateTime startDate,
     required DateTime endDate,
+    required bool isDashboard,
   }) async {
     _isFetching = true;
     _orderModelByDate = null;
@@ -264,7 +265,10 @@ class OrdersProvider with ChangeNotifier {
     if (globalStatusCode == 200) {
       _orderModelByDate = OrderModel.fromJson(json.decode(response));
 
-      _totalOrderPrice = getTotalOrderPrice(_orderModelByDate ?? OrderModel());
+      if(isDashboard){
+        _totalOrderPrice = getTotalOrderPrice(_orderModelByDate ?? OrderModel());
+      }
+
       _isFetching = false;
       notifyListeners();
     }
@@ -301,6 +305,7 @@ class OrdersProvider with ChangeNotifier {
     final today = DateTime.now();
 
     getOrderByDate(
+      isDashboard: false,
       startDate: DateTime(today.year, today.month, today.day),
       endDate: DateTime(today.year, today.month, today.day, 23, 59, 59),
     );
@@ -328,7 +333,9 @@ class OrdersProvider with ChangeNotifier {
       //startDate = now; // default today
     }
 
-    getOrderByDate(startDate: startDate, endDate: endDate);
+    getOrderByDate(
+        isDashboard: false,
+        startDate: startDate, endDate: endDate);
   }
 }
 

@@ -42,7 +42,7 @@ class _SalesDetailsScreenState extends State<SalesDetailsScreen> {
       DateTime startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
       DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
       await Future.wait([
-        orderProvider.getOrderByDate(startDate: startDate, endDate: endDate),
+        orderProvider.getOrderByDate(startDate: startDate, endDate: endDate,isDashboard: true),
       ]);
     } catch (e) {
       print("Error: $e");

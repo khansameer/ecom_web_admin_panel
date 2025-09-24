@@ -261,7 +261,19 @@ homeGraphView({required bool isSaleDetails}) {
             Flexible(
               child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {
-                  return SfCartesianChart(
+                  return chartData.isEmpty
+                      ? Center(
+                    child: Text(
+                      "No Data Available",
+                      style: commonTextStyle(
+                        fontSize: 14,
+                        color: themeProvider.isDark ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  )
+                      :
+                   SfCartesianChart(
                     plotAreaBorderWidth: 0,
                     primaryXAxis: CategoryAxis(
                       labelStyle: commonTextStyle(
@@ -390,14 +402,14 @@ commonTopProductListView({void Function()? onTap}) {
                 return commonListViewBuilder(
                   padding: EdgeInsetsGeometry.zero,
                   shrinkWrap: true,
-                  items: provider.filteredProducts ?? [],
+                  items: provider.products,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index, data) {
-                    var data = provider.filteredProducts?[index];
-                    final totalVariants = data?.variants?.length;
+                    var data = provider.products[index];
+                    final totalVariants = data.variants?.length;
                     //  final left = "${parts[0]}for";
-                    num? totalInventory = data?.variants?.isNotEmpty == true
-                        ? data?.variants?.fold(
+                    num? totalInventory = data.variants?.isNotEmpty == true
+                        ? data.variants?.fold(
                             0,
                             (sum, variant) =>
                                 sum! + (variant.inventoryQuantity ?? 0),
@@ -409,20 +421,20 @@ commonTopProductListView({void Function()? onTap}) {
                       imageMargin: EdgeInsetsGeometry.only(left: 10),
 
                       width:
-                          provider.filteredProducts != null &&
-                              provider.filteredProducts!.length == 1
+                          provider.products != null &&
+                              provider.products!.length == 1
                           ? MediaQuery.sizeOf(context).width - 30
                           : MediaQuery.sizeOf(context).width - 80,
-                      image: data?.image?.src ?? '',
+                      image: data.image?.src ?? '',
                       onTap: () {},
-                      price: data?.variants?.isNotEmpty == true
-                          ? '$rupeeIcon${data?.variants?.first.price}'
+                      price: data.variants?.isNotEmpty == true
+                          ? '$rupeeIcon${data.variants?.first.price}'
                           : '$rupeeIcon 0',
                       textInventory1: "$totalInventory in stock",
                       textInventory2: ' for $totalVariants variants',
-                      productName: data?.title ?? '',
-                      status: data?.status.toString().toCapitalize() ?? '',
-                      colorStatusColor: data?.status?.isNotEmpty == true
+                      productName: data.title ?? '',
+                      status: data.status.toString().toCapitalize() ?? '',
+                      colorStatusColor: data.status?.isNotEmpty == true
                           ? provider.getStatusColor(
                               data!.status.toString().toCapitalize(),
                             )
