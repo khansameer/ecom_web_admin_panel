@@ -4,7 +4,6 @@ import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../core/color/color_utils.dart';
 import '../core/component/animated_counter.dart';
@@ -35,18 +34,18 @@ class _SalesDetailsScreenState extends State<SalesDetailsScreen> {
   }
 
   Future<void> init() async {
-    try {
-      final orderProvider = Provider.of<OrdersProvider>(context, listen: false);
-      DateTime now = DateTime.now();
+    final orderProvider = Provider.of<OrdersProvider>(context, listen: false);
+    DateTime now = DateTime.now();
 
-      DateTime startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
-      DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
-      await Future.wait([
-        orderProvider.getOrderByDate(startDate: startDate, endDate: endDate,isDashboard: true),
-      ]);
-    } catch (e) {
-      print("Error: $e");
-    }
+    DateTime startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
+    DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    await Future.wait([
+      orderProvider.getOrderByDate(
+        startDate: startDate,
+        endDate: endDate,
+        isDashboard: true,
+      ),
+    ]);
   }
 
   @override
@@ -60,151 +59,169 @@ class _SalesDetailsScreenState extends State<SalesDetailsScreen> {
         centerTitle: true,
       ),
       body: commonAppBackground(
-        child: Consumer2<ThemeProvider,OrdersProvider >(
+        child: Consumer2<ThemeProvider, OrdersProvider>(
           builder: (context, provider, orderProvider, child) {
-            return SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                spacing: 20,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header with animated count
-                  commonBoxView(
-                    title: "Today Orders & Price",
-                    contentView: SizedBox(
-                      width: size.width,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-
-                          IntrinsicHeight(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      commonText(text: "Orders",   fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: provider.isDark ? Colors.white : colorText,),
-                                      AnimatedCounter(
-                                        leftText: '',
-                                        endValue:orderProvider.orderModelByDate?.orders?.length??0,
-                                        duration: Duration(seconds: 2),
-                                        style: commonTextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w600,
-                                          color: provider.isDark ? Colors.white : colorTextDesc1,
-                                        ),
-                                        prefix: "",
-                                        suffix: "",
+            return Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    spacing: 20,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header with animated count
+                      commonBoxView(
+                        title: "Today Orders & Price",
+                        contentView: SizedBox(
+                          width: size.width,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              IntrinsicHeight(
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          commonText(
+                                            text: "Orders",
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: provider.isDark
+                                                ? Colors.white
+                                                : colorLogo,
+                                          ),
+                                          AnimatedCounter(
+                                            leftText: '',
+                                            endValue:
+                                                orderProvider
+                                                    .orderModelByDate
+                                                    ?.orders
+                                                    ?.length ??
+                                                0,
+                                            duration: Duration(seconds: 2),
+                                            style: commonTextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.w600,
+                                              color: provider.isDark
+                                                  ? Colors.white
+                                                  : colorTextDesc1,
+                                            ),
+                                            prefix: "",
+                                            suffix: "",
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
-                                ),
+                                    ),
 
-                                VerticalDivider(),
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      commonText(text: "Price",fontSize: 14,
-                                        fontWeight: FontWeight.w600,
-                                        color: provider.isDark ? Colors.white : colorText,),
-                                      commonText(
-                                        text: '$rupeeIcon${orderProvider.totalOrderPrice}',
-                                        style: commonTextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w600,
-                                            color: provider.isDark ? Colors.white : colorTextDesc1,
-                                        ),
-
+                                    VerticalDivider(),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          commonText(
+                                            text: "Price",
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: provider.isDark
+                                                ? Colors.white
+                                                : colorLogo,
+                                          ),
+                                          commonText(
+                                            text:
+                                                '$rupeeIcon${orderProvider.totalOrderPrice}',
+                                            style: commonTextStyle(
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.w600,
+                                              color: provider.isDark
+                                                  ? Colors.white
+                                                  : colorTextDesc1,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
 
-                  commonBoxView(
-                      title: "Today Sales",
-                      contentView: SizedBox(height: 320, child: homeGraphView(isSaleDetails: true))),
-
-
-                  ListView.builder(
-                    shrinkWrap: true,
-
-                    physics: NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.all(0),
-                    itemCount: orderProvider.orderModelByDate?.orders?.length ?? 0,
-                    // null to [] convert
-                    itemBuilder: (context, index) {
-                      var data =orderProvider.orderModelByDate?.orders?[index];
-                      return commonOrderView(
-                        errorImageView: Container(
-                          margin: EdgeInsets.only(left: 5, top: 5, bottom: 5),
-                          child: commonErrorBoxView(text: data?.name ?? ''),
+                      commonBoxView(
+                        title: "Today Sales",
+                        contentView: SizedBox(
+                          height: 320,
+                          child: homeGraphView(isSaleDetails: true),
                         ),
+                      ),
 
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal: 0,
-                        ),
-                        onTap: () {
-                          navigatorKey.currentState?.pushNamed(
-                            RouteName.orderDetailsScreen,
-                            arguments: data,
+                      ListView.builder(
+                        shrinkWrap: true,
+
+                        physics: NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(0),
+                        itemCount:
+                            orderProvider.orderModelByDate?.orders?.length ?? 0,
+                        // null to [] convert
+                        itemBuilder: (context, index) {
+                          var data = orderProvider.orderModelByDate?.orders?[index];
+                          return commonOrderView(
+                            errorImageView: Container(
+                              margin: EdgeInsets.only(left: 5, top: 5, bottom: 5),
+                              child: commonErrorBoxView(text: data?.name ?? ''),
+                            ),
+
+                            margin: const EdgeInsets.symmetric(
+                              vertical: 5,
+                              horizontal: 0,
+                            ),
+                            onTap: () {
+                              navigatorKey.currentState?.pushNamed(
+                                RouteName.orderDetailsScreen,
+                                arguments: data,
+                              );
+                            },
+                            colorTextStatus: orderProvider.getPaymentStatusColor(
+                              '${data?.financialStatus.toString().toCapitalize()}',
+                            ),
+                            decoration: commonBoxDecoration(
+                              borderRadius: 4,
+
+                              color: orderProvider
+                                  .getPaymentStatusColor(
+                                    '${data?.financialStatus.toString().toCapitalize()}',
+                                  )
+                                  .withValues(alpha: 0.1),
+                            ),
+
+                            orderID: data?.customer?.firstName != null
+                                ? '${data?.customer?.firstName}  ${data?.customer?.lastName}'
+                                : noCustomer,
+                            image: data?.name??'',
+                            //productName:'${ data?.customer?.firstName}  ${ data?.customer?.lastName}',
+                            productName: '${data?.lineItems?.length} Items',
+                            status:
+                                '${data?.financialStatus.toString().toCapitalize()}',
+                            price: double.parse(
+                              data?.subtotalPrice?.toString() ?? '0',
+                            ),
+                            date: formatDateTime(
+                              data?.createdAt ?? '',
+                            ), //data.date.toLocal().toString(),
                           );
                         },
-                        colorTextStatus: orderProvider.getPaymentStatusColor(
-                          '${data?.financialStatus.toString().toCapitalize()}',
-                        ),
-                        decoration: commonBoxDecoration(
-                          borderRadius: 4,
-
-                          color: orderProvider
-                              .getPaymentStatusColor(
-                            '${data?.financialStatus.toString().toCapitalize()}',
-                          )
-                              .withValues(alpha: 0.1),
-                        ),
-
-                        orderID: data?.customer?.firstName!=null?
-                        '${data?.customer?.firstName}  ${data?.customer?.lastName}':noCustomer,
-                        image: 'sdsasas',
-                        //productName:'${ data?.customer?.firstName}  ${ data?.customer?.lastName}',
-                        productName: 'Items:${data?.lineItems?.length}',
-                        status:
-                        '${data?.financialStatus.toString().toCapitalize()}',
-                        price: double.parse(
-                          data?.subtotalPrice?.toString() ?? '0',
-                        ),
-                        date: formatDateTime(
-                          data?.createdAt ?? '',
-                        ), //data.date.toLocal().toString(),
-                      );
-                    },
+                      ),
+                    ],
                   ),
+                ),
 
-                ],
-              ),
+                orderProvider.isFetching?showLoaderList():SizedBox.shrink()
+              ],
             );
           },
         ),
       ),
-    );
-  }
-
-  Widget _infoCard({required String value, required Color color}) {
-    return commonText(
-      text: value,
-      textAlign: TextAlign.center,
-      color: color,
-      fontSize: 15,
-      fontWeight: FontWeight.w600,
     );
   }
 }
@@ -216,11 +233,6 @@ class SalesData {
   SalesData(this.month, this.sales);
 }
 
-/*class SalesData {
-  final String month;
-  final double sales;
-  SalesData(this.month, this.sales);
-}*/
 class RegionSales {
   final String region;
   final double sales;

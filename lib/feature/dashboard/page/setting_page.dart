@@ -118,7 +118,7 @@ class SettingPage extends StatelessWidget {
                       confirmText: "Yes",
                       onPressed: () {
                         context.read<ProductProvider>().reset();
-                        context.read<OrdersProvider>().resetFilters();
+                        context.read<OrdersProvider>().resetData();
                         context.read<CustomerProvider>().reset();
                         context.read<ProfileProvider>().resetState();
                         context.read<LoginProvider>().resetState();

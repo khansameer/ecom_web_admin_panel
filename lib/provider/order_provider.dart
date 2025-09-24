@@ -7,23 +7,10 @@ import 'package:neeknots/models/order_model.dart';
 import 'package:neeknots/service/gloable_status_code.dart';
 import 'package:neeknots/service/network_repository.dart';
 
-import '../models/order_details_model.dart' as orderDetails;
+import '../models/order_details_model.dart' as orderDetails show OrderDetailsModel;
 import '../service/api_config.dart';
 
 class OrdersProvider with ChangeNotifier {
-  Color getStatusColor(String status) {
-    switch (status) {
-      case "Pending":
-        return Colors.amber;
-      case "Shipped":
-        return Colors.blue;
-      case "Delivered":
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
-  }
-
   Color getPaymentStatusColor(String status) {
     switch (status) {
       case "Pending":
@@ -38,20 +25,26 @@ class OrdersProvider with ChangeNotifier {
   }
 
   String _selectedStatus = "All";
-  String _statusFilter = "All";
 
   String get selectedStatus => _selectedStatus;
 
-  void resetFilters() {
+  void resetData() {
     _searchQuery = "";
-    _statusFilter = "All";
+    _orders.clear();
+
     //   _applyFilters();
   }
 
   /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
 
   void filterByStatus(String status) {
-    _statusFilter = status;
+    String apiStatus = status.toLowerCase().replaceAll(' ', '_');
+    if (status == "all") {
+      getOrderList(status: null);
+    } else {
+      getOrderList(status: apiStatus);
+    }
+
     _selectedStatus = status;
     notifyListeners();
     //_applyFilters();
@@ -60,10 +53,10 @@ class OrdersProvider with ChangeNotifier {
   bool _isFetching = false;
 
   bool get isFetching => _isFetching;
-  OrderModel? _orderModel;
 
-  OrderModel? get orderModel => _orderModel;
   String _searchQuery = "";
+
+  String get searchQuery => _searchQuery;
 
   //for filter
   void setSearchQuery(String query) {
@@ -71,52 +64,61 @@ class OrdersProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Order>? get filterOrderList {
-    return orderModel?.orders?.where((p) {
+  List<Order> get filterOrderList {
+    return _orders.where((p) {
       final matchesSearch = p.name.toString().toLowerCase().contains(
         _searchQuery.toLowerCase(),
       );
 
-      final matchesStatus =
-          _selectedStatus == "All" || p.financialStatus == _selectedStatus;
+
 
       //return matchesSearch && matchesCategory && matchesStatus;
-      return matchesSearch && matchesStatus;
+      return matchesSearch;
     }).toList();
   }
 
-  Future<void> getOrderList({int? limit}) async {
+  bool _hasMore = true;
+  final int _limit = 100; // items per page
+  bool get hasMore => _hasMore;
+
+  final List<Order> _orders = [];
+
+  List<Order> get orders => _orders;
+
+  Future<void> getOrderList({int? limit, String? status}) async {
     _isFetching = true;
     notifyListeners();
+    final effectiveLimit = limit ?? _limit;
 
     try {
-      final url = limit != null
-          ? '${ApiConfig.ordersUrl}?limit=$limit&order=updated_at+desc'
-          :'${ApiConfig.ordersUrl}?order=updated_at+desc';
+      String url = '${ApiConfig.ordersUrl}?limit=$effectiveLimit&order=id+asc';
+      if (status != null && status.isNotEmpty) {
+        final encodedTitle = "&financial_status=$status";
+        url += encodedTitle;
+      }
 
       final response = await callGETMethod(url: url);
-      _orderModel = OrderModel.fromJson(json.decode(response));
+      if (globalStatusCode == 200) {
+        final data = json.decode(response); // ✅ now .body works
 
-      final orders = _orderModel?.orders ?? [];
+        final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
+        if(fetchedOrders.isNotEmpty){
 
-      await Future.wait(
-        orders.map(
-          (order) => Future.wait(
-            (order.lineItems ?? []).map((item) async {
-              item.imageUrl = await fetchProductImage(
-                productId: item.productId ?? 0,
-                variantId: item.variantId ?? 0,
-              );
-            }),
-          ),
-        ),
-      );
+          _orders.addAll(fetchedOrders);
+        }
+        else
+          {
+            _orders.clear();
+          }
 
-      _isFetching = false;
+        _isFetching = false;
+        notifyListeners();
+      }
     } catch (e) {
+
       debugPrint('Error fetching orders: $e');
-      _orderModel = OrderModel(orders: []); // fallback empty list
     } finally {
+
       _isFetching = false;
       notifyListeners();
     }
@@ -265,8 +267,10 @@ class OrdersProvider with ChangeNotifier {
     if (globalStatusCode == 200) {
       _orderModelByDate = OrderModel.fromJson(json.decode(response));
 
-      if(isDashboard){
-        _totalOrderPrice = getTotalOrderPrice(_orderModelByDate ?? OrderModel());
+      if (isDashboard) {
+        _totalOrderPrice = getTotalOrderPrice(
+          _orderModelByDate ?? OrderModel(),
+        );
       }
 
       _isFetching = false;
@@ -333,9 +337,7 @@ class OrdersProvider with ChangeNotifier {
       //startDate = now; // default today
     }
 
-    getOrderByDate(
-        isDashboard: false,
-        startDate: startDate, endDate: endDate);
+    getOrderByDate(isDashboard: false, startDate: startDate, endDate: endDate);
   }
 }
 

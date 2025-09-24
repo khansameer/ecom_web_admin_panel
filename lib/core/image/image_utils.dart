@@ -22,6 +22,7 @@ const String icTotalProduct="$iconDashboardPath/ic_total_product.png";
 const String icTotalSale="$iconDashboardPath/trend.png";
 const String icTotalUser="$iconDashboardPath/ic_total_user.png";
 const String icPen="$iconDashboardPath/ic_pen.png";
+const String icNoData="$iconDashboardPath/ic_no_data.png";
 
 
 //==============================Product=============================

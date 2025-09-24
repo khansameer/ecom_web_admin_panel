@@ -112,8 +112,6 @@ Future callGETMethod({required String url, String? key}) async {
 
 Future getResponse(Response response) async {
   globalStatusCode = response.statusCode;
-  // debugPrint("----response Body ${response.body}");
-  // debugPrint("----response request ${response.request}");
 
   if (globalStatusCode == 500 ||
       globalStatusCode == 502 ||

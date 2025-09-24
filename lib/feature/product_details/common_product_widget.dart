@@ -21,7 +21,6 @@ commonBannerView({
   final themeProvider = Provider.of<ThemeProvider>(
     navigatorKey.currentContext!,
   );
-  print("image ${images.length}");
 
   return images.isNotEmpty
       ? Column(

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -18,7 +17,6 @@ class ProductProvider with ChangeNotifier {
   var tetQty = TextEditingController();
   var tetPrice = TextEditingController();
 
-  //Girish - 23-sept
   List<Images> productImages = [];
 
   int _currentIndex = 0;
@@ -41,67 +39,15 @@ class ProductProvider with ChangeNotifier {
 
   String get selectedStatus => _selectedStatus;
 
-
   List<Products> get filteredProducts {
     return _products.where((p) {
       final matchesSearch = p.title.toString().toLowerCase().contains(
         _searchQuery.toLowerCase(),
       );
 
-
       return matchesSearch;
     }).toList();
   }
-
-
-  Timer? _debounce;
-
-  /*void setSearchQuery(String query) {
-    _searchQuery = query;
-
-    // 👉 Debounce to avoid multiple API calls on every keystroke
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (_searchQuery.length >= 3) {
-        _lastId = null;
-        _products.clear();
-        getProductList(
-          context: navigatorKey.currentContext!,
-          searchTitle: query,
-        );
-      } else if (_searchQuery.isEmpty) {
-        // ✅ Agar clear kar diya, to normal list reload karo
-        _lastId = null;
-        _products.clear();
-        getProductList(context: navigatorKey.currentContext!);
-      }
-    });
-
-    notifyListeners();
-  }*/
-  /*void setSearchQuery(String query) {
-    _searchQuery = query;
-
-    // 👉 Debounce to avoid multiple API calls on every keystroke
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      _lastId = null;
-      _products.clear();
-
-      // ✅ Call API even for short queries
-      if (_searchQuery.isNotEmpty) {
-        getProductList(
-          context: navigatorKey.currentContext!,
-          searchTitle: query,
-        );
-      } else {
-        // ❌ Empty query → load normal list
-        getProductList(context: navigatorKey.currentContext!);
-      }
-    });
-
-    notifyListeners();
-  }*/
 
   void setSearchQuery(String query) {
     _searchQuery = query;
@@ -114,13 +60,12 @@ class ProductProvider with ChangeNotifier {
   }
 
   void setStatus(String status) {
-    print('=-====${status}');
     _selectedStatus = status;
 
     if (status == "all") {
       _lastId = null;
       _products.clear();
-      getProductList(context: navigatorKey.currentContext!, status: null);
+      getProductList(context: navigatorKey.currentContext!);
     } else {
       _lastId = null;
       _products.clear();
@@ -223,8 +168,9 @@ class ProductProvider with ChangeNotifier {
   final int _limit = 50; // items per page
   bool get hasMore => _hasMore;
   List<Products> _products = [];
-  int? _lastId; // last fetched product ID
+
   List<Products> get products => _products;
+  int? _lastId; // last fetched product ID
 
   Future<void> getProductList({
     int? limit,
@@ -242,17 +188,7 @@ class ProductProvider with ChangeNotifier {
 
       String url =
           '${ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
-
-    /*  // 👉 Agar title search ho to query param add karo
-      if (searchTitle != null && searchTitle.isNotEmpty) {
-        // remove invalid special characters for Shopify search
-
-        final encodedTitle = "&title=$searchTitle";
-        url += encodedTitle;
-      }*/
       if (status != null && status.isNotEmpty) {
-        // remove invalid special characters for Shopify search
-
         final encodedTitle = "&status=$status";
         url += encodedTitle;
       }
@@ -260,10 +196,9 @@ class ProductProvider with ChangeNotifier {
       if (_lastId != null) {
         url += '&since_id=$_lastId';
       }
-      print('==========${url}');
+
       final response = await callGETMethod(url: url);
 
-      print('${json.decode(response)}');
       if (globalStatusCode == 200) {
         final fetchedProducts =
             ProductModel.fromJson(json.decode(response)).products ?? [];
@@ -273,8 +208,7 @@ class ProductProvider with ChangeNotifier {
         }
 
         if (fetchedProducts.isNotEmpty) {
-          if (_lastId == null /*|| searchTitle != null*/) {
-            // 👉 Agar search kar rahe ho to purani list clear karna better hai
+          if (_lastId == null /*|| searchTitle != null*/ ) {
             _products.clear();
           }
           _products.addAll(fetchedProducts);
@@ -428,13 +362,12 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-
   Future<void> updateProductById({
     required String description,
     required int productId,
   }) async {
     final urlString = "${ApiConfig.baseUrl}/products/$productId.json";
-    final response = await callPutMethodWithToken(
+    final _ = await callPutMethodWithToken(
       params: {
         "product": {"body_html": description},
       },
@@ -444,4 +377,22 @@ class ProductProvider with ChangeNotifier {
       //print("updated:- $response");
     } else {}
   }
+
+  DateTime? _startDate;
+  DateTime? _endDate;
+
+  DateTime? get startDate => _startDate;
+  DateTime? get endDate => _endDate;
+  void setDateRange(DateTime start, DateTime end) {
+    _startDate = start;
+    _endDate = end;
+    notifyListeners();
+  }
+
+  void clearDateRange() {
+    _startDate = null;
+    _endDate = null;
+    notifyListeners();
+  }
+
 }

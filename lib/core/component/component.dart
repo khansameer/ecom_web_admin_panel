@@ -575,12 +575,22 @@ PopScope<Object> commonPopScope({
 
 Center commonErrorView({String? text}) {
   return Center(
-    child: commonText(
-      textAlign: TextAlign.center,
-      text: text ?? "No data Found",
-      fontSize: 16,
-      fontWeight: FontWeight.w300,
-      color: Colors.black.withValues(alpha: 0.5),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 20,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+
+        commonAssetImage(icNoData,width: 100,height: 100,),
+        commonText(
+          textAlign: TextAlign.center,
+          text: text ?? "No data Found",
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: Colors.black.withValues(alpha: 0.5),
+        ),
+      ],
     ),
   );
 }

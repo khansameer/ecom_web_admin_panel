@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../core/component/animated_counter.dart';
+import '../../../core/component/common_date_range_picker.dart';
 import '../../../core/component/date_utils.dart';
 import '../../../core/string/string_utils.dart';
 import '../order_widget/common_order_widget.dart';
@@ -181,7 +182,6 @@ _commonDashboardView({
             color: provider.isDark ? Colors.white : colorText,
           ),
 
-
           AnimatedCounter(
             leftText: leftText,
             rightText: rightText?.isNotEmpty == true ? rightText : '',
@@ -225,137 +225,215 @@ homeGraphView({required bool isSaleDetails}) {
         margin: EdgeInsets.all(5),
         child: Column(
           children: [
-            isSaleDetails?SizedBox.shrink(): Row(
-              children: [
-                Expanded(
-                  child: commonText(
-                    text: "Summary Sales",
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+            isSaleDetails
+                ? SizedBox.shrink()
+                : Row(
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: commonText(
+                          text: "Summary Sales",
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+
+                      Flexible(
+                        flex: 4,
+                        child: SizedBox(
+                          height: 45,
+                          child: CommonDropdown(
+                            borderRadius: 5,
+                            initialValue: orderProvider.selectedRange,
+                            items: ["Today", "Week", "Month"],
+
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                orderProvider.setRange(
+                                  newValue,
+                                ); // update Provider
+
+                                orderProvider.fetchByRange(newValue);
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(width: 10),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          height: 45,
+                          width: 45,
+                          decoration: commonBoxDecoration(
+                            borderColor: colorBorder,
+                            borderRadius: 5,
+                          ),
+                          child: Center(
+                            child: IconButton(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                final provider = Provider.of<OrdersProvider>(
+                                  context,
+                                  listen: false,
+                                );
+                                final productProvider =
+                                    Provider.of<ProductProvider>(
+                                      context,
+                                      listen: false,
+                                    );
+                                CommonDateRangePicker.show(
+                                  context: context,
+                                  onApplyClick: (start, end) {
+                                    DateTime startDate = DateTime(
+                                      start.year,
+                                      start.month,
+                                      start.day,
+                                      0,
+                                      0,
+                                      0,
+                                    );
+                                    DateTime endDate = DateTime(
+                                      end.year,
+                                      end.month,
+                                      end.day,
+                                      23,
+                                      59,
+                                      59,
+                                    );
+                                    debugPrint(
+                                      "Selected: $startDate → $endDate",
+                                    );
+                                    provider.getOrderByDate(
+                                      isDashboard: false,
+                                      startDate: startDate,
+                                      endDate: endDate,
+                                    );
+                                    productProvider.clearDateRange();
+                                    // यहाँ API call या कोई भी extra काम कर सकते हो
+                                  },
+                                  onCancelClick: () {
+                                    debugPrint("Date range cleared");
+                                    productProvider.clearDateRange();
+                                  },
+                                );
+                              },
+                              icon: Icon(
+                                Icons.calendar_month_outlined,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // commonAssetImage(icProductFilter,width: 24,height: 24,color: colorTextDesc1),
+                    ],
                   ),
-                ),
 
-                Spacer(),
-             Expanded(
-                  child: SizedBox(
-                    height: 45,
-                    child: CommonDropdown(
-                      borderRadius: 5,
-                      initialValue: orderProvider.selectedRange,
-                      items: ["Today", "Week", "Month"],
-
-                      onChanged: (String? newValue) {
-                        if (newValue != null) {
-                          orderProvider.setRange(newValue); // update Provider
-
-                          orderProvider.fetchByRange(newValue);
-                        }
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
+            SizedBox(height: 10),
 
             Flexible(
               child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {
-                  return chartData.isEmpty
-                      ? Center(
-                    child: Text(
-                      "No Data Available",
-                      style: commonTextStyle(
-                        fontSize: 14,
-                        color: themeProvider.isDark ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  )
-                      :
-                   SfCartesianChart(
-                    plotAreaBorderWidth: 0,
-                    primaryXAxis: CategoryAxis(
-                      labelStyle: commonTextStyle(
-                        fontSize: 12,
-                        color: themeProvider.isDark
-                            ? Colors.white
-                            : Colors.black,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    primaryYAxis: NumericAxis(
-                      labelStyle: commonTextStyle(
-                        color: themeProvider.isDark
-                            ? Colors.white
-                            : Colors.black,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
-                      ),
-                      axisLine: const AxisLine(width: 0),
+                  return orderProvider.isFetching ||data.isEmpty
+                      ? SizedBox.shrink()
+                      : chartData.isNotEmpty
+                      ? SfCartesianChart(
+                          plotAreaBorderWidth: 0,
+                          primaryXAxis: CategoryAxis(
+                            labelStyle: commonTextStyle(
+                              fontSize: 12,
+                              color: themeProvider.isDark
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          primaryYAxis: NumericAxis(
+                            labelStyle: commonTextStyle(
+                              color: themeProvider.isDark
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            axisLine: const AxisLine(width: 0),
 
-                      // hide right side line
-                    ),
-                    tooltipBehavior: TooltipBehavior(
-                      enable: true,
-                      header: '',
-                      builder:
-                          (
-                            dynamic data,
-                            dynamic point,
-                            dynamic series,
-                            int pointIndex,
-                            int seriesIndex,
-                          ) {
-                            final sales = data as SalesData;
-                            return Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.black87,
-                                borderRadius: BorderRadius.circular(6),
+                            // hide right side line
+                          ),
+                          tooltipBehavior: TooltipBehavior(
+                            enable: true,
+                            header: '',
+                            builder:
+                                (
+                                  dynamic data,
+                                  dynamic point,
+                                  dynamic series,
+                                  int pointIndex,
+                                  int seriesIndex,
+                                ) {
+                                  final sales = data as SalesData;
+                                  return Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black87,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      sales.orderNumber,
+
+                                      // "Orders: ${sales.orderIds.join(', ')}\nTotal: ${sales.y}",
+                                      style: commonTextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  );
+                                },
+                          ),
+                          series: <CartesianSeries<SalesData, String>>[
+                            ColumnSeries<SalesData, String>(
+                              color: Colors.orange.withValues(alpha: 0.3),
+                              borderColor: Colors.orange,
+                              borderWidth: 2,
+
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                topRight: Radius.circular(12),
                               ),
-                              child: Text(
-                                sales.orderNumber,
-
-                                // "Orders: ${sales.orderIds.join(', ')}\nTotal: ${sales.y}",
-                                style: commonTextStyle(color: Colors.white),
+                              width: 0.5,
+                              // bar thickness (0.5 = 50% of available slot)
+                              spacing: 0.2,
+                              // gap between bars
+                              markerSettings: const MarkerSettings(
+                                isVisible: true,
+                                height: 6,
+                                width: 6,
+                                shape: DataMarkerType.circle,
+                                borderWidth: 2,
                               ),
-                            );
-                          },
-                    ),
-                    series: <CartesianSeries<SalesData, String>>[
-                      ColumnSeries<SalesData, String>(
-                        color: Colors.orange.withValues(alpha: 0.3),
-                        borderColor: Colors.orange,
-                        borderWidth: 2,
+                              dataSource: chartData,
+                              xValueMapper: (SalesData sales, _) =>
+                                  sales.orderNumber,
+                              yValueMapper: (SalesData sales, _) =>
+                                  sales.totalPrice,
 
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(12),
-                          topRight: Radius.circular(12),
-                        ),
-                        width: 0.5,   // bar thickness (0.5 = 50% of available slot)
-                        spacing: 0.2, // gap between bars
-                        markerSettings: const MarkerSettings(
-                          isVisible: true,
-                          height: 6,
-                          width: 6,
-                          shape: DataMarkerType.circle,
-                          borderWidth: 2,
-                        ),
-                        dataSource: chartData,
-                        xValueMapper: (SalesData sales, _) => sales.orderNumber,
-                        yValueMapper: (SalesData sales, _) => sales.totalPrice,
-
-                        dataLabelSettings: DataLabelSettings(isVisible: true,  textStyle: commonTextStyle(
-                          fontWeight: FontWeight.w600, // ✅ Bold
-                          fontSize: 12,               // optional size
-                          color: colorTextDesc1,        // or Colors.white in dark mode
-                        ),),
-                        dataLabelMapper: (SalesData sales, _) =>
-                        "$rupeeIcon${sales.totalPrice.toStringAsFixed(0)}",
-                      ),
-                    ],
-                  );
+                              dataLabelSettings: DataLabelSettings(
+                                isVisible: true,
+                                textStyle: commonTextStyle(
+                                  fontWeight: FontWeight.w600, // ✅ Bold
+                                  fontSize: 12, // optional size
+                                  color:
+                                      colorTextDesc1, // or Colors.white in dark mode
+                                ),
+                              ),
+                              dataLabelMapper: (SalesData sales, _) =>
+                                  "$rupeeIcon${sales.totalPrice.toStringAsFixed(0)}",
+                            ),
+                          ],
+                        )
+                      :commonErrorView(text: "Data Not Found");
                 },
               ),
             ),
@@ -422,7 +500,7 @@ commonTopProductListView({void Function()? onTap}) {
 
                       width:
                           provider.products != null &&
-                              provider.products!.length == 1
+                              provider.products.length == 1
                           ? MediaQuery.sizeOf(context).width - 30
                           : MediaQuery.sizeOf(context).width - 80,
                       image: data.image?.src ?? '',
@@ -433,10 +511,10 @@ commonTopProductListView({void Function()? onTap}) {
                       textInventory1: "$totalInventory in stock",
                       textInventory2: ' for $totalVariants variants',
                       productName: data.title ?? '',
-                      status: data.status.toString().toCapitalize() ?? '',
+                      status: data.status.toString().toCapitalize(),
                       colorStatusColor: data.status?.isNotEmpty == true
                           ? provider.getStatusColor(
-                              data!.status.toString().toCapitalize(),
+                              data.status.toString().toCapitalize(),
                             )
                           : Colors.grey,
                       decoration: commonBoxDecoration(
@@ -485,7 +563,7 @@ commonTopOrderListView({void Function()? onTap}) {
           ),
 
           SizedBox(
-            height: 130,
+            height: 180,
             width: MediaQuery.sizeOf(context).width,
 
             child: Consumer<OrdersProvider>(
@@ -494,20 +572,16 @@ commonTopOrderListView({void Function()? onTap}) {
                   padding: EdgeInsetsGeometry.zero,
                   shrinkWrap: true,
                   physics: BouncingScrollPhysics(),
-                  items: provider.filterOrderList ?? [],
+                  items: provider.filterOrderList,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index, data) {
-                    var data = provider.filterOrderList?[index];
+                    var data = provider.filterOrderList[index];
                     return commonOrderView(
                       margin: EdgeInsetsGeometry.only(right: 10),
 
-                      errorImageView: Container(
-                        margin: EdgeInsets.only(left: 5),
-                        child: commonErrorBoxView(text: data?.name ?? ''),
-                      ),
                       width:
                           provider.filterOrderList != null &&
-                              provider.filterOrderList!.length == 1
+                              provider.filterOrderList.length == 1
                           ? MediaQuery.sizeOf(context).width - 30
                           : MediaQuery.sizeOf(context).width - 80,
                       onTap: () {
@@ -517,31 +591,30 @@ commonTopOrderListView({void Function()? onTap}) {
                         );
                       },
                       colorTextStatus: provider.getPaymentStatusColor(
-                        '${data?.financialStatus.toString().toCapitalize()}',
+                        data.financialStatus.toString().toCapitalize(),
                       ),
                       decoration: commonBoxDecoration(
                         borderRadius: 4,
 
                         color: provider
                             .getPaymentStatusColor(
-                              '${data?.financialStatus.toString().toCapitalize()}',
+                              data.financialStatus.toString().toCapitalize(),
                             )
                             .withValues(alpha: 0.1),
                       ),
 
-                      orderID:
-                      data?.customer?.firstName!=null?
-                      '${data?.customer?.firstName}  ${data?.customer?.lastName}':noCustomer,
-                      image: '',
+                      orderID: data.customer?.firstName != null
+                          ? '${data.customer?.firstName}  ${data.customer?.lastName}'
+                          : noCustomer,
+                      image: data.name ?? '',
 
-                      productName: 'Items:${data?.lineItems?.length}',
-                      status:
-                          '${data?.financialStatus.toString().toCapitalize()}',
+                      productName: '${data.lineItems?.length} Items',
+                      status: data.financialStatus.toString().toCapitalize(),
                       price: double.parse(
-                        data?.subtotalPrice?.toString() ?? '0',
+                        data.subtotalPrice?.toString() ?? '0',
                       ),
                       date: formatDateTime(
-                        data?.createdAt ?? '',
+                        data.createdAt ?? '',
                       ), //data.date.toLocal().toString(),
                     );
                   },

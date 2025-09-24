@@ -92,7 +92,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   switch (index) {
                     case 0: // Product
-                      context.read<OrdersProvider>().resetFilters();
+                      context.read<OrdersProvider>().resetData();
                       context.read<CustomerProvider>().reset();
                       context.read<ProfileProvider>().resetState();
                       break;
@@ -103,18 +103,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       break;
                     case 2: // Home
                       context.read<ProductProvider>().reset();
-                      context.read<OrdersProvider>().resetFilters();
+                      context.read<OrdersProvider>().resetData();
                       context.read<CustomerProvider>().reset();
                       context.read<ProfileProvider>().resetState();
                       break;
                     case 3: // Customer
                       context.read<ProductProvider>().reset();
-                      context.read<OrdersProvider>().resetFilters();
+                      context.read<OrdersProvider>().resetData();
                       context.read<ProfileProvider>().resetState();
                       break;
                     case 4: // Account
                       context.read<ProductProvider>().reset();
-                      context.read<OrdersProvider>().resetFilters();
+                      context.read<OrdersProvider>().resetData();
                       context.read<CustomerProvider>().reset();
                       break;
                   }
@@ -129,7 +129,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
 
-            context.watch<ProductProvider>().isFetching ||   context.watch<OrdersProvider>().isFetching
+            context.watch<ProductProvider>().isFetching ||   context.watch<OrdersProvider>().isFetching || context.watch<CustomerProvider>().isFetching
                 ? Container(
                color:  Colors.black.withValues(alpha: 0.01),
                 width: MediaQuery.sizeOf(context).width,
