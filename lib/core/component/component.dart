@@ -640,6 +640,35 @@ void showCommonBottomSheet({
   );
 }
 
+//24-Sept-2025 Girish
+void appBottomSheetWithSafeArea({
+  required BuildContext context,
+  required Widget child,
+}) {
+  final mediaQuery = MediaQuery.of(context);
+  final statusBarHeight = mediaQuery.padding.top + mediaQuery.viewPadding.top;
+  final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: themeProvider.isDark ? colorDarkBgColor : Colors.white,
+    barrierColor: Colors.black.withValues(alpha: 0.2),
+    builder: (context) {
+      return Container(
+        constraints: BoxConstraints(
+          maxHeight:
+              MediaQuery.of(context).size.height -
+              statusBarHeight, // dynamic and safe
+        ),
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+
+        child: child,
+      );
+    },
+  );
+}
+
 Future<bool?> showCommonDialog({
   required String title,
   required BuildContext context,
@@ -713,7 +742,6 @@ Future<bool?> showCommonDialog({
 Widget showLoaderList() {
   return Center(
     child: Container(
-
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [colorLogo, colorLogo],
@@ -731,10 +759,10 @@ Widget showLoaderList() {
     ),
   );
 }
+
 Widget showLoaderList11() {
   return Center(
     child: Container(
-
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [colorLogo, colorLogo],
@@ -1163,10 +1191,7 @@ Future<String?> fetchProductImage({
   required int variantId,
 }) async {
   final url = '${ApiConfig.getImageUrl}/$productId.json';
-  final response = await callGETMethod(
-
-    url: url,
-  );
+  final response = await callGETMethod(url: url);
   if (globalStatusCode == 200) {
     final data = json.decode(response);
     final images = data['product']['images'] as List;
@@ -1196,14 +1221,9 @@ Future<String?> fetchProductImage({
   }
 }
 
-Future<String?> fetchCustomerImage({
-  required int customerID,
-}) async {
+Future<String?> fetchCustomerImage({required int customerID}) async {
   final url = '${ApiConfig.getCustomerImage}/$customerID.json';
-  final response = await callGETMethod(
-
-    url: url,
-  );
+  final response = await callGETMethod(url: url);
   if (globalStatusCode == 200) {
     final data = json.decode(response);
     final customer = data['customer'];
@@ -1223,7 +1243,7 @@ commonRefreshIndicator({
   required final Widget child,
 }) {
   return RefreshIndicator(
-    color: colorButton,
+    color: colorLogo,
     backgroundColor: Colors.white,
     strokeWidth: 2,
     onRefresh: onRefresh,

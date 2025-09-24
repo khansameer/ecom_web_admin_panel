@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -304,22 +305,23 @@ class ProductProvider with ChangeNotifier {
 
   Products? get product => _product;
 
-  Future<void> getProductDetail({required String productId}) async {
-    _isFetching = true;
+  void setIsImageUpdating(bool val) {
+    _isImageUpdating = val;
     notifyListeners();
+  }
+
+  Future<void> getProductById({required String productId}) async {
     try {
       final url = "${ApiConfig.getImageUrl}/$productId.json";
-
       final response = await callGETMethod(url: url);
       if (globalStatusCode == 200) {
-        _product = Products.fromJson(json.decode(response));
+        final jsonData = json.decode(response);
+        // Use "product" key for single product
+        _product = Products.fromJson(jsonData['product']);
       }
     } catch (e) {
       debugPrint("⚠️ Unexpected Error: $e");
-    } finally {
-      _isFetching = false;
-      notifyListeners();
-    }
+    } finally {}
   }
 
   int _totalProductCount = 0;
@@ -382,26 +384,12 @@ class ProductProvider with ChangeNotifier {
       },
       url: urlString,
     );
-
     if (globalStatusCode == 200) {
       final data = json.decode(response);
       final imageJson = data["image"];
-      /*   if (imageJson != null) {
-        final newImage = Images.fromJson(imageJson);
-
-        // Add to list and refresh UI
-        productImages.add(newImage);
-
-        // Optional: jump to the newly added image
-        setCurrentIndex(productImages.length - 1);
-
-        _isImageUpdating = false;
-        notifyListeners();
-      }*/
       if (imageJson != null) {
         // Convert JSON → Images model
         final newImage = Images.fromJson(imageJson);
-
         productImages.add(newImage);
         _isImageUpdating = false;
         notifyListeners(); // ✅ UI refresh
@@ -417,6 +405,8 @@ class ProductProvider with ChangeNotifier {
     required int productId,
     required ProductProvider provider,
   }) async {
+    _isImageUpdating = true;
+    notifyListeners();
     final urlString =
         "${ApiConfig.baseUrl}/products/$productId/images/$imageId.json";
 
@@ -430,7 +420,28 @@ class ProductProvider with ChangeNotifier {
       if (currentIndex >= productImages.length && currentIndex > 0) {
         setCurrentIndex(productImages.length - 1); // ✅ Correct
       }
+      _isImageUpdating = false;
+      notifyListeners();
+    } else {
+      _isImageUpdating = false;
+      notifyListeners();
     }
   }
 
+
+  Future<void> updateProductById({
+    required String description,
+    required int productId,
+  }) async {
+    final urlString = "${ApiConfig.baseUrl}/products/$productId.json";
+    final response = await callPutMethodWithToken(
+      params: {
+        "product": {"body_html": description},
+      },
+      url: urlString,
+    );
+    if (globalStatusCode == 200) {
+      //print("updated:- $response");
+    } else {}
+  }
 }

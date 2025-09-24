@@ -55,7 +55,10 @@ Future callPostMethodWithToken({
       });
 }
 
-Future callPutMethodWithToken(String url, Map<String, dynamic> params) async {
+Future callPutMethodWithToken({
+  required String url,
+  required Map<String, dynamic> params,
+}) async {
   final uri = Uri.parse(url);
 
   final response = await http
@@ -100,8 +103,6 @@ Future callDeleteMethod({
 }
 
 Future callGETMethod({required String url, String? key}) async {
-
-  
   return await http.get(Uri.parse(url), headers: commonHeadersToken).then((
     http.Response response,
   ) {
