@@ -128,10 +128,13 @@ class _ProductPageState extends State<ProductPage> {
                             return commonProductListView(
                               image: data.image?.src ?? '',
                               onTap: () {
-                                navigatorKey.currentState?.pushNamed(
-                                  RouteName.productDetailsScreen,
-                                  arguments: data,
-                                );
+                                if (data.id != null) {
+                                  navigatorKey.currentState?.pushNamed(
+                                    RouteName.productDetailsScreen,
+                                    arguments: data.id.toString(),
+                                  );
+                                }
+
                               },
                               price: data.variants?.isNotEmpty == true
                                   ? '$rupeeIcon${data.variants?.first.price}'
