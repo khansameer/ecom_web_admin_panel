@@ -402,12 +402,6 @@ class ProductProvider with ChangeNotifier {
     List<Map<String, dynamic>>? variants,
   }) async {
     final urlString = "${ApiConfig.baseUrl}/products/$productId.json";
-<<<<<<< Updated upstream
-    final _ = await callPutMethodWithToken(
-      params: {
-        "product": {"body_html": description},
-      },
-=======
 
     final Map<String, dynamic> productData = {"id": productId};
     if (title != null) productData["title"] = title;
@@ -415,7 +409,6 @@ class ProductProvider with ChangeNotifier {
     if (variants != null) productData["variants"] = variants;
     final response = await callPutMethodWithToken(
       params: {"product": productData},
->>>>>>> Stashed changes
       url: urlString,
     );
     if (globalStatusCode == 200) {
@@ -423,7 +416,6 @@ class ProductProvider with ChangeNotifier {
     } else {}
   }
 
-<<<<<<< Updated upstream
   DateTime? _startDate;
   DateTime? _endDate;
 
@@ -440,12 +432,4 @@ class ProductProvider with ChangeNotifier {
     _endDate = null;
     notifyListeners();
   }
-
-=======
-  /**
-   *  params: {
-        "product": {"body_html": description},
-      },
-   */
->>>>>>> Stashed changes
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/feature/customer_details/customer_order_page.dart';
 import 'package:neeknots/feature/sales_details_screen.dart';
 import 'package:neeknots/feature/change_password/change_password_screen.dart';
 import 'package:neeknots/feature/customer_details/customer_detail_page.dart';
@@ -62,6 +63,11 @@ class RouteGenerate {
         return MaterialPageRoute(builder: (_) => const TotalOrderScreen());
       case RouteName.totalCustomerScreen:
         return MaterialPageRoute(builder: (_) => const TotalCustomerScreen());
+      case RouteName.customerOrders:
+        final args = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => CustomerOrderPage(customerId: args),
+        );
       case RouteName.totalProductScreen:
         return MaterialPageRoute(builder: (_) => const TotalProductScreen());
       case RouteName.salesDetailsScreen:

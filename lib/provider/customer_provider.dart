@@ -34,13 +34,9 @@ class CustomerProvider with ChangeNotifier {
   Future<void> getTotalCustomerCount() async {
     _isFetching = true;
     notifyListeners();
-    final response = await callGETMethod(
-
-      url: ApiConfig.totalCustomerUrl,
-    );
+    final response = await callGETMethod(url: ApiConfig.totalCustomerUrl);
 
     if (globalStatusCode == 200) {
-
       final data = json.decode(response);
 
       _totalCustomerCount = data["count"] ?? 0;
@@ -53,19 +49,16 @@ class CustomerProvider with ChangeNotifier {
   }
 
   CustomerModel? _customerModel;
-
   CustomerModel? get customerModel => _customerModel;
 
   Future<void> getCustomerList() async {
     _isFetching = true;
     notifyListeners();
     final response = await callGETMethod(
-
       url: '${ApiConfig.customerUrl}?order=updated_at+desc',
     );
 
     if (globalStatusCode == 200) {
-
       _customerModel = CustomerModel.fromJson(json.decode(response));
 
       _isFetching = false;

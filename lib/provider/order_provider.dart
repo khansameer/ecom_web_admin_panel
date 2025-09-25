@@ -7,7 +7,9 @@ import 'package:neeknots/models/order_model.dart';
 import 'package:neeknots/service/gloable_status_code.dart';
 import 'package:neeknots/service/network_repository.dart';
 
-import '../models/order_details_model.dart' as orderDetails show OrderDetailsModel;
+import '../models/order_details_model.dart'
+    as orderDetails
+    show OrderDetailsModel;
 import '../service/api_config.dart';
 
 class OrdersProvider with ChangeNotifier {
@@ -70,8 +72,6 @@ class OrdersProvider with ChangeNotifier {
         _searchQuery.toLowerCase(),
       );
 
-
-
       //return matchesSearch && matchesCategory && matchesStatus;
       return matchesSearch;
     }).toList();
@@ -82,7 +82,6 @@ class OrdersProvider with ChangeNotifier {
   bool get hasMore => _hasMore;
 
   final List<Order> _orders = [];
-
   List<Order> get orders => _orders;
 
   Future<void> getOrderList({int? limit, String? status}) async {
@@ -99,26 +98,19 @@ class OrdersProvider with ChangeNotifier {
 
       final response = await callGETMethod(url: url);
       if (globalStatusCode == 200) {
-        final data = json.decode(response); // ✅ now .body works
-
+        final data = json.decode(response);
         final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
-        if(fetchedOrders.isNotEmpty){
-
+        if (fetchedOrders.isNotEmpty) {
           _orders.addAll(fetchedOrders);
+        } else {
+          _orders.clear();
         }
-        else
-          {
-            _orders.clear();
-          }
-
         _isFetching = false;
         notifyListeners();
       }
     } catch (e) {
-
       debugPrint('Error fetching orders: $e');
     } finally {
-
       _isFetching = false;
       notifyListeners();
     }
@@ -188,7 +180,7 @@ class OrdersProvider with ChangeNotifier {
 
   OrderDetailsModel? get orderDetailsModel => _orderDetailsModel;
 
-  Future<void> getOrderBYID({int? orderID}) async {
+  Future<void> getOrderById({int? orderID}) async {
     _isFetching = true;
     notifyListeners();
 
@@ -210,6 +202,37 @@ class OrdersProvider with ChangeNotifier {
     } catch (e) {
       debugPrint('Error fetching orders: $e');
       _orderDetailsModel = OrderDetailsModel(); // fallback empty list
+    } finally {
+      _isFetching = false;
+      notifyListeners();
+    }
+  }
+
+  //Girish 25-Sep
+  final List<Order> _customerOrders = [];
+  List<Order> get customerOrders => _customerOrders;
+
+  Future<void> getOrdersByCustomerId({required String customerId}) async {
+    _customerOrders.clear();
+    _isFetching = true;
+    notifyListeners();
+
+    try {
+      final url =
+          '${ApiConfig.getCustomerImage}/$customerId/orders.json?status=any';
+      final response = await callGETMethod(url: url);
+      if (globalStatusCode == 200) {
+        final data = json.decode(response);
+        final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
+        if (fetchedOrders.isNotEmpty) {
+          _customerOrders.addAll(fetchedOrders);
+        } else {
+          _customerOrders.clear();
+        }
+      }
+    } catch (e) {
+      _isFetching = false;
+      notifyListeners();
     } finally {
       _isFetching = false;
       notifyListeners();

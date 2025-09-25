@@ -17,6 +17,7 @@ commonBannerView({
   required ProductProvider provider,
   required List<Images> images,
   void Function()? onTap,
+  void Function()? onDelete,
 }) {
   final themeProvider = Provider.of<ThemeProvider>(
     navigatorKey.currentContext!,
@@ -65,12 +66,14 @@ commonBannerView({
                               onTap: () {
                                 showCommonDialog(
                                   onPressed: () {
-                                    provider.deleteProductImage(
-                                      imageId: img.id ?? 0,
-                                      productId: img.productId ?? 0,
-                                      provider: provider,
-                                    );
                                     Navigator.pop(context);
+                                    provider
+                                        .deleteProductImage(
+                                          imageId: img.id ?? 0,
+                                          productId: img.productId ?? 0,
+                                          provider: provider,
+                                        )
+                                        .then((val) {});
                                   },
                                   confirmText: "Remove",
                                   title: "Remove",

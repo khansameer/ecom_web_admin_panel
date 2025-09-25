@@ -16,7 +16,7 @@ customerDetailsInfo({required Customer customer}) {
   final provider = Provider.of<CustomerProvider>(navigatorKey.currentContext!);
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
-    margin: const EdgeInsets.all(16),
+    margin: EdgeInsets.only(left: 16, right: 16, top: 16),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -43,17 +43,23 @@ customerDetailsInfo({required Customer customer}) {
               ),
               _buildRow(title: "Order", value: '${customer.ordersCount}'),
               _buildRow(
-                padding: EdgeInsets.symmetric(vertical: 5,horizontal: 10),
-                colorText:provider
-                    .getStatusColor(customer.emailMarketingConsent?.state??'') ,
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                colorText: provider.getStatusColor(
+                  customer.emailMarketingConsent?.state ?? '',
+                ),
                 fontSize: 10,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: provider
-                        .getStatusColor(customer.emailMarketingConsent?.state??'')
-                        .withValues(alpha: 0.1),
-                  ),
-                  title: "Status", value: '${customer.emailMarketingConsent?.state.toString().toCapitalize().replaceAll("_", " ")}'),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: provider
+                      .getStatusColor(
+                        customer.emailMarketingConsent?.state ?? '',
+                      )
+                      .withValues(alpha: 0.1),
+                ),
+                title: "Status",
+                value:
+                    '${customer.emailMarketingConsent?.state.toString().toCapitalize().replaceAll("_", " ")}',
+              ),
             ],
           ),
         ),
@@ -74,7 +80,6 @@ customerDetailsInfo({required Customer customer}) {
             ],
           ),
         ),
-
 
         // Content
       ],
@@ -114,10 +119,13 @@ customerOrderDetailsInfo({required Customer customer}) {
 
 customerProductInfo({required Customer customer}) {
   return Consumer<OrdersProvider>(
-    builder: (context,provider,child) {
+    builder: (context, provider, child) {
       return Container(
-        decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
-        margin: const EdgeInsets.all(16),
+        decoration: commonBoxDecoration(
+          borderColor: colorBorder,
+          borderRadius: 8,
+        ),
+        margin: EdgeInsets.only(left: 16, right: 16, top: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -147,7 +155,14 @@ customerProductInfo({required Customer customer}) {
                               vertical: 3,
                             ),
                             child: commonText(
-                              text: provider.orderDetailsModel?.orderData?.financialStatus.toString().toCapitalize()??'',
+                              text:
+                                  provider
+                                      .orderDetailsModel
+                                      ?.orderData
+                                      ?.financialStatus
+                                      .toString()
+                                      .toCapitalize() ??
+                                  '',
                               fontSize: 10,
 
                               fontWeight: FontWeight.w600,
@@ -155,16 +170,45 @@ customerProductInfo({required Customer customer}) {
                           ),
                         ),
                         Container(
-                          decoration: commonBoxDecoration(color: provider.orderDetailsModel?.orderData?.fulfillmentStatus!=null?Colors.green.withValues(alpha: 0.1):Colors.amber.withValues(alpha: 0.1)),
+                          decoration: commonBoxDecoration(
+                            color:
+                                provider
+                                        .orderDetailsModel
+                                        ?.orderData
+                                        ?.fulfillmentStatus !=
+                                    null
+                                ? Colors.green.withValues(alpha: 0.1)
+                                : Colors.amber.withValues(alpha: 0.1),
+                          ),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12.0,
                             vertical: 3,
                           ),
                           child: commonText(
-                            text: provider.orderDetailsModel?.orderData?.fulfillmentStatus!=null ?provider.orderDetailsModel?.orderData?.fulfillmentStatus.toString().toCapitalize()??'':"Unfulfilled",
+                            text:
+                                provider
+                                        .orderDetailsModel
+                                        ?.orderData
+                                        ?.fulfillmentStatus !=
+                                    null
+                                ? provider
+                                          .orderDetailsModel
+                                          ?.orderData
+                                          ?.fulfillmentStatus
+                                          .toString()
+                                          .toCapitalize() ??
+                                      ''
+                                : "Unfulfilled",
                             fontSize: 10,
 
-                            color: provider.orderDetailsModel?.orderData?.fulfillmentStatus!=null?Colors.green:Colors.amber,
+                            color:
+                                provider
+                                        .orderDetailsModel
+                                        ?.orderData
+                                        ?.fulfillmentStatus !=
+                                    null
+                                ? Colors.green
+                                : Colors.amber,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -174,7 +218,8 @@ customerProductInfo({required Customer customer}) {
                   Row(
                     children: [
                       commonText(
-                        text: "$rupeeIcon${provider.orderDetailsModel?.orderData?.currentTotalPrice}",
+                        text:
+                            "$rupeeIcon${provider.orderDetailsModel?.orderData?.currentTotalPrice}",
                         color: Colors.blueAccent,
                         fontWeight: FontWeight.w600,
                       ),
@@ -189,7 +234,11 @@ customerProductInfo({required Customer customer}) {
               child: commonText(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                text:  formatCreatedAt(provider.orderDetailsModel?.orderData?.createdAt??DateTime.now().toString(), source: "Orders")
+                text: formatCreatedAt(
+                  provider.orderDetailsModel?.orderData?.createdAt ??
+                      DateTime.now().toString(),
+                  source: "Orders",
+                ),
                 //text: "13 Sept 2025 at 7:19 pm from  Draft Orders",
               ),
             ),
@@ -198,17 +247,24 @@ customerProductInfo({required Customer customer}) {
             // Content
             Consumer<OrdersProvider>(
               builder: (context, provider, child) {
-              return  Padding(
+                return Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: commonListViewBuilder(
                     shrinkWrap: true,
                     padding: EdgeInsetsGeometry.zero,
-                    items: provider.orderDetailsModel?.orderData?.lineItems ?? [],
+                    items:
+                        provider.orderDetailsModel?.orderData?.lineItems ?? [],
                     itemBuilder: (context, index, data1) {
-                      var data = provider.orderDetailsModel?.orderData?.lineItems?[index];
+                      var data = provider
+                          .orderDetailsModel
+                          ?.orderData
+                          ?.lineItems?[index];
                       //final parts = data?.name?.split('-');
                       final parts =
-                          data?.name?.split('-').map((e) => e.trim()).toList() ??
+                          data?.name
+                              ?.split('-')
+                              .map((e) => e.trim())
+                              .toList() ??
                           [];
 
                       // first part
@@ -220,7 +276,9 @@ customerProductInfo({required Customer customer}) {
                           : '';
 
                       return Container(
-                        decoration: commonBoxDecoration(borderColor: colorBorder),
+                        decoration: commonBoxDecoration(
+                          borderColor: colorBorder,
+                        ),
                         padding: const EdgeInsets.symmetric(
                           vertical: 12,
                           horizontal: 16,
@@ -274,7 +332,9 @@ customerProductInfo({required Customer customer}) {
                                       Container(
                                         decoration: commonBoxDecoration(
                                           borderRadius: 5,
-                                          color: colorBorder.withValues(alpha: 0.1),
+                                          color: colorBorder.withValues(
+                                            alpha: 0.1,
+                                          ),
                                         ),
                                         padding: EdgeInsets.symmetric(
                                           vertical: 2,
@@ -335,7 +395,7 @@ customerProductInfo({required Customer customer}) {
           ],
         ),
       );
-    }
+    },
   );
 }
 

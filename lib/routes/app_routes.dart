@@ -10,6 +10,7 @@ class RouteName {
   static const String productDetailsScreen = "/ProductDetailsScreen";
   static const String addProductScreen = "/AddProductScreen";
   static const String orderDetailsScreen = "/OrderDetailsScreen";
+  static const String customerOrders = "/CustomerOrderPage";
   static const String totalOrderScreen = "/TotalOrderScreen";
   static const String totalCustomerScreen = "/TotalCustomerScreen";
   static const String totalProductScreen = "/TotalProductScreen";

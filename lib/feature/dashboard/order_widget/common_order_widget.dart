@@ -19,6 +19,7 @@ commonOrderView({
   required double price,
   Decoration? decoration,
   required String status,
+  bool? invisibleCustomer = true,
 }) {
   return Consumer<ThemeProvider>(
     builder: (context, provider, child) {
@@ -43,18 +44,17 @@ commonOrderView({
                   text: "Order",
                   value: image,
                 ),
-                commonOrderItemView(text: "Customer", value: orderID),
+                if (invisibleCustomer == true)
+                  commonOrderItemView(text: "Customer", value: orderID),
 
                 commonOrderItemView(text: "Items", value: productName),
                 commonOrderItemView(
-                  colorValue: provider.isDark
-                      ? Colors.white
-                      : colorTextDesc,
+                  colorValue: provider.isDark ? Colors.white : colorTextDesc,
                   text: "Payment Status",
 
                   valueView: Container(
                     decoration:
-                    decoration ??
+                        decoration ??
                         commonBoxDecoration(
                           borderRadius: 8,
                           color: Colors.grey.withValues(alpha: 0.5),
@@ -74,14 +74,12 @@ commonOrderView({
                   ),
                 ),
                 commonOrderItemView(
-                  colorValue: provider.isDark
-                      ? Colors.white
-                      : colorTextDesc,
+                  colorValue: provider.isDark ? Colors.white : colorTextDesc,
                   text: "Delivery Status",
 
                   valueView: Container(
                     decoration:
-                    decoration ??
+                        decoration ??
                         commonBoxDecoration(
                           borderRadius: 8,
                           color: Colors.grey.withValues(alpha: 0.5),
@@ -128,7 +126,7 @@ commonOrderItemView({
       Expanded(
         child: commonText(
           text: text ?? "Order No",
-          fontWeight: fontWeight??FontWeight.w500,
+          fontWeight: fontWeight ?? FontWeight.w500,
           fontSize: 12,
           color: colorText,
         ),
@@ -138,7 +136,7 @@ commonOrderItemView({
             textAlign: TextAlign.left,
             text: value ?? '',
 
-            fontWeight: fontWeight??FontWeight.w500,
+            fontWeight: fontWeight ?? FontWeight.w500,
             fontSize: 12,
             color: colorValue,
           ),
