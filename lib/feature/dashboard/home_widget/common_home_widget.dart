@@ -337,7 +337,8 @@ homeGraphView({required bool isSaleDetails}) {
             Flexible(
               child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {
-                  return orderProvider.isFetching ||data.isEmpty
+                  print('==============${data.length}');
+                  return orderProvider.isFetching
                       ? SizedBox.shrink()
                       : chartData.isNotEmpty
                       ? SfCartesianChart(

@@ -69,7 +69,7 @@ Future<void> main() async {
     NotificationService.firebaseMessagingBackgroundHandler,
   );
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+ // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(
     MultiProvider(
