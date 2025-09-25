@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -18,6 +19,38 @@ class ProductProvider with ChangeNotifier {
   var tetPrice = TextEditingController();
 
   List<Images> productImages = [];
+  //Girsh - 24-Sept-2025
+  // dynamic controllers mapped by variant id
+  final Map<int, TextEditingController> qtyControllers = {};
+  final Map<int, TextEditingController> priceControllers = {};
+  // initialize controllers based on variants
+
+  void initializeVariantController(List<Variants>? variants) {
+    qtyControllers.clear();
+    priceControllers.clear();
+    if (variants != null) {
+      for (final v in variants) {
+        final key = v.id ?? 0;
+
+        qtyControllers[key] = TextEditingController(
+          text: v.inventoryQuantity?.toString() ?? '',
+        );
+        priceControllers[key] = TextEditingController(text: v.price ?? '');
+      }
+    }
+  }
+
+  // dispose controllers to avoid memory leaks
+  void disposeControllers() {
+    for (final c in qtyControllers.values) {
+      c.dispose();
+    }
+    for (final c in priceControllers.values) {
+      c.dispose();
+    }
+    qtyControllers.clear();
+    priceControllers.clear();
+  }
 
   int _currentIndex = 0;
 
@@ -363,14 +396,26 @@ class ProductProvider with ChangeNotifier {
   }
 
   Future<void> updateProductById({
-    required String description,
+    String? title,
+    String? description,
     required int productId,
+    List<Map<String, dynamic>>? variants,
   }) async {
     final urlString = "${ApiConfig.baseUrl}/products/$productId.json";
+<<<<<<< Updated upstream
     final _ = await callPutMethodWithToken(
       params: {
         "product": {"body_html": description},
       },
+=======
+
+    final Map<String, dynamic> productData = {"id": productId};
+    if (title != null) productData["title"] = title;
+    if (description != null) productData["body_html"] = description;
+    if (variants != null) productData["variants"] = variants;
+    final response = await callPutMethodWithToken(
+      params: {"product": productData},
+>>>>>>> Stashed changes
       url: urlString,
     );
     if (globalStatusCode == 200) {
@@ -378,6 +423,7 @@ class ProductProvider with ChangeNotifier {
     } else {}
   }
 
+<<<<<<< Updated upstream
   DateTime? _startDate;
   DateTime? _endDate;
 
@@ -395,4 +441,11 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
+=======
+  /**
+   *  params: {
+        "product": {"body_html": description},
+      },
+   */
+>>>>>>> Stashed changes
 }

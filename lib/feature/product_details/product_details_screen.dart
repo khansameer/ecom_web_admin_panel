@@ -49,10 +49,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   provider.product?.bodyHtml ?? '',
                 );
 
-                provider.tetQty.text =
-                    '${provider.product?.variants?.length ?? 0}';
+                final stockInfo = _stockCalculation(provider);
+
+                provider.tetQty.text = stockInfo["inventory"] ?? '';
+
                 provider.tetPrice.text =
                     provider.product?.variants?.first.price ?? "0";
+
+                provider.initializeVariantController(
+                  provider.product?.variants,
+                );
               }
               provider.setIsImageUpdating(false);
             })
@@ -70,13 +76,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     final themeProvider = Provider.of<ThemeProvider>(
       navigatorKey.currentContext!,
     );
-
     final stockInfo = _stockCalculation(provider);
-    final inventory = stockInfo["inventory"];
-    final variants = stockInfo["variants"];
-
+    final inventory = "${stockInfo["inventory"]} in stock";
+    final variants = "for ${stockInfo["variants"]} variants";
     final textPrice = _priceCalculation(provider);
-
     return commonScaffold(
       appBar: commonAppBar(
         title: "Product Details",
@@ -275,7 +278,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                 provider: provider,
                                               ),
                                               SizedBox(height: 16),
-
+                                              // updateVariant(
+                                              //   provider: provider,
+                                              //   variants:
+                                              //       provider
+                                              //           .product
+                                              //           ?.variants ??
+                                              //       [],
+                                              // ),
+                                              /**
+                                               * provider
+                                                                .priceControllers[variant
+                                                                    .id]
+                                               */
                                               _commonHeading(text: "Status"),
                                               SizedBox(height: 16),
                                               CommonDropdown(
@@ -301,14 +316,39 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                     provider.setIsImageUpdating(
                                                       true,
                                                     );
+                                                    final variantsPayload = provider
+                                                        .product
+                                                        ?.variants
+                                                        ?.map((variant) {
+                                                          return {
+                                                            "id": variant.id,
+                                                            "price": provider
+                                                                .tetPrice
+                                                                .text,
+                                                            "inventory_quantity":
+                                                                int.tryParse(
+                                                                  provider
+                                                                      .qtyControllers[variant
+                                                                          .id]!
+                                                                      .text,
+                                                                ) ??
+                                                                0,
+                                                          };
+                                                        })
+                                                        .toList();
                                                     provider
                                                         .updateProductById(
+                                                          title: provider
+                                                              .tetName
+                                                              .text,
                                                           description: provider
                                                               .tetDesc
                                                               .text,
                                                           productId: int.parse(
                                                             widget.productId,
                                                           ),
+                                                          variants:
+                                                              variantsPayload,
                                                         )
                                                         .then((onValue) {
                                                           init();
@@ -369,10 +409,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           )
         : 0;
 
-    return {
-      "inventory": "$totalInventory in stock",
-      "variants": "for $totalVariants variants",
-    };
+    return {"inventory": "$totalInventory", "variants": "$totalVariants"};
   }
 
   _priceCalculation(ProductProvider provider) {

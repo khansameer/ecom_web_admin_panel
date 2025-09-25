@@ -41,25 +41,26 @@ class Products {
   List<Images>? images;
   Images? image;
 
-  Products(
-      {this.id,
-        this.title,
-        this.bodyHtml,
-        this.vendor,
-        this.productType,
-        this.createdAt,
-        this.handle,
-        this.updatedAt,
-        this.publishedAt,
-        this.templateSuffix,
-        this.publishedScope,
-        this.tags,
-        this.status,
-        this.adminGraphqlApiId,
-        this.variants,
-        this.options,
-        this.images,
-        this.image});
+  Products({
+    this.id,
+    this.title,
+    this.bodyHtml,
+    this.vendor,
+    this.productType,
+    this.createdAt,
+    this.handle,
+    this.updatedAt,
+    this.publishedAt,
+    this.templateSuffix,
+    this.publishedScope,
+    this.tags,
+    this.status,
+    this.adminGraphqlApiId,
+    this.variants,
+    this.options,
+    this.images,
+    this.image,
+  });
 
   Products.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -158,34 +159,35 @@ class Variants {
   String? adminGraphqlApiId;
   dynamic imageId;
 
-  Variants(
-      {this.id,
-        this.productId,
-        this.title,
-        this.price,
-        this.position,
-        this.inventoryPolicy,
-        this.compareAtPrice,
-        this.option1,
-        this.option2,
-        this.option3,
-        this.createdAt,
-        this.updatedAt,
-        this.taxable,
-        this.barcode,
-        this.fulfillmentService,
-        this.grams,
-        this.inventoryManagement,
-        this.requiresShipping,
-        this.sku,
-        this.imageUrl,
-        this.weight,
-        this.weightUnit,
-        this.inventoryItemId,
-        this.inventoryQuantity,
-        this.oldInventoryQuantity,
-        this.adminGraphqlApiId,
-        this.imageId});
+  Variants({
+    this.id,
+    this.productId,
+    this.title,
+    this.price,
+    this.position,
+    this.inventoryPolicy,
+    this.compareAtPrice,
+    this.option1,
+    this.option2,
+    this.option3,
+    this.createdAt,
+    this.updatedAt,
+    this.taxable,
+    this.barcode,
+    this.fulfillmentService,
+    this.grams,
+    this.inventoryManagement,
+    this.requiresShipping,
+    this.sku,
+    this.imageUrl,
+    this.weight,
+    this.weightUnit,
+    this.inventoryItemId,
+    this.inventoryQuantity,
+    this.oldInventoryQuantity,
+    this.adminGraphqlApiId,
+    this.imageId,
+  });
 
   Variants.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -289,18 +291,19 @@ class Images {
   String? src;
   List<dynamic>? variantIds;
 
-  Images(
-      {this.id,
-        this.alt,
-        this.position,
-        this.productId,
-        this.createdAt,
-        this.updatedAt,
-        this.adminGraphqlApiId,
-        this.width,
-        this.height,
-        this.src,
-        this.variantIds});
+  Images({
+    this.id,
+    this.alt,
+    this.position,
+    this.productId,
+    this.createdAt,
+    this.updatedAt,
+    this.adminGraphqlApiId,
+    this.width,
+    this.height,
+    this.src,
+    this.variantIds,
+  });
 
   Images.fromJson(Map<String, dynamic> json) {
     id = json['id'];

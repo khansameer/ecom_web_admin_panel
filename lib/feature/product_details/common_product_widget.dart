@@ -65,13 +65,12 @@ commonBannerView({
                               onTap: () {
                                 showCommonDialog(
                                   onPressed: () {
-                                    Navigator.pop(context);
-
                                     provider.deleteProductImage(
                                       imageId: img.id ?? 0,
                                       productId: img.productId ?? 0,
                                       provider: provider,
                                     );
+                                    Navigator.pop(context);
                                   },
                                   confirmText: "Remove",
                                   title: "Remove",
@@ -186,7 +185,7 @@ commonFormView({required ProductProvider provider}) {
       SizedBox(height: 8),
       commonTextField(
         controller: provider.tetName,
-        enabled: false,
+        enabled: true,
         hintText: "Alligator Soft Toy",
       ),
       SizedBox(height: 15),
@@ -194,7 +193,6 @@ commonFormView({required ProductProvider provider}) {
       SizedBox(height: 8),
       commonTextField(
         controller: provider.tetDesc,
-
         enabled: true,
         hintText:
             "The Paraiso blouse embodies effortless warm-weather dressing. The unique cotton eyelet is enhanced by the volume of the tiers, which end in a high-low hem. The puff sleeves add just a touch of sweetness. Shown with the Norte short for a tonal look.",
@@ -214,8 +212,8 @@ commonFormView({required ProductProvider provider}) {
                 SizedBox(height: 8),
                 commonTextField(
                   hintText: "1",
+                  enabled: false,
                   controller: provider.tetQty,
-
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
@@ -232,9 +230,7 @@ commonFormView({required ProductProvider provider}) {
                 SizedBox(height: 8),
                 commonTextField(
                   controller: provider.tetPrice,
-
                   hintText: "\$25",
-
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
@@ -365,11 +361,29 @@ commonVariants({
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                vertical: 4.0,
+                                vertical: 6.0,
                                 horizontal: 10,
                               ),
                               child: commonText(
                                 text: '$rupeeIcon${data?.price}',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 24),
+                          Container(
+                            decoration: commonBoxDecoration(
+                              color: colorBorder.withValues(alpha: 0.1),
+                              borderRadius: 5,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6.0,
+                                horizontal: 10,
+                              ),
+                              child: commonText(
+                                text: 'Qty - ${data?.inventoryQuantity}',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -387,6 +401,113 @@ commonVariants({
         },
       ),
     ],
+  );
+}
+
+updateVariant({
+  required ProductProvider provider,
+  required List<Variants> variants,
+}) {
+  return Column(
+    spacing: 0,
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _commonHeading(text: "Variants"),
+      SizedBox(height: 8),
+      commonListViewBuilder(
+        shrinkWrap: true,
+        padding: EdgeInsetsGeometry.zero,
+        items: variants,
+        itemBuilder: (context, index, data1) {
+          var data = variants[index];
+          final qtyCtrl = provider.qtyControllers[data.id];
+          final priceCtrl = provider.priceControllers[data.id];
+
+          return Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return Container(
+                decoration: commonBoxDecoration(borderColor: colorBorder),
+                margin: EdgeInsets.all(5),
+                padding: EdgeInsets.all(5),
+                child: commonListTile(
+                  textColor: themeProvider.isDark ? Colors.white : colorLogo,
+                  contentPadding: EdgeInsetsGeometry.zero,
+                  leadingIcon: commonNetworkImage(data?.imageUrl ?? ''),
+                  subtitleView: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 8),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+
+                        children: [
+                          commonText(text: "Price"),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: customTextField(
+                              controller: priceCtrl ?? TextEditingController(),
+                              hintText: priceCtrl?.text ?? '',
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          commonText(text: "Qty"),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: customTextField(
+                              controller: qtyCtrl ?? TextEditingController(),
+                              hintText: qtyCtrl?.text ?? '',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  title: data.title ?? '',
+                ),
+              );
+            },
+          );
+        },
+      ),
+    ],
+  );
+}
+
+Widget customTextField({
+  required TextEditingController controller,
+  String hintText = '',
+}) {
+  return TextField(
+    style: commonTextStyle(),
+    controller: controller,
+    textAlign: TextAlign.center,
+    decoration: InputDecoration(
+      hintText: hintText,
+      isDense: true, // removes default vertical padding
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 8,
+      ), // control padding manually
+      filled: true,
+      fillColor: colorBorder.withValues(alpha: 0.1), // background color
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8), // rounded corners
+        borderSide: BorderSide.none, // remove default border
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: Colors.grey, // border color when focused
+          width: 1.5,
+        ),
+      ),
+    ),
   );
 }
 
