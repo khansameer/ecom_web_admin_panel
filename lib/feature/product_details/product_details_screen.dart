@@ -97,7 +97,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 },
                 child: ListView(
                   children: [
-                    SizedBox(height: 8),
+
                     commonBannerView(
                       provider: provider,
                       images: provider.productImages,

@@ -174,7 +174,7 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
           if (index < orders.length) {
             var data = orders[index];
             return commonOrderView(
-              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
               onTap: () {
                 navigatorKey.currentState?.pushNamed(
                   RouteName.orderDetailsScreen,
@@ -242,10 +242,9 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
     return commonInkWell(
       onTap: onTap,
       child: Container(
-        width: 80,
-        height: 80,
+
         margin: EdgeInsets.all(5),
-        padding: const EdgeInsets.all(0),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: commonBoxDecoration(
           color:
               color?.withValues(alpha: 0.05) ??
@@ -258,26 +257,42 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
         ),
         child: Center(
           child: Column(
+            spacing: 6,
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              commonText(
-                color: provider.isDark ? Colors.white : colorLogo,
-                text: title?.toUpperCase() ?? "Paid".toUpperCase(),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-              AnimatedCounter(
-                leftText: '',
-                rightText: '',
-                endValue: value,
-                duration: Duration(seconds: 2),
-                style: commonTextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: provider.isDark ? Colors.white : colorTextDesc1,
+              Container(
+                width: 40,
+                height: 40,
+                padding: EdgeInsets.all(2), // border thickness
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: color ?? Colors.transparent, // border color
+                    width: 1, // border width
+                  ),
+                ),
+                child: Center(
+                  child: AnimatedCounter(
+                    leftText: '',
+                    rightText: '',
+                    endValue: value,
+                    duration: Duration(seconds: 2),
+                    style: commonTextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
+                  ),
                 ),
               ),
+              commonText(
+                color: provider.isDark ? Colors.white : colorLogo,
+                text: title?.toCapitalize() ?? "Paid".toCapitalize(),
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+
             ],
           ),
         ),

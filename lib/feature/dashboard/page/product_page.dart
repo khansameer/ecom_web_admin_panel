@@ -25,6 +25,7 @@ class _ProductPageState extends State<ProductPage> {
   void initState() {
     super.initState();
     init();
+
   }
 
   Future<void> init() async {
@@ -32,11 +33,11 @@ class _ProductPageState extends State<ProductPage> {
       final provider = Provider.of<ProductProvider>(context, listen: false);
 
       provider.resetProducts();
-      provider.getProductList(context: context);
+      provider.getProductListPagination(context: context);
       _scrollController.addListener(() {
         if (_scrollController.position.pixels >=
             _scrollController.position.maxScrollExtent - 100) {
-          provider.getProductList(context: context);
+          provider.getProductListPagination(context: context);
         }
       });
     });
@@ -94,7 +95,7 @@ class _ProductPageState extends State<ProductPage> {
                         filters: filters,
                         onReset: () {
                           provider.resetProducts();
-                          provider.getProductList(
+                          provider.getProductListPagination(
                             context: navigatorKey.currentContext!,
                           );
                         },
@@ -113,9 +114,8 @@ class _ProductPageState extends State<ProductPage> {
               ),
 
               Expanded(
-                child:   provider.isFetching
-                    ?SizedBox.shrink()
-                    :provider.filteredProducts.isNotEmpty
+                child:    provider.isFetching
+                    ?SizedBox.shrink():provider.filteredProducts.isNotEmpty
                     ? ListView.builder(
                         controller: _scrollController,
                         padding: const EdgeInsets.all(12),
@@ -173,7 +173,7 @@ class _ProductPageState extends State<ProductPage> {
                               WidgetsBinding.instance.addPostFrameCallback((
                                 _,
                               ) {
-                                provider.getProductList(context: context);
+                                provider.getProductListPagination(context: context);
                               });
 
                               return const Padding(

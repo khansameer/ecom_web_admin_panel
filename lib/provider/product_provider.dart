@@ -199,12 +199,83 @@ class ProductProvider with ChangeNotifier {
   bool get isImageUpdating => _isImageUpdating;
 
   bool _hasMore = true;
-  final int _limit = 50; // items per page
+  final int _limit = 100; // items per page
   bool get hasMore => _hasMore;
   List<Products> _products = [];
 
   List<Products> get products => _products;
   int? _lastId; // last fetched product ID
+  int _currentPage = 0;
+  int get currentPage => _currentPage;
+  Future<void> getProductListPagination({
+    int? limit,
+    String? status,
+    required BuildContext context,
+    bool reset = false,
+  }) async {
+    if (_isFetching || !_hasMore) return;
+
+    _isFetching = true;
+    notifyListeners();
+
+    try {
+      final effectiveLimit = limit ?? _limit;
+
+      if (reset) {
+        _lastId = null;
+        _products.clear();
+        _hasMore = true;
+        _currentPage = 0;
+      }
+
+      String url =
+          '${ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
+      if (status != null && status.isNotEmpty) url += "&status=$status";
+      if (_lastId != null) url += '&since_id=$_lastId';
+
+      final response = await callGETMethod(url: url);
+
+      if (globalStatusCode == 200) {
+        final fetchedProducts =
+            ProductModel.fromJson(json.decode(response)).products ?? [];
+
+        if (fetchedProducts.isNotEmpty) {
+          // Remove duplicates before adding
+          final newItems = fetchedProducts
+              .where((p) => !_products.any((e) => e.id == p.id))
+              .toList();
+
+          if (newItems.isNotEmpty) {
+            _products.addAll(newItems);
+            _lastId = newItems.last.id;
+            _currentPage++;
+            debugPrint("📄 Loaded page: $_currentPage");
+            debugPrint("📦 Total items loaded: ${_products.length}");
+          } else {
+            // No new items → stop pagination
+            _hasMore = false;
+            debugPrint("✅ All products loaded, stopping pagination.");
+          }
+        } else {
+          _hasMore = false;
+          debugPrint("✅ No more products returned from API.");
+        }
+        // stop fetching if we have loaded all 278
+        if (_products.length >= 278) {
+          _hasMore = false;
+          debugPrint("✅ Loaded all 278 products.");
+        }
+
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("⚠️ Unexpected Error: $e");
+    } finally {
+      _isFetching = false;
+      notifyListeners();
+    }
+  }
+
 
   Future<void> getProductList({
     int? limit,
