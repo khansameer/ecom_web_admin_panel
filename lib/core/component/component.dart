@@ -387,6 +387,7 @@ Widget commonListTile({
   double titleFontSize = 14,
   Color? tileColor,
   TextOverflow? overflow,
+  bool? isCustomer = false,
   EdgeInsetsGeometry contentPadding = const EdgeInsets.symmetric(
     horizontal: 16,
     vertical: 0,
@@ -581,8 +582,7 @@ Center commonErrorView({String? text}) {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-
-        commonAssetImage(icNoData,width: 100,height: 100,),
+        commonAssetImage(icNoData, width: 100, height: 100),
         commonText(
           textAlign: TextAlign.center,
           text: text ?? "No data Found",
