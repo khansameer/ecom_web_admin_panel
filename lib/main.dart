@@ -69,8 +69,6 @@ Future<void> main() async {
     NotificationService.firebaseMessagingBackgroundHandler,
   );
 
- // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   runApp(
     MultiProvider(
       providers: providers,
@@ -87,7 +85,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
     return MaterialApp(
       scaffoldMessengerKey: rootScaffoldMessengerKey,
       navigatorKey: navigatorKey,

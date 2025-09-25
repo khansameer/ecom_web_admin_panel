@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -19,10 +18,12 @@ class ProductProvider with ChangeNotifier {
   var tetPrice = TextEditingController();
 
   List<Images> productImages = [];
+
   //Girsh - 24-Sept-2025
   // dynamic controllers mapped by variant id
   final Map<int, TextEditingController> qtyControllers = {};
   final Map<int, TextEditingController> priceControllers = {};
+
   // initialize controllers based on variants
 
   void initializeVariantController(List<Variants>? variants) {
@@ -215,9 +216,7 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final effectiveLimit =
-          limit ??
-          _limit; // agar limit pass ho to use kare, warna default _limit
+      final effectiveLimit = limit ?? _limit;
 
       String url =
           '${ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
@@ -283,7 +282,7 @@ class ProductProvider with ChangeNotifier {
       final response = await callGETMethod(url: url);
       if (globalStatusCode == 200) {
         final jsonData = json.decode(response);
-        // Use "product" key for single product
+
         _product = Products.fromJson(jsonData['product']);
       }
     } catch (e) {
@@ -339,10 +338,8 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
 
     final urlString = "${ApiConfig.baseUrl}/products/$productId/images.json";
-    // read as bytes
     final bytes = await File(imagePath).readAsBytes();
 
-    // convert to base64
     final base64Image = base64Encode(bytes);
 
     final response = await callPostMethodWithToken(
@@ -355,7 +352,6 @@ class ProductProvider with ChangeNotifier {
       final data = json.decode(response);
       final imageJson = data["image"];
       if (imageJson != null) {
-        // Convert JSON → Images model
         final newImage = Images.fromJson(imageJson);
         productImages.add(newImage);
         _isImageUpdating = false;
@@ -380,10 +376,8 @@ class ProductProvider with ChangeNotifier {
     await callDeleteMethod(url: urlString);
 
     if (globalStatusCode == 200) {
-      // Remove image from local list
       productImages.removeWhere((img) => img.id == imageId);
 
-      // Adjust currentIndex if needed
       if (currentIndex >= productImages.length && currentIndex > 0) {
         setCurrentIndex(productImages.length - 1); // ✅ Correct
       }
@@ -412,7 +406,6 @@ class ProductProvider with ChangeNotifier {
       url: urlString,
     );
     if (globalStatusCode == 200) {
-      //print("updated:- $response");
     } else {}
   }
 
@@ -420,7 +413,9 @@ class ProductProvider with ChangeNotifier {
   DateTime? _endDate;
 
   DateTime? get startDate => _startDate;
+
   DateTime? get endDate => _endDate;
+
   void setDateRange(DateTime start, DateTime end) {
     _startDate = start;
     _endDate = end;

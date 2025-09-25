@@ -12,5 +12,5 @@ class ApiConfig {
   static const totalOrderUrl = '$baseUrl/orders/count.json';
   static const getImageUrl = '$baseUrl/products';
   static const getCustomerImage = '$baseUrl/customers';
-  static const getOrderById= '$baseUrl/orders';
+  static const getOrderById = '$baseUrl/orders';
 }

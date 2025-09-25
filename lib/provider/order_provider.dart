@@ -75,6 +75,7 @@ class OrdersProvider with ChangeNotifier {
   bool get hasMore => _hasMore;
 
   final List<Order> _orders = [];
+
   List<Order> get orders => _orders;
 
   // Store totals
@@ -89,34 +90,7 @@ class OrdersProvider with ChangeNotifier {
   void setSelectedTab(String tab) {
     selectedTab = tab;
     notifyListeners();
-    // 🚫 Yahan API call nahi hogi
   }
-
-  /*  void setSelectedTab(String tab) {
-    selectedTab = tab;
-    notifyListeners();
-
-    // Tab ke hisaab se filter API call karo
-    switch (tab) {
-      case "Paid":
-        orderCountStatusValue(financialStatus: "paid");
-        break;
-      case "Pending":
-        orderCountStatusValue(financialStatus: "pending");
-        break;
-      case "Shipping":
-        orderCountStatusValue(financialStatus: "shipping");
-        break;
-      case "Refunded":
-        orderCountStatusValue(financialStatus: "refunded");
-        break;
-      case "Cancel":
-        orderCountStatusValue(financialStatus: "cancelled");
-        break;
-      default:
-        orderCountStatusValue(); // fallback
-    }
-  }*/
 
   void resetData() {
     _orders.clear();
@@ -142,7 +116,6 @@ class OrdersProvider with ChangeNotifier {
         url += encodedTitle;
       }
 
-      print('========uir$url');
       final response = await callGETMethod(url: url);
       if (globalStatusCode == 200) {
         final data = json.decode(response);
@@ -324,7 +297,19 @@ class OrdersProvider with ChangeNotifier {
 
   //Girish 25-Sep
   final List<Order> _customerOrders = [];
+
   List<Order> get customerOrders => _customerOrders;
+
+  List<Order> get filterCustomerOrderList {
+    return _customerOrders.where((p) {
+      final matchesSearch = p.name.toString().toLowerCase().contains(
+        _searchQuery.toLowerCase(),
+      );
+
+      //return matchesSearch && matchesCategory && matchesStatus;
+      return matchesSearch;
+    }).toList();
+  }
 
   Future<void> getOrdersByCustomerId({required String customerId}) async {
     _customerOrders.clear();
@@ -476,15 +461,6 @@ class OrdersProvider with ChangeNotifier {
 
     getOrderByDate(isDashboard: false, startDate: startDate, endDate: endDate);
   }
-
-  /*  String _selectedTab = "Paid";
-
-  String get selectedTab => _selectedTab;
-
-  void setSelectedTab(String tab) {
-    _selectedTab = tab;
-    notifyListeners();
-  }*/
 }
 
 class SalesData {

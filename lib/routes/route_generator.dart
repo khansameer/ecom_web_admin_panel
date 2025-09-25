@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:neeknots/feature/customer_details/customer_order_page.dart';
-import 'package:neeknots/feature/sales_details_screen.dart';
 import 'package:neeknots/feature/change_password/change_password_screen.dart';
 import 'package:neeknots/feature/customer_details/customer_detail_page.dart';
+import 'package:neeknots/feature/customer_details/customer_order_page.dart';
 import 'package:neeknots/feature/edit_profile/edit_profile_screen.dart';
 import 'package:neeknots/feature/notification/notification_screen.dart';
 import 'package:neeknots/feature/order_details/order_details_screen.dart';
 import 'package:neeknots/feature/product_details/add_product_screen.dart';
 import 'package:neeknots/feature/product_details/product_details_screen.dart';
+import 'package:neeknots/feature/sales_details_screen.dart';
 import 'package:neeknots/feature/total_order_screen.dart';
-
-import 'package:neeknots/models/product_model.dart';
 import 'package:neeknots/models/customer_model.dart';
 
 import '../feature/dashboard/dashboard_screen.dart';
