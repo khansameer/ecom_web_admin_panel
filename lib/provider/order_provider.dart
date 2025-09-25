@@ -7,7 +7,9 @@ import 'package:neeknots/models/order_model.dart';
 import 'package:neeknots/service/gloable_status_code.dart';
 import 'package:neeknots/service/network_repository.dart';
 
-import '../models/order_details_model.dart' as orderDetails show OrderDetailsModel;
+import '../models/order_details_model.dart'
+    as orderDetails
+    show OrderDetailsModel;
 import '../service/api_config.dart';
 
 class OrdersProvider with ChangeNotifier {
@@ -28,21 +30,14 @@ class OrdersProvider with ChangeNotifier {
 
   String get selectedStatus => _selectedStatus;
 
-  void resetData() {
-    _searchQuery = "";
-    _orders.clear();
-
-    //   _applyFilters();
-  }
-
   /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
 
   void filterByStatus(String status) {
     String apiStatus = status.toLowerCase().replaceAll(' ', '_');
     if (status == "all") {
-      getOrderList(status: null);
+      getOrderList(financialStatus: null);
     } else {
-      getOrderList(status: apiStatus);
+      getOrderList(financialStatus: apiStatus);
     }
 
     _selectedStatus = status;
@@ -70,8 +65,6 @@ class OrdersProvider with ChangeNotifier {
         _searchQuery.toLowerCase(),
       );
 
-
-
       //return matchesSearch && matchesCategory && matchesStatus;
       return matchesSearch;
     }).toList();
@@ -85,15 +78,116 @@ class OrdersProvider with ChangeNotifier {
 
   List<Order> get orders => _orders;
 
-  Future<void> getOrderList({int? limit, String? status}) async {
+  // Store totals
+  int totalPaid = 0;
+  int totalPending = 0;
+  int totalRefunded = 0;
+  int totalShipping = 0;
+  int totalCancel = 0;
+  String selectedTab = "Paid";
+  List<Order> filterTotalOrderList = [];
+
+  void setSelectedTab(String tab) {
+    selectedTab = tab;
+    notifyListeners();
+    // 🚫 Yahan API call nahi hogi
+  }
+
+  /*  void setSelectedTab(String tab) {
+    selectedTab = tab;
+    notifyListeners();
+
+    // Tab ke hisaab se filter API call karo
+    switch (tab) {
+      case "Paid":
+        orderCountStatusValue(financialStatus: "paid");
+        break;
+      case "Pending":
+        orderCountStatusValue(financialStatus: "pending");
+        break;
+      case "Shipping":
+        orderCountStatusValue(financialStatus: "shipping");
+        break;
+      case "Refunded":
+        orderCountStatusValue(financialStatus: "refunded");
+        break;
+      case "Cancel":
+        orderCountStatusValue(financialStatus: "cancelled");
+        break;
+      default:
+        orderCountStatusValue(); // fallback
+    }
+  }*/
+
+  void resetData() {
+    _orders.clear();
+    filterOrderList.clear();
+    _searchQuery = "";
+    _orders.clear();
+    totalPaid = totalPending = totalRefunded = totalShipping = totalCancel = 0;
+    notifyListeners();
+  }
+
+  Future<void> getOrderList({int? limit, String? financialStatus}) async {
+    _orders.clear(); // only clear when fetching all orders
+
     _isFetching = true;
     notifyListeners();
     final effectiveLimit = limit ?? _limit;
 
     try {
-      String url = '${ApiConfig.ordersUrl}?limit=$effectiveLimit&order=id+asc';
-      if (status != null && status.isNotEmpty) {
-        final encodedTitle = "&financial_status=$status";
+      String url =
+          '${ApiConfig.ordersUrl}?status=any&limit=$effectiveLimit&order=id+asc';
+      if (financialStatus != null && financialStatus.isNotEmpty) {
+        final encodedTitle = "&financial_status=$financialStatus";
+        url += encodedTitle;
+      }
+
+      print('========uir$url');
+      final response = await callGETMethod(url: url);
+      if (globalStatusCode == 200) {
+        final data = json.decode(response); // ✅ now .body works
+
+        final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
+        if (fetchedOrders.isNotEmpty) {
+          _orders.addAll(fetchedOrders);
+          notifyListeners();
+        } else {
+          _orders.clear();
+        }
+
+        _isFetching = false;
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error fetching orders: $e');
+    } finally {
+      _isFetching = false;
+      notifyListeners();
+    }
+  }
+
+  Map<String, List<Order>> _ordersByStatus = {};
+
+  Map<String, List<Order>> get ordersByStatus => _ordersByStatus;
+
+  // selected tab orders
+  List<Order> get selectedOrders =>
+      _ordersByStatus[selectedTab.toLowerCase()] ?? [];
+
+  Future<void> orderCountStatusValue({
+    int? limit,
+    String? financialStatus,
+  }) async {
+    _isFetching = true;
+    notifyListeners();
+    final effectiveLimit = limit ?? _limit;
+
+    try {
+      String url =
+          '${ApiConfig.ordersUrl}?status=any&limit=$effectiveLimit&order=id+asc';
+      if (financialStatus != null && financialStatus.isNotEmpty) {
+        final encodedTitle = "&financial_status=$financialStatus";
         url += encodedTitle;
       }
 
@@ -102,23 +196,35 @@ class OrdersProvider with ChangeNotifier {
         final data = json.decode(response); // ✅ now .body works
 
         final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
-        if(fetchedOrders.isNotEmpty){
 
-          _orders.addAll(fetchedOrders);
+        totalPaid = fetchedOrders
+            .where((e) => e.financialStatus?.toLowerCase() == 'paid')
+            .length;
+        totalPending = fetchedOrders
+            .where((e) => e.financialStatus?.toLowerCase() == 'pending')
+            .length;
+        totalRefunded = fetchedOrders
+            .where((e) => e.financialStatus?.toLowerCase() == 'refunded')
+            .length;
+        totalShipping = fetchedOrders
+            .where((e) => e.financialStatus?.toLowerCase() == 'shipping')
+            .length;
+        totalCancel = fetchedOrders
+            .where((e) => e.financialStatus?.toLowerCase() == 'cancelled')
+            .length;
+        _ordersByStatus.clear(); // ✅ naya fetch hote hi purana clear karo
+        for (var order in fetchedOrders) {
+          final status = order.financialStatus?.toLowerCase() ?? 'unknown';
+          _ordersByStatus.putIfAbsent(status, () => []);
+          _ordersByStatus[status]!.add(order);
         }
-        else
-          {
-            _orders.clear();
-          }
 
         _isFetching = false;
         notifyListeners();
       }
     } catch (e) {
-
       debugPrint('Error fetching orders: $e');
     } finally {
-
       _isFetching = false;
       notifyListeners();
     }
@@ -135,7 +241,9 @@ class OrdersProvider with ChangeNotifier {
     _isFetching = true;
     notifyListeners();
 
-    final response = await callGETMethod(url: ApiConfig.totalOrderUrl);
+    final response = await callGETMethod(
+      url: '${ApiConfig.totalOrderUrl}?status=any',
+    );
 
     if (globalStatusCode == 200) {
       final data = json.decode(response);
@@ -339,6 +447,15 @@ class OrdersProvider with ChangeNotifier {
 
     getOrderByDate(isDashboard: false, startDate: startDate, endDate: endDate);
   }
+
+  /*  String _selectedTab = "Paid";
+
+  String get selectedTab => _selectedTab;
+
+  void setSelectedTab(String tab) {
+    _selectedTab = tab;
+    notifyListeners();
+  }*/
 }
 
 class SalesData {

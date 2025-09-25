@@ -64,49 +64,41 @@ class _HomePageState extends State<HomePage> {
       child: Consumer3<OrdersProvider, ProductProvider, CustomerProvider>(
         builder:
             (context, orderProvider, productProvider, customerProvider, child) {
-              return Stack(
+              return ListView(
+                shrinkWrap: true,
+
+                padding: EdgeInsets.all(12),
                 children: [
-                  ListView(
-                    shrinkWrap: true,
-
-                    padding: EdgeInsets.all(12),
-                    children: [
-                      homeTopView(
-                        totalOrderPrice: orderProvider.totalOrderPrice,
-                        totalOrder: orderProvider.totalOrderCount,
-                        totalProduct: productProvider.totalProductCount,
-                        totalCustomer: customerProvider.totalCustomerCount,
-                        totalSaleOrder: orderProvider.totalOrderSaleCount,
-                      ),
-                      SizedBox(height: 24),
-                      SizedBox(height: 300, child: homeGraphView(isSaleDetails: false)),
-                      SizedBox(height: 24),
-                      Consumer<DashboardProvider>(
-                        builder: (context, provider, child) {
-                          return commonTopProductListView(
-                            onTap: () {
-                              provider.setIndex(0);
-                            },
-                          );
-                        },
-                      ),
-
-                      SizedBox(height: 24),
-                      Consumer<DashboardProvider>(
-                        builder: (context, provider, child) {
-                          return commonTopOrderListView(
-                            onTap: () {
-                              provider.setIndex(1);
-                            },
-                          );
-                        },
-                      ),
-                    ],
+                  homeTopView(
+                    totalOrderPrice: orderProvider.totalOrderPrice,
+                    totalOrder: orderProvider.totalOrderCount,
+                    totalProduct: productProvider.totalProductCount,
+                    totalCustomer: customerProvider.totalCustomerCount,
+                    totalSaleOrder: orderProvider.totalOrderSaleCount,
                   ),
-                 // showLoaderList11(),
-                 /* orderProvider.isFetching || productProvider.isFetching
-                      ? showLoaderList()
-                      : SizedBox.shrink(),*/
+                  SizedBox(height: 24),
+                  SizedBox(height: 300, child: homeGraphView(isSaleDetails: false)),
+                  SizedBox(height: 24),
+                  Consumer<DashboardProvider>(
+                    builder: (context, provider, child) {
+                      return commonTopProductListView(
+                        onTap: () {
+                          provider.setIndex(0);
+                        },
+                      );
+                    },
+                  ),
+
+                  SizedBox(height: 24),
+                  Consumer<DashboardProvider>(
+                    builder: (context, provider, child) {
+                      return commonTopOrderListView(
+                        onTap: () {
+                          provider.setIndex(1);
+                        },
+                      );
+                    },
+                  ),
                 ],
               );
             },

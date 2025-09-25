@@ -18,7 +18,8 @@ class CommonDateRangePicker {
 
       dismissible: true,
       minimumDate: DateTime.now().subtract(const Duration(days: 30)),
-      maximumDate: DateTime.now().add(const Duration(days: 30)),
+      //maximumDate: DateTime.now().add(const Duration(days: 30)),
+      maximumDate: DateTime.now(), // ✅ only till today
       startDate: provider.startDate,
       endDate: provider.endDate,
       fontFamily: fontPoppins,

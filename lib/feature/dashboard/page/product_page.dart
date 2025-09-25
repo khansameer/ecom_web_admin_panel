@@ -56,146 +56,144 @@ class _ProductPageState extends State<ProductPage> {
       },
       child: Consumer<ProductProvider>(
         builder: (context, provider, child) {
-          return SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 18.0,
-                    left: 18,
-                    right: 18,
-                  ),
-                  child: commonTextField(
-                    hintText: "Search products by name...",
-                    prefixIcon: commonPrefixIcon(
-                      image: icProductSearch,
-                      width: 16,
-                      height: 16,
-                    ),
-
-                    suffixIcon: IconButton(
-                      icon: commonPrefixIcon(
-                        image: icProductFilter,
-                        width: 20,
-                        height: 20,
-                      ),
-                      onPressed: () {
-                        final filters = [
-                          FilterItem(
-                            label: "Status",
-                            options: ["All", "Active", "Draft", "Archived"],
-                            selectedValue: provider.selectedStatus
-                                .toString()
-                                .toCapitalize(), // 👈 provider से लो
-                          ),
-                        ];
-                        showCommonFilterDialog(
-                          context: context,
-                          title: "Filter Product",
-                          filters: filters,
-                          onReset: () {
-                            provider.resetProducts();
-                            provider.getProductList(
-                              context: navigatorKey.currentContext!,
-                            );
-                          },
-                          onApply: () {
-                            final selectedStatus = filters
-                                .firstWhere((f) => f.label == "Status")
-                                .selectedValue;
-
-                            provider.setStatus(selectedStatus.toLowerCase());
-                          },
-                        );
-                      },
-                    ),
-                    onChanged: (value) => provider.setSearchQuery(value),
-                  ),
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 18.0,
+                  left: 18,
+                  right: 18,
                 ),
+                child: commonTextField(
+                  hintText: "Search products by name...",
+                  prefixIcon: commonPrefixIcon(
+                    image: icProductSearch,
+                    width: 16,
+                    height: 16,
+                  ),
 
-                Expanded(
-                  child:   provider.isFetching
-                      ?SizedBox.shrink()
-                      :provider.filteredProducts.isNotEmpty
-                      ? ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.all(12),
-                          itemCount:
-                              provider.hasMore && provider.searchQuery.isEmpty
-                              ? provider.filteredProducts.length + 1
-                              : provider.filteredProducts.length,
-                          itemBuilder: (context, index) {
-                            if (index < provider.filteredProducts.length) {
-                              var data = provider.filteredProducts[index];
-                              final totalVariants = data.variants?.length ?? 0;
-                              num? totalInventory =
-                                  data.variants?.isNotEmpty == true
-                                  ? data.variants?.fold(
-                                      0,
-                                      (sum, variant) =>
-                                          sum! +
-                                          (variant.inventoryQuantity ?? 0),
+                  suffixIcon: IconButton(
+                    icon: commonPrefixIcon(
+                      image: icProductFilter,
+                      width: 20,
+                      height: 20,
+                    ),
+                    onPressed: () {
+                      final filters = [
+                        FilterItem(
+                          label: "Status",
+                          options: ["All", "Active", "Draft", "Archived"],
+                          selectedValue: provider.selectedStatus
+                              .toString()
+                              .toCapitalize(), // 👈 provider से लो
+                        ),
+                      ];
+                      showCommonFilterDialog(
+                        context: context,
+                        title: "Filter Product",
+                        filters: filters,
+                        onReset: () {
+                          provider.resetProducts();
+                          provider.getProductList(
+                            context: navigatorKey.currentContext!,
+                          );
+                        },
+                        onApply: () {
+                          final selectedStatus = filters
+                              .firstWhere((f) => f.label == "Status")
+                              .selectedValue;
+
+                          provider.setStatus(selectedStatus.toLowerCase());
+                        },
+                      );
+                    },
+                  ),
+                  onChanged: (value) => provider.setSearchQuery(value),
+                ),
+              ),
+
+              Expanded(
+                child:   provider.isFetching
+                    ?SizedBox.shrink()
+                    :provider.filteredProducts.isNotEmpty
+                    ? ListView.builder(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.all(12),
+                        itemCount:
+                            provider.hasMore && provider.searchQuery.isEmpty
+                            ? provider.filteredProducts.length + 1
+                            : provider.filteredProducts.length,
+                        itemBuilder: (context, index) {
+                          if (index < provider.filteredProducts.length) {
+                            var data = provider.filteredProducts[index];
+                            final totalVariants = data.variants?.length ?? 0;
+                            num? totalInventory =
+                                data.variants?.isNotEmpty == true
+                                ? data.variants?.fold(
+                                    0,
+                                    (sum, variant) =>
+                                        sum! +
+                                        (variant.inventoryQuantity ?? 0),
+                                  )
+                                : 0;
+
+                            return commonProductListView(
+                              image: data.image?.src ?? '',
+                              onTap: () {
+                                if (data.id != null) {
+                                  navigatorKey.currentState?.pushNamed(
+                                    RouteName.productDetailsScreen,
+                                    arguments: data.id.toString(),
+                                  );
+                                }
+                              },
+                              price: data.variants?.isNotEmpty == true
+                                  ? '$rupeeIcon${data.variants?.first.price}'
+                                  : '$rupeeIcon 0',
+                              textInventory1: "$totalInventory in stock",
+                              textInventory2: ' for $totalVariants variants',
+                              productName: data.title ?? '',
+                              status: data.status.toString().toCapitalize(),
+                              colorStatusColor:
+                                  data.status?.isNotEmpty == true
+                                  ? provider.getStatusColor(
+                                      data.status.toString().toCapitalize(),
                                     )
-                                  : 0;
+                                  : Colors.grey,
+                              decoration: commonBoxDecoration(
+                                borderRadius: 8,
+                                borderWidth: 0.5,
+                              ),
+                            );
+                          } else {
+                            // 🔹 Loader sirf infinite scroll (search off) me
+                            if (provider.searchQuery.isEmpty &&
+                                provider.hasMore) {
+                              // Trigger next page
+                              WidgetsBinding.instance.addPostFrameCallback((
+                                _,
+                              ) {
+                                provider.getProductList(context: context);
+                              });
 
-                              return commonProductListView(
-                                image: data.image?.src ?? '',
-                                onTap: () {
-                                  if (data.id != null) {
-                                    navigatorKey.currentState?.pushNamed(
-                                      RouteName.productDetailsScreen,
-                                      arguments: data.id.toString(),
-                                    );
-                                  }
-                                },
-                                price: data.variants?.isNotEmpty == true
-                                    ? '$rupeeIcon${data.variants?.first.price}'
-                                    : '$rupeeIcon 0',
-                                textInventory1: "$totalInventory in stock",
-                                textInventory2: ' for $totalVariants variants',
-                                productName: data.title ?? '',
-                                status: data.status.toString().toCapitalize(),
-                                colorStatusColor:
-                                    data.status?.isNotEmpty == true
-                                    ? provider.getStatusColor(
-                                        data.status.toString().toCapitalize(),
-                                      )
-                                    : Colors.grey,
-                                decoration: commonBoxDecoration(
-                                  borderRadius: 8,
-                                  borderWidth: 0.5,
+                              return const Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Center(
+                                  child: CupertinoActivityIndicator(
+                                    color: Colors.black,
+                                  ),
                                 ),
                               );
                             } else {
-                              // 🔹 Loader sirf infinite scroll (search off) me
-                              if (provider.searchQuery.isEmpty &&
-                                  provider.hasMore) {
-                                // Trigger next page
-                                WidgetsBinding.instance.addPostFrameCallback((
-                                  _,
-                                ) {
-                                  provider.getProductList(context: context);
-                                });
-
-                                return const Padding(
-                                  padding: EdgeInsets.all(16),
-                                  child: Center(
-                                    child: CupertinoActivityIndicator(
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                // 🔹 Agar search ya no more data
-                                return const SizedBox.shrink();
-                              }
+                              // 🔹 Agar search ya no more data
+                              return const SizedBox.shrink();
                             }
-                          },
-                        )
-                      : commonErrorView( text: "Product Not Found."),
-                ),
-              ],
-            ),
+                          }
+                        },
+                      )
+                    : commonErrorView( text: "Product Not Found."),
+              ),
+            ],
           );
         },
       ),

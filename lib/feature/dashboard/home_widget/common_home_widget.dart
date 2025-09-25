@@ -125,11 +125,7 @@ _commonDashboardView({
   String? rightText,
   void Function()? onTap,
 }) {
-  /*  AnimatedCounter(
-    endValue: 4215,
-    duration: Duration(seconds: 3),
-    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
-  ),*/
+
   return commonInkWell(
     onTap: onTap,
     child: Container(
@@ -337,7 +333,7 @@ homeGraphView({required bool isSaleDetails}) {
             Flexible(
               child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {
-                  print('==============${data.length}');
+
                   return orderProvider.isFetching
                       ? SizedBox.shrink()
                       : chartData.isNotEmpty
