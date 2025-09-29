@@ -8,6 +8,11 @@ const String icPassword="$iconLoginPath/padlock.png";
 const String icPasswordShow="$iconLoginPath/show.png";
 const String icPasswordHide="$iconLoginPath/hide.png";
 const String icPhone="$iconLoginPath/ic_phone.png";
+const String icStore="$iconLoginPath/store.png";
+const String icUser="$iconLoginPath/user.png";
+const String icNetwork="$iconLoginPath/network.png";
+//const String icAppLogo="$iconLoginPath/app_logo.jpg";
+const String icAppLogo="$iconLoginPath/applogo.png";
 
 //==============================dashboard=============================
 const String iconDashboardPath="$basePath/dashboard";

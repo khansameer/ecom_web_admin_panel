@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../core/firebase/auth_service.dart';
+import '../core/hive/app_config_cache.dart';
+
 class ProfileProvider with ChangeNotifier {
   bool _isFetching = false;
 
@@ -55,5 +58,32 @@ class ProfileProvider with ChangeNotifier {
     tetLName.dispose();
     tetPhoneNo.dispose();
     super.dispose();
+  }
+
+  Map<String, dynamic>? _userData;
+
+  Map<String, dynamic>? get userData => _userData;
+
+  Future<Map<String, dynamic>?> loadUserData() async {
+    _userData?.clear();
+    _isLoading = true;
+    notifyListeners();
+    String? storedEmailOrMobile = await AppConfigCache.getStoredEmailOrMobile();
+
+    final userData = await AuthService().checkUserStatus(
+      emailOrMobile: storedEmailOrMobile ?? '',
+    );
+
+    _userData = userData;
+
+    _isLoading = false;
+    notifyListeners();
+    return _userData;
+  }
+
+  /// Optional: Clear user data
+  void clearUserData() {
+    _userData?.clear();
+    notifyListeners();
   }
 }

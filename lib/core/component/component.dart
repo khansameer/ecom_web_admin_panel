@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -220,7 +221,7 @@ Widget commonButton({
   final double? fontSize,
   final FontWeight? fontWeight,
   final Widget? icon,
-  final List<Color>? gradientColors,
+
   final EdgeInsetsGeometry? padding,
 }) {
   return Consumer<ThemeProvider>(
@@ -230,7 +231,7 @@ Widget commonButton({
         width: width ?? MediaQuery.sizeOf(navigatorKey.currentContext!).width,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: provider.isDark ? Colors.white : colorLogo,
+            color:color??( provider.isDark ? Colors.white : colorLogo),
 
             borderRadius: BorderRadius.circular(radius ?? 15),
           ),
@@ -858,9 +859,10 @@ commonSubTitleText({String? text}) {
   );
 }
 
-commonDescriptionText({String? text}) {
+commonDescriptionText({String? text,TextAlign ?textAlign}) {
   return commonText(
     text: text ?? '',
+    textAlign: textAlign,
     fontWeight: FontWeight.w400,
     fontSize: 12,
   );
@@ -1063,6 +1065,8 @@ Widget commonCircleNetworkImage(
   String? imageUrl, {
   double size = 60,
   double borderWidth = 0,
+      String ?errorPath,
+      BoxShape? shape,
   Color borderColor = Colors.white,
   BoxFit fit = BoxFit.cover,
   Widget? placeholder,
@@ -1078,7 +1082,7 @@ Widget commonCircleNetworkImage(
     height: size,
     padding: EdgeInsets.all(borderWidth),
     decoration: BoxDecoration(
-      shape: BoxShape.circle,
+      shape:shape?? BoxShape.circle,
       border: Border.all(color: borderColor, width: borderWidth),
     ),
     child: ClipOval(
@@ -1092,9 +1096,11 @@ Widget commonCircleNetworkImage(
                   placeholder ??
                   Center(child: CircularProgressIndicator(strokeWidth: 2)),
               errorWidget: (context, url, error) =>
-                  errorWidget ?? Center(child: commonAssetImage(icDummyUser)),
+                  errorWidget ?? Center(child: commonAssetImage(
+
+                      errorPath??icDummyUser)),
             )
-          : (errorWidget ?? Center(child: commonAssetImage(icDummyUser))),
+          : (errorWidget ?? Center(child: commonAssetImage(errorPath??icDummyUser))),
     ),
   );
 }
@@ -1200,7 +1206,7 @@ Future<String?> fetchProductImage({
   required int productId,
   required int variantId,
 }) async {
-  final url = '${ApiConfig.getImageUrl}/$productId.json';
+  final url = '${await ApiConfig.getImageUrl}/$productId.json';
   final response = await callGETMethod(url: url);
   if (globalStatusCode == 200) {
     final data = json.decode(response);
@@ -1258,5 +1264,34 @@ commonRefreshIndicator({
     strokeWidth: 2,
     onRefresh: onRefresh,
     child: child,
+  );
+}
+Widget commonTextRich({
+  String? text1,
+  String? text2,
+  TextAlign? textAlign,
+  TextStyle? textStyle1,
+  TextStyle? textStyle2,
+  GestureRecognizer? onTap,
+}) {
+  return Text.rich(
+    textAlign: textAlign ?? TextAlign.center,
+    TextSpan(
+      children: [
+        TextSpan(
+          text: text1 ?? 'Sign in ',
+          style:
+          textStyle1 ??
+              commonTextStyle(fontWeight: FontWeight.w700, fontSize: 36),
+        ),
+        TextSpan(
+          recognizer: onTap,
+          text: text2 ?? 'to your\nAccount ',
+          style:
+          textStyle2 ??
+              commonTextStyle(fontWeight: FontWeight.w400, fontSize: 36),
+        ),
+      ],
+    ),
   );
 }

@@ -17,8 +17,29 @@ samples, guidance on mobile development, and a full API reference.
 
 
 
-          SwitchListTile(
-            title: const Text("Dark Mode"),
-            value: themeProvider.isDark,
-            onChanged: (value) => themeProvider.toggleTheme(),
-          ),
+ElevatedButton(
+onPressed: () async {
+// Check Firestore for email+mobile
+final authService = FirestoreAuthService();
+final user = await authService.loginUser(
+email: _emailController.text.trim(),
+mobile: _mobileController.text.trim(),
+);
+
+    if (user != null) {
+      // Send OTP
+      final otpService = OtpService();
+      await otpService.sendEmailOtp(user["email"]);
+      await otpService.sendMobileOtp(user["mobile"]);
+
+      // Navigate to OTP verification screen
+      Navigator.push(context, MaterialPageRoute(
+        builder: (_) => OtpVerificationScreen(userData: user)
+      ));
+    }
+},
+child: const Text("Send OTP"),
+)
+
+
+flutter pub run build_runner build --delete-conflicting-outputs

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/feature/auth/otp_verification_screen.dart';
+import 'package:neeknots/feature/auth/signup/signup_screen.dart';
 import 'package:neeknots/feature/change_password/change_password_screen.dart';
 import 'package:neeknots/feature/customer_details/customer_detail_page.dart';
 import 'package:neeknots/feature/customer_details/customer_order_page.dart';
 import 'package:neeknots/feature/edit_profile/edit_profile_screen.dart';
+import 'package:neeknots/feature/inactive_account_screen/inactive_account_screen.dart';
 import 'package:neeknots/feature/notification/notification_screen.dart';
 import 'package:neeknots/feature/order_details/order_details_screen.dart';
 import 'package:neeknots/feature/product_details/add_product_screen.dart';
@@ -11,12 +14,12 @@ import 'package:neeknots/feature/sales_details_screen.dart';
 import 'package:neeknots/feature/total_order_screen.dart';
 import 'package:neeknots/models/customer_model.dart';
 
+import '../feature/auth/login_screen.dart';
 import '../feature/dashboard/dashboard_screen.dart';
-import '../feature/login/login_screen.dart';
+
 import '../feature/splash/splash_screen.dart';
 import '../feature/total_customer_screen.dart';
 import '../feature/total_product_screen.dart';
-import '../models/order_model.dart' hide Customer;
 import 'app_routes.dart';
 
 class RouteGenerate {
@@ -51,9 +54,9 @@ class RouteGenerate {
         );
 
       case RouteName.orderDetailsScreen:
-        final args = settings.arguments as Order;
+        final args = settings.arguments as int;
         return MaterialPageRoute(
-          builder: (_) => OrderDetailsScreen(order: args),
+          builder: (_) => OrderDetailsScreen(orderID: args),
         );
       case RouteName.addProductScreen:
         return MaterialPageRoute(builder: (_) => const AddProductScreen());
@@ -73,6 +76,15 @@ class RouteGenerate {
         return MaterialPageRoute(
           builder: (_) => SalesDetailsScreen(todaySales: args),
         );
+
+      case RouteName.signupScreen:
+        return MaterialPageRoute(builder: (_) => const SignupScreen());
+      case RouteName.otpVerificationScreen:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(builder: (_) => OtpVerificationScreen(userData: args));
+
+      case RouteName.inactiveAccountScreen:
+        return MaterialPageRoute(builder: (_) => const InactiveAccountScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }

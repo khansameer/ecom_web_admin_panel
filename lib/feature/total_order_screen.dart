@@ -178,7 +178,7 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
               onTap: () {
                 navigatorKey.currentState?.pushNamed(
                   RouteName.orderDetailsScreen,
-                  arguments: data,
+                  arguments: data.id,
                 );
               },
               colorTextStatus: provider.getPaymentStatusColor(

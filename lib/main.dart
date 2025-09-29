@@ -12,6 +12,7 @@ import 'package:neeknots/provider/notification_provider.dart';
 import 'package:neeknots/provider/order_provider.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:neeknots/provider/profile_provider.dart';
+import 'package:neeknots/provider/signup_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:neeknots/routes/route_generator.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
+
 List<SingleChildWidget> providers = [
   ChangeNotifierProvider<ThemeProvider>(create: (_) => ThemeProvider()),
   ChangeNotifierProvider<LoginProvider>(create: (_) => LoginProvider()),
@@ -42,6 +44,7 @@ List<SingleChildWidget> providers = [
   ChangeNotifierProvider<OrdersProvider>(create: (_) => OrdersProvider()),
   ChangeNotifierProvider<CustomerProvider>(create: (_) => CustomerProvider()),
   ChangeNotifierProvider<ProfileProvider>(create: (_) => ProfileProvider()),
+  ChangeNotifierProvider<SignupProvider>(create: (_) => SignupProvider()),
   ChangeNotifierProvider<ImagePickerProvider>(
     create: (_) => ImagePickerProvider(),
   ),
@@ -55,7 +58,6 @@ List<SingleChildWidget> providers = [
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Hive init
   await Hive.initFlutter();
 
   await Firebase.initializeApp(

@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:neeknots/models/product_model.dart';
+import 'package:neeknots/models/product_model.dart' hide Variants, Images;
 
 import '../core/component/component.dart';
 import '../main.dart';
+import '../models/product_details_model.dart';
 import '../service/api_config.dart';
 import '../service/gloable_status_code.dart';
 import '../service/network_repository.dart';
@@ -229,7 +230,7 @@ class ProductProvider with ChangeNotifier {
       }
 
       String url =
-          '${ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
+          '${ await ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
       if (status != null && status.isNotEmpty) url += "&status=$status";
       if (_lastId != null) url += '&since_id=$_lastId';
 
@@ -290,7 +291,7 @@ class ProductProvider with ChangeNotifier {
       final effectiveLimit = limit ?? _limit;
 
       String url =
-          '${ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
+          '${await ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
       if (status != null && status.isNotEmpty) {
         final encodedTitle = "&status=$status";
         url += encodedTitle;
@@ -338,9 +339,9 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Products? _product;
+  ProductDetailsModel? _productDetailsModel;
 
-  Products? get product => _product;
+  ProductDetailsModel? get productDetailsModel => _productDetailsModel;
 
   void setIsImageUpdating(bool val) {
     _isImageUpdating = val;
@@ -349,12 +350,12 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> getProductById({required String productId}) async {
     try {
-      final url = "${ApiConfig.getImageUrl}/$productId.json";
+      final url = "${await ApiConfig.getImageUrl}/$productId.json";
       final response = await callGETMethod(url: url);
       if (globalStatusCode == 200) {
         final jsonData = json.decode(response);
 
-        _product = Products.fromJson(jsonData['product']);
+        _productDetailsModel = ProductDetailsModel.fromJson(jsonData['product']);
       }
     } catch (e) {
       debugPrint("⚠️ Unexpected Error: $e");
@@ -368,7 +369,7 @@ class ProductProvider with ChangeNotifier {
   Future<void> getTotalProductCount() async {
     _isFetching = true;
     notifyListeners();
-    final response = await callGETMethod(url: ApiConfig.totalProductUrl);
+    final response = await callGETMethod(url: await ApiConfig.totalProductUrl);
 
     if (globalStatusCode == 200) {
       final data = json.decode(response);
@@ -382,7 +383,7 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchImagesForProduct(Products product) async {
+  Future<void> fetchImagesForProduct(ProductDetailsModel product) async {
     if (product.variants == null) return;
 
     _isFetching = true;
@@ -408,7 +409,7 @@ class ProductProvider with ChangeNotifier {
     _isImageUpdating = true;
     notifyListeners();
 
-    final urlString = "${ApiConfig.baseUrl}/products/$productId/images.json";
+    final urlString = "${await ApiConfig.baseUrl}/products/$productId/images.json";
     final bytes = await File(imagePath).readAsBytes();
 
     final base64Image = base64Encode(bytes);
@@ -442,7 +443,7 @@ class ProductProvider with ChangeNotifier {
     _isImageUpdating = true;
     notifyListeners();
     final urlString =
-        "${ApiConfig.baseUrl}/products/$productId/images/$imageId.json";
+        "${await ApiConfig.baseUrl}/products/$productId/images/$imageId.json";
 
     await callDeleteMethod(url: urlString);
 
@@ -466,13 +467,13 @@ class ProductProvider with ChangeNotifier {
     required int productId,
     List<Map<String, dynamic>>? variants,
   }) async {
-    final urlString = "${ApiConfig.baseUrl}/products/$productId.json";
+    final urlString = "${await ApiConfig.baseUrl}/products/$productId.json";
 
     final Map<String, dynamic> productData = {"id": productId};
     if (title != null) productData["title"] = title;
     if (description != null) productData["body_html"] = description;
     if (variants != null) productData["variants"] = variants;
-    final response = await callPutMethodWithToken(
+    final _ = await callPutMethodWithToken(
       params: {"product": productData},
       url: urlString,
     );

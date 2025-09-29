@@ -34,14 +34,20 @@ class CustomerProvider with ChangeNotifier {
   Future<void> getTotalCustomerCount() async {
     _isFetching = true;
     notifyListeners();
-    final response = await callGETMethod(url: ApiConfig.totalCustomerUrl);
+    try{
+      final response = await callGETMethod(url: await ApiConfig.totalCustomerUrl);
 
-    if (globalStatusCode == 200) {
-      final data = json.decode(response);
+      if (globalStatusCode == 200) {
+        final data = json.decode(response);
 
-      _totalCustomerCount = data["count"] ?? 0;
-      _isFetching = false;
-      notifyListeners();
+        _totalCustomerCount = data["count"] ?? 0;
+        _isFetching = false;
+        notifyListeners();
+      }
+
+    }
+    catch(e){
+      debugPrint(e.toString());
     }
 
     _isFetching = false;
@@ -55,7 +61,7 @@ class CustomerProvider with ChangeNotifier {
     _isFetching = true;
     notifyListeners();
     final response = await callGETMethod(
-      url: '${ApiConfig.customerUrl}?order=updated_at+desc',
+      url: '${await ApiConfig.customerUrl}?order=updated_at+desc',
     );
 
     if (globalStatusCode == 200) {

@@ -72,6 +72,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     onTap: () => provider.setIndex(4),
                     child: Center(
                       child: commonCircleAssetImage(
+
                         borderColor: Colors.white,
                         borderWidth: 2,
                         icDummyUser,

@@ -8,9 +8,10 @@ import 'package:provider/provider.dart';
 
 import '../../core/color/color_utils.dart';
 import '../../main.dart';
+import '../../models/order_details_model.dart';
 import '../../models/order_model.dart';
 
-productInfo({required Order order}) {
+productInfo({required OrderData order}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -190,7 +191,7 @@ commonHeadingView({String? title, required bool isPayment}) {
   );
 }
 
-orderInfo({required Order order}) {
+orderInfo({required OrderData order}) {
   final themeProvider = Provider.of<ThemeProvider>(
     navigatorKey.currentContext!,
   );
@@ -242,7 +243,7 @@ orderInfo({required Order order}) {
   );
 }
 
-customerInfo({required Order order}) {
+customerInfo({required OrderData order}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -322,7 +323,7 @@ customerInfo({required Order order}) {
   );
 }
 
-paymentSummery({required Order order}) {
+paymentSummery({required OrderData order}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -341,7 +342,7 @@ paymentSummery({required Order order}) {
             children: [
               _buildRowPayment(
                 title: "Subtotal",
-                amount: "$rupeeIcon${order.currentSubtotalPrice}",
+                amount: "$rupeeIcon${order.currentTotalPrice}",
                 value: "${order.lineItems?.length} items",
               ),
               /*_buildRowPayment(
@@ -364,13 +365,13 @@ paymentSummery({required Order order}) {
               _buildRowPayment(
                 title: "Total",
                 fontWeight: FontWeight.w600,
-                amount: "$rupeeIcon${order.currentSubtotalPrice}",
+                amount: "$rupeeIcon${order.currentTotalPrice}",
                 fontSize: 14,
               ),
               _buildRowPayment(
                 title: "Paid",
                 fontWeight: FontWeight.w400,
-                amount: "$rupeeIcon${order.currentSubtotalPrice}",
+                amount: "$rupeeIcon${order.currentTotalPrice}",
                 fontSize: 14,
               ),
             ],

@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       init();
     });
   }
@@ -40,11 +40,11 @@ class _HomePageState extends State<HomePage> {
     DateTime startDate = DateTime(now.year, now.month, now.day, 0, 0, 0);
     DateTime endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
     productProvider.resetProducts();
-    await Future.wait([
+     Future.wait([
 
       productProvider.getProductList(limit: 5,context: context),
       productProvider.getTotalProductCount(),
-      orderProvider.getOrderList(limit: 5),
+      orderProvider.getOrderList(limit: "5"),
       customerProvider.getTotalCustomerCount(),
       orderProvider.getTotalOrderCount(),
 

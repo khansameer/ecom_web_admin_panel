@@ -19,7 +19,7 @@ class CustomerDetailPage extends StatefulWidget {
 }
 
 class _CustomerDetailPageState extends State<CustomerDetailPage> {
-  @override
+
   @override
   void initState() {
     super.initState();

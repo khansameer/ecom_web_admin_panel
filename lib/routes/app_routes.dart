@@ -1,6 +1,7 @@
 class RouteName {
   static const String splashScreen = "/splashScreen";
   static const String loginScreen = "/loginScreen";
+  static const String signupScreen = "/SignupScreen";
   static const String dashboardScreen = "/DashboardScreen";
   static const String splashPage = "/splashPage";
   static const String customerDetail = "/CustomerDetailPage";
@@ -15,4 +16,6 @@ class RouteName {
   static const String totalCustomerScreen = "/TotalCustomerScreen";
   static const String totalProductScreen = "/TotalProductScreen";
   static const String salesDetailsScreen = "/SalesDetailsScreen";
+  static const String otpVerificationScreen = "/OtpVerificationScreen";
+  static const String inactiveAccountScreen = "/InactiveAccountScreen";
 }

@@ -2,46 +2,40 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/component/context_extension.dart';
-import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/provider/order_provider.dart';
+import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/component/date_utils.dart';
 import '../../../core/image/image_utils.dart';
+import '../../../core/string/string_utils.dart';
 import '../../../main.dart';
-import '../../../routes/app_routes.dart';
 import '../order_widget/common_order_widget.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({super.key});
 
   @override
-  State<OrderPage> createState() => _OrderPageState();
+  State<OrderPage> createState() => _OrdersPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
+class _OrdersPageState extends State<OrderPage> {
   @override
   void initState() {
     super.initState();
     init();
   }
 
-  Future<void> init() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final postMdl = Provider.of<OrdersProvider>(
-        navigatorKey.currentContext!,
-        listen: false,
-      );
-
-      postMdl.resetData();
-      postMdl.getOrderList();
-    });
+  void init() {
+    Future.microtask(
+      () => Provider.of<OrdersProvider>(context, listen: false).getOrderList(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<OrdersProvider>(
-      builder: (context, provider, child) {
+      builder: (context, provider, _) {
         return commonRefreshIndicator(
           onRefresh: () async {
             init();
@@ -49,11 +43,7 @@ class _OrderPageState extends State<OrderPage> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(
-                  top: 18.0,
-                  left: 18,
-                  right: 18,
-                ),
+                padding: const EdgeInsets.only(top: 18.0, left: 12, right: 12),
                 child: commonTextField(
                   hintText: "Search by Order ID",
                   prefixIcon: commonPrefixIcon(
@@ -91,8 +81,10 @@ class _OrderPageState extends State<OrderPage> {
                         title: "Filter Orders",
                         filters: filters,
                         onReset: () {
-                          provider.getOrderList(financialStatus: null);
-                          // provider.filterByStatus("All"); // reset
+                          provider.getOrderList(
+                            loadMore: false,
+                            financialStatus: null,
+                          );
                         },
                         onApply: () {
                           final selectedStatus = filters.first.selectedValue
@@ -107,91 +99,72 @@ class _OrderPageState extends State<OrderPage> {
                 ),
               ),
               Expanded(
-                child:  provider.isFetching
-                    ?SizedBox.shrink()
-                    :provider.filterOrderList.isNotEmpty
-                    ? ListView.builder(
-                        shrinkWrap: true,
-
-                        padding: const EdgeInsets.all(12),
-                        itemCount: provider.filterOrderList.length,
-                        // null to [] convert
-                        itemBuilder: (context, index) {
-                          if (index < provider.filterOrderList.length) {
-                            var data = provider.filterOrderList[index];
-                            return commonOrderView(
-                              margin: const EdgeInsets.symmetric(
-                                vertical: 6,
-                                horizontal: 12,
-                              ),
-                              onTap: () {
-                                navigatorKey.currentState?.pushNamed(
-                                  RouteName.orderDetailsScreen,
-                                  arguments: data,
-                                );
-                              },
-                              colorTextStatus: provider
-                                  .getPaymentStatusColor(
-                                    data.financialStatus
-                                        .toString()
-                                        .toCapitalize(),
-                                  ),
-                              decoration: commonBoxDecoration(
-                                borderRadius: 4,
-
-                                color: provider
-                                    .getPaymentStatusColor(
-                                      data.financialStatus
-                                          .toString()
-                                          .toCapitalize(),
-                                    )
-                                    .withValues(alpha: 0.1),
-                              ),
-
-                              orderID: data.customer?.firstName != null
-                                  ? '${data.customer?.firstName}  ${data.customer?.lastName}'
-                                  : noCustomer,
-                              image: data.name ?? '',
-                              //productName:'${ data?.customer?.firstName}  ${ data?.customer?.lastName}',
-                              productName:
-                                  '${data.lineItems?.length} Items',
-                              status: data.financialStatus
-                                  .toString()
-                                  .toCapitalize(),
-                              price: double.parse(
-                                data.subtotalPrice?.toString() ?? '0',
-                              ),
-                              date: formatDateTime(
-                                data.createdAt ?? '',
-                              ), //data.date.toLocal().toString(),
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (scrollInfo) {
+                    // Load more only when not searching
+                    if (provider.searchQuery.isEmpty &&
+                        !provider.isFetching &&
+                        provider.hasMore &&
+                        scrollInfo.metrics.pixels ==
+                            scrollInfo.metrics.maxScrollExtent) {
+                      provider.getOrderList(loadMore: true);
+                    }
+                    return false;
+                  },
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(left: 0, right: 0, top: 10),
+                    itemCount:
+                        provider.filterOrderList.length +
+                        (provider.hasMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index < provider.filterOrderList.length) {
+                        final data = provider.filterOrderList[index];
+                        return commonOrderView(
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 12,
+                          ),
+                          onTap: () {
+                            navigatorKey.currentState?.pushNamed(
+                              RouteName.orderDetailsScreen,
+                              arguments: data.id,
                             );
-                          } else {
-                            // 🔹 Loader sirf infinite scroll (search off) me
-                            if (provider.searchQuery.isEmpty &&
-                                provider.hasMore) {
-                              // Trigger next page
-                              WidgetsBinding.instance.addPostFrameCallback((
-                                _,
-                              ) {
-                                provider.getOrderList();
-                              });
+                          },
+                          colorTextStatus: provider.getPaymentStatusColor(
+                            data.financialStatus.toString().toCapitalize(),
+                          ),
+                          decoration: commonBoxDecoration(
+                            borderRadius: 4,
 
-                              return const Padding(
-                                padding: EdgeInsets.all(16),
-                                child: Center(
-                                  child: CupertinoActivityIndicator(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              );
-                            } else {
-                              // 🔹 Agar search ya no more data
-                              return const SizedBox.shrink();
-                            }
-                          }
-                        },
-                      )
-                    : commonErrorView(text: "Order not found"),
+                            color: provider
+                                .getPaymentStatusColor(
+                                  data.financialStatus
+                                      .toString()
+                                      .toCapitalize(),
+                                )
+                                .withValues(alpha: 0.1),
+                          ),
+                          orderID: data.customer?.firstName != null
+                              ? '${data.customer?.firstName}  ${data.customer?.lastName}'
+                              : noCustomer,
+                          image: data.name ?? '',
+                          productName: '${data.lineItems?.length} Items',
+                          status:
+                              '${data.financialStatus.toString().toCapitalize()} | ${data.fulfillmentStatus?.toCapitalize() ?? 'Unfulfilled'}',
+                          price: double.parse(
+                            data.subtotalPrice?.toString() ?? '0',
+                          ),
+                          date: formatDateTime(data.createdAt ?? ''),
+                        );
+                      } else {
+                        return const Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Center(child: CupertinoActivityIndicator()),
+                        );
+                      }
+                    },
+                  ),
+                ),
               ),
             ],
           ),

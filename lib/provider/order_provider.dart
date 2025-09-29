@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/models/order_details_model.dart';
 import 'package:neeknots/models/order_model.dart';
@@ -32,7 +33,7 @@ class OrdersProvider with ChangeNotifier {
 
   /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
 
-  void filterByStatus(String status) {
+  /*  void filterByStatus(String status) {
     String apiStatus = status.toLowerCase().replaceAll(' ', '_');
     if (status == "all") {
       getOrderList(financialStatus: null);
@@ -43,7 +44,7 @@ class OrdersProvider with ChangeNotifier {
     _selectedStatus = status;
     notifyListeners();
     //_applyFilters();
-  }
+  }*/
 
   bool _isFetching = false;
 
@@ -59,24 +60,7 @@ class OrdersProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Order> get filterOrderList {
-    return _orders.where((p) {
-      final matchesSearch = p.name.toString().toLowerCase().contains(
-        _searchQuery.toLowerCase(),
-      );
-
-      //return matchesSearch && matchesCategory && matchesStatus;
-      return matchesSearch;
-    }).toList();
-  }
-
-  bool _hasMore = true;
   final int _limit = 100; // items per page
-  bool get hasMore => _hasMore;
-
-  final List<Order> _orders = [];
-
-  List<Order> get orders => _orders;
 
   // Store totals
   int totalPaid = 0;
@@ -93,49 +77,11 @@ class OrdersProvider with ChangeNotifier {
   }
 
   void resetData() {
-    _orders.clear();
     filterOrderList.clear();
     _searchQuery = "";
-    _orders.clear();
+
     totalPaid = totalPending = totalRefunded = totalShipping = totalCancel = 0;
     notifyListeners();
-  }
-
-  Future<void> getOrderList({int? limit, String? financialStatus}) async {
-    _orders.clear(); // only clear when fetching all orders
-
-    _isFetching = true;
-    notifyListeners();
-    final effectiveLimit = limit ?? _limit;
-
-    try {
-      String url =
-          '${ApiConfig.ordersUrl}?status=any&limit=$effectiveLimit&order=id+asc';
-      if (financialStatus != null && financialStatus.isNotEmpty) {
-        final encodedTitle = "&financial_status=$financialStatus";
-        url += encodedTitle;
-      }
-
-      final response = await callGETMethod(url: url);
-      if (globalStatusCode == 200) {
-        final data = json.decode(response);
-        final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
-        if (fetchedOrders.isNotEmpty) {
-          _orders.addAll(fetchedOrders);
-          notifyListeners();
-        } else {
-          _orders.clear();
-        }
-
-        _isFetching = false;
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error fetching orders: $e');
-    } finally {
-      _isFetching = false;
-      notifyListeners();
-    }
   }
 
   Map<String, List<Order>> _ordersByStatus = {};
@@ -156,7 +102,7 @@ class OrdersProvider with ChangeNotifier {
 
     try {
       String url =
-          '${ApiConfig.ordersUrl}?status=any&limit=$effectiveLimit&order=id+asc';
+          '${await ApiConfig.ordersUrl}?status=any&limit=$effectiveLimit&order=id+asc';
       if (financialStatus != null && financialStatus.isNotEmpty) {
         final encodedTitle = "&financial_status=$financialStatus";
         url += encodedTitle;
@@ -205,6 +151,30 @@ class OrdersProvider with ChangeNotifier {
 
   int get totalOrderCount => _totalOrderCount;
 
+ /* Future<void> getTotalOrderCount({
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    _isFetching = true;
+    notifyListeners();
+
+    final response =  callGETMethod(
+      url: '${ApiConfig.totalOrderUrl}?status=any',
+    );
+
+    if (globalStatusCode == 200) {
+      final data = json.decode(await response);
+
+      _totalOrderCount = data["count"] ?? 0;
+      _isFetching = false;
+      notifyListeners();
+    }
+
+    _isFetching = false;
+    notifyListeners();
+  }*/
+
+
   Future<void> getTotalOrderCount({
     DateTime? startDate,
     DateTime? endDate,
@@ -212,16 +182,13 @@ class OrdersProvider with ChangeNotifier {
     _isFetching = true;
     notifyListeners();
 
-    final response = await callGETMethod(
-      url: '${ApiConfig.totalOrderUrl}?status=any',
-    );
+    final url = "${await ApiConfig.totalOrderUrl}?status=any";
+
+    final response = await callGETMethod(url: url);
 
     if (globalStatusCode == 200) {
-      final data = json.decode(response);
-
+      final data = json.decode(await response);
       _totalOrderCount = data["count"] ?? 0;
-      _isFetching = false;
-      notifyListeners();
     }
 
     _isFetching = false;
@@ -245,10 +212,10 @@ class OrdersProvider with ChangeNotifier {
     // Format as ISO 8601
     final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
-
+    final url = "${await  ApiConfig.totalOrderUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax";
     final response = await callGETMethod(
       url:
-          '${ApiConfig.totalOrderUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax',
+      url,
     );
 
     if (globalStatusCode == 200) {
@@ -267,12 +234,17 @@ class OrdersProvider with ChangeNotifier {
 
   OrderDetailsModel? get orderDetailsModel => _orderDetailsModel;
 
+  clearOrderDetailsData() {
+    _orderDetailsModel?.orderData = null;
+    notifyListeners();
+  }
+
   Future<void> getOrderById({int? orderID}) async {
     _isFetching = true;
     notifyListeners();
 
     try {
-      final url = '${ApiConfig.getOrderById}/$orderID.json';
+      final url = '${await ApiConfig.getOrderById}/$orderID.json';
 
       final response = await callGETMethod(url: url);
 
@@ -318,7 +290,7 @@ class OrdersProvider with ChangeNotifier {
 
     try {
       final url =
-          '${ApiConfig.getCustomerImage}/$customerId/orders.json?status=any';
+          '${await ApiConfig.getCustomerImage}/$customerId/orders.json?status=any';
       final response = await callGETMethod(url: url);
       if (globalStatusCode == 200) {
         final data = json.decode(response);
@@ -380,10 +352,10 @@ class OrdersProvider with ChangeNotifier {
     // Format as ISO 8601
     final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
-
+    final url = "${await ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax";
     final response = await callGETMethod(
       url:
-          '${ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax',
+      url,
     );
 
     if (globalStatusCode == 200) {
@@ -460,6 +432,120 @@ class OrdersProvider with ChangeNotifier {
     }
 
     getOrderByDate(isDashboard: false, startDate: startDate, endDate: endDate);
+  }
+
+  Future<Map<String, dynamic>> getOrderPagination({
+    String? pageInfo,
+    String? financialStatus,
+    String? limit,
+  }) async {
+    final queryParams = {
+      'limit': limit ?? '10',
+      if (pageInfo != null)
+        'page_info': pageInfo
+      else if (financialStatus != null)
+        'financial_status': financialStatus
+      else
+        'status': 'any',
+    };
+
+    final baseUrl = await ApiConfig.baseUrl;
+
+    final uri = Uri.parse(
+        "$baseUrl/orders.json"
+    ).replace(queryParameters: queryParams);
+
+    final response = await http.get(
+      uri,
+      headers: await ApiConfig.getCommonHeaders(),
+    );
+
+
+    if (response.statusCode != 200) {
+      throw Exception("Error fetching orders: ${response.body}");
+    }
+
+    final data = json.decode(response.body);
+
+    final orders = (data['orders'] as List)
+        .map((e) => Order.fromJson(e))
+        .toList();
+    String? nextPageInfo;
+    final linkHeader = response.headers['link'];
+    if (linkHeader != null) {
+      final parts = linkHeader.split(',');
+      for (var part in parts) {
+        if (part.contains('rel="next"')) {
+          final match = RegExp(r'page_info=([^&>]+)').firstMatch(part);
+          if (match != null) {
+            nextPageInfo = match.group(1);
+          }
+        }
+      }
+    }
+
+    return {"orders": orders, "nextPageInfo": nextPageInfo};
+  }
+
+  void filterByStatus(String status) {
+    String apiStatus = status.toLowerCase().replaceAll(' ', '_');
+    if (status == "all") {
+      getOrderList(loadMore: false, financialStatus: null);
+    } else {
+      getOrderList(loadMore: false, financialStatus: apiStatus);
+    }
+
+    _selectedStatus = status;
+    notifyListeners();
+    //_applyFilters();
+  }
+
+  String? _nextPageInfo;
+
+  bool get hasMore => _nextPageInfo != null;
+
+  List<Order> get ordersList => _ordersList;
+  List<Order> _ordersList = [];
+
+  Future<void> getOrderList({
+    bool loadMore = false,
+    String? financialStatus,
+    String? limit,
+  }) async {
+    if (_isFetching) return;
+    if (!loadMore) _ordersList.clear(); // clear only on initial load
+
+    _isFetching = true;
+    notifyListeners();
+
+    try {
+      final result = await getOrderPagination(
+        financialStatus: financialStatus,
+        limit: limit,
+        pageInfo: loadMore ? _nextPageInfo : null,
+      );
+
+      if (loadMore) {
+        _ordersList.addAll(result["orders"]);
+      } else {
+        _ordersList = result["orders"];
+      }
+
+      _nextPageInfo = result["nextPageInfo"];
+    } finally {
+      _isFetching = false;
+      notifyListeners();
+    }
+  }
+
+  List<Order> get filterOrderList {
+    return ordersList.where((p) {
+      final matchesSearch = p.name.toString().toLowerCase().contains(
+        _searchQuery.toLowerCase(),
+      );
+
+      return matchesSearch;
+    }).toList();
   }
 }
 

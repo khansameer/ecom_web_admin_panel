@@ -171,8 +171,12 @@ class _CustomersPageState extends State<CustomersPage> {
                   },
                 );
               },
-            ):commonErrorView(
-              text: "Customer Not Fount."
+            ):Container(
+              width: MediaQuery.sizeOf(context).width,
+              height: MediaQuery.sizeOf(context).height*0.7,
+              child: commonErrorView(
+                text: "Customer Not Fount."
+              ),
             ),
           ),
 

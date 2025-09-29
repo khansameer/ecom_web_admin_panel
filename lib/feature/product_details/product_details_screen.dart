@@ -3,6 +3,7 @@ import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/string/string_utils.dart';
+import 'package:neeknots/models/product_details_model.dart';
 import 'package:neeknots/models/product_model.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:neeknots/service/gloable_status_code.dart';
@@ -41,12 +42,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             .then((value) {
               if (globalStatusCode == 200) {
                 //print("data = ${provider.product?.title ?? ''}");
-                provider.productImages = provider.product?.images ?? [];
-                provider.fetchImagesForProduct(provider.product ?? Products());
+                provider.productImages = provider.productDetailsModel?.images ?? [];
+                provider.fetchImagesForProduct(provider.productDetailsModel ?? ProductDetailsModel());
                 //For Update
-                provider.tetName.text = provider.product?.title ?? '';
+                provider.tetName.text = provider.productDetailsModel?.title ?? '';
                 provider.tetDesc.text = removeHtmlTags(
-                  provider.product?.bodyHtml ?? '',
+                  provider.productDetailsModel?.bodyHtml ?? '',
                 );
 
                 final stockInfo = _stockCalculation(provider);
@@ -54,10 +55,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 provider.tetQty.text = stockInfo["inventory"] ?? '';
 
                 provider.tetPrice.text =
-                    provider.product?.variants?.first.price ?? "0";
+                    provider.productDetailsModel?.variants?.first.price ?? "0";
 
                 provider.initializeVariantController(
-                  provider.product?.variants,
+                  provider.productDetailsModel?.variants,
                 );
               }
               provider.setIsImageUpdating(false);
@@ -89,7 +90,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       body: commonAppBackground(
         child: Stack(
           children: [
-            if (provider.product != null)
+            if (provider.productDetailsModel != null)
               commonRefreshIndicator(
                 onRefresh: () async {
                   // Add your refresh logic here if needed
@@ -132,7 +133,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 children: [
                                   Expanded(
                                     child: commonText(
-                                      text: provider.product?.title ?? '',
+                                      text: provider.productDetailsModel?.title ?? '',
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       color: themeProvider.isDark
@@ -185,11 +186,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                         commonText(
                                           textAlign: TextAlign.right,
-                                          text: provider.product?.status ?? '',
+                                          text: provider.productDetailsModel?.status ?? '',
                                           fontWeight: FontWeight.w500,
                                           fontSize: 12,
                                           color: provider.getStatusColor(
-                                            provider.product?.status
+                                            provider.productDetailsModel?.status
                                                     ?.toCapitalize() ??
                                                 'Grey',
                                           ),
@@ -210,7 +211,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                               commonText(
                                 text: removeHtmlTags(
-                                  provider.product?.bodyHtml ?? '',
+                                  provider.productDetailsModel?.bodyHtml ?? '',
                                 ),
                               ),
                             ],
@@ -219,11 +220,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           SizedBox(height: 15),
                           commonOtherVariants(
                             provider: provider,
-                            products: provider.product ?? Products(),
+                            products: provider.productDetailsModel ?? ProductDetailsModel(),
                           ),
                           commonVariants(
                             provider: provider,
-                            products: provider.product ?? Products(),
+                            products: provider.productDetailsModel ?? ProductDetailsModel(),
                           ),
                           SizedBox(height: 30),
 
@@ -317,7 +318,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                       true,
                                                     );
                                                     final variantsPayload = provider
-                                                        .product
+                                                        .productDetailsModel
                                                         ?.variants
                                                         ?.map((variant) {
                                                           return {
@@ -399,7 +400,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   Map<String, String> _stockCalculation(ProductProvider provider) {
-    var data = provider.product?.variants ?? [];
+    var data = provider.productDetailsModel?.variants ?? [];
     final totalVariants = data.length;
     //  final left = "${parts[0]}for";
     num? totalInventory = data.isNotEmpty == true
@@ -413,7 +414,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   _priceCalculation(ProductProvider provider) {
-    var data = provider.product?.variants ?? [];
+    var data = provider.productDetailsModel?.variants ?? [];
     final priceText = data.isNotEmpty == true
         ? '$rupeeIcon${data.first.price}'
         : '$rupeeIcon 0';

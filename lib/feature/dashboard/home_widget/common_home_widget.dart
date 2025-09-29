@@ -584,7 +584,7 @@ commonTopOrderListView({void Function()? onTap}) {
                       onTap: () {
                         navigatorKey.currentState?.pushNamed(
                           RouteName.orderDetailsScreen,
-                          arguments: data,
+                          arguments: data.id,
                         );
                       },
                       colorTextStatus: provider.getPaymentStatusColor(

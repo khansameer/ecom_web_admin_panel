@@ -1,0 +1,81 @@
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:neeknots/core/color/color_utils.dart';
+import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/core/validation/validation.dart';
+import 'package:neeknots/provider/login_provider.dart';
+
+
+Widget commonSignUpView({
+  required LoginProvider provider,
+  required void Function() onPressed,
+  GestureRecognizer? onPressSignUp,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+
+      commonTextField(
+        keyboardType: TextInputType.name,
+       prefixIcon: commonPrefixIcon(image: icUser),
+        controller: provider.tetFullName,
+        hintText: "Full Name",
+      ),
+      const SizedBox(height: 20),
+
+      commonTextField(
+        keyboardType: TextInputType.emailAddress,
+        validator: validateEmail,
+
+        prefixIcon: commonPrefixIcon(image: icEmail),
+        controller: provider.tetEmail,
+        hintText: "Email Address",
+      ),
+
+      const SizedBox(height: 20),
+      commonTextField(
+        hintText: "Phone No",
+        controller: provider.tetPhone,
+
+        maxLines: 1,
+
+        keyboardType: TextInputType.phone,
+        validator: validatePhoneNumber,
+        prefixIcon: commonPrefixIcon(image: icPhone),
+      ),
+      const SizedBox(height: 20),
+      commonTextField(
+        hintText: "Store Name",
+        controller: provider.tetStoreName,
+
+        maxLines: 1,
+
+        keyboardType: TextInputType.text,
+        validator: validatePassword,
+        prefixIcon: commonPrefixIcon(image: icStore),
+      ),
+      const SizedBox(height: 20),
+      commonTextField(
+        hintText: "Website Url",
+        controller: provider.tetWebsiteUrl,
+
+        maxLines: 1,
+
+        keyboardType: TextInputType.url,
+        validator: validatePassword,
+        prefixIcon: commonPrefixIcon(image: icNetwork),
+      ),
+      const SizedBox(height: 50),
+      commonButton(text: "Create", onPressed: onPressed),
+      const SizedBox(height: 20),
+      commonTextRich(
+          onTap: onPressSignUp,
+          text1: "Already have an account? ",text2: "Login",textStyle1: commonTextStyle(),textStyle2: commonTextStyle(color: colorLogo,fontWeight: FontWeight.w600)),
+
+      //commonText(text: "Don't have an account? Signup"),
+
+
+    ],
+  );
+}

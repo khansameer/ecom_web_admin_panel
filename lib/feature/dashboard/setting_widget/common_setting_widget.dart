@@ -13,12 +13,14 @@ import '../../../provider/profile_provider.dart';
 Widget buildAvatar({
   required ProfileProvider provider,
   required ThemeProvider themeProvider,
+  required String  imageUrl,
   required ImagePickerProvider imageProvider,
 }) {
   final path = imageProvider.imagePath;
 
   final fileExists = path != null && File(path).existsSync();
 
+  print('===iageUrl${imageUrl}');
   return Container(
     width: 120,
     height: 120,
@@ -43,8 +45,12 @@ Widget buildAvatar({
             radius: 100,
             backgroundColor: Colors.white,
             child: commonCircleNetworkImage(
-              errorWidget: Image.asset(icDummyUser),
-              icDummyUser,
+              errorPath: icAppLogo,
+             /* errorWidget: SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: Center(child: commonAssetImage(icAppLogo,width: 100,height: 100))),*/
+              imageUrl,
               fit: BoxFit.cover,
               size: 120,
             ),
@@ -57,7 +63,10 @@ profileView({
   required ImagePickerProvider imageProvider,
   required ThemeProvider themeProvider,
   required BuildContext context,
+  required String  imageUrl,
+
 }) {
+  print('=imageUrl===$imageUrl');
   return Row(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,10 +77,12 @@ profileView({
           buildAvatar(
             themeProvider: themeProvider,
             provider: provider,
+            imageUrl: imageUrl,
+
             imageProvider: imageProvider,
           ),
 
-          Positioned(
+         /* Positioned(
             right: 0,
             bottom: 0,
             child: commonInkWell(
@@ -106,7 +117,7 @@ profileView({
                 ),
               ),
             ),
-          ),
+          ),*/
         ],
       ),
     ],

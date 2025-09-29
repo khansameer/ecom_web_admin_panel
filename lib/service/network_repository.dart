@@ -3,23 +3,25 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:neeknots/routes/AppConfig.dart';
 import 'package:neeknots/service/api_config.dart';
 
 import 'gloable_status_code.dart';
 
-Map<String, String> commonHeadersToken = {
-  'Content-Type': 'application/json',
-  'accept': '*/*',
-  "X-Shopify-Access-Token": ApiConfig.accessToken,
-};
+// Map<String, String> commonHeadersToken = {
+//   'Content-Type': 'application/json',
+//   'accept': '*/*',
+//   "X-Shopify-Access-Token": ApiConfig.accessToken,
+// };
 Future callPostMethod(String url, Map<String, dynamic> params) async {
+  print('==Post Method==${url}');
   return await http
       .post(
         Uri.parse(url),
 
         body: json.encode(params),
 
-        headers: commonHeadersToken,
+        headers: await ApiConfig.getCommonHeaders(),
       )
       .timeout(const Duration(seconds: 3))
       .then((http.Response response) {
@@ -28,11 +30,12 @@ Future callPostMethod(String url, Map<String, dynamic> params) async {
 }
 
 Future callPatchMethod(String url, Map<String, dynamic> body) async {
+  print('==Patch Method==${url}');
   return await http
       .patch(
         Uri.parse(url),
         body: utf8.encode(json.encode(body)),
-        headers: commonHeadersToken,
+        headers: await ApiConfig.getCommonHeaders(),
       )
       .then((http.Response response) {
         return getResponse(response);
@@ -44,11 +47,12 @@ Future callPostMethodWithToken({
   required Map<String, dynamic> body,
   Map<String, String>? headers,
 }) async {
+  print('==Post Method==${url}');
   return await http
       .post(
         Uri.parse(url),
         body: utf8.encode(json.encode(body)),
-        headers: headers ?? commonHeadersToken,
+        headers: headers ?? await ApiConfig.getCommonHeaders(),
       )
       .then((http.Response response) {
         return getResponse(response);
@@ -60,12 +64,12 @@ Future callPutMethodWithToken({
   required Map<String, dynamic> params,
 }) async {
   final uri = Uri.parse(url);
-
+  print('==put Method==${url}');
   final response = await http
       .put(
         uri,
         body: jsonEncode(params), // utf8.encode not required
-        headers: commonHeadersToken,
+        headers: await ApiConfig.getCommonHeaders(),
       )
       .timeout(Duration(seconds: 30));
 
@@ -91,25 +95,40 @@ Future callDeleteMethod({
   Map<String, dynamic>? params,
 }) async {
   final request = http.Request("DELETE", Uri.parse(url));
-  request.headers.addAll(commonHeadersToken);
+  request.headers.addAll(await ApiConfig.getCommonHeaders());
   if (params != null) {
     request.body = json.encode(params);
   }
 
+  print('==DeleteUrl==${url}');
   final streamedResponse = await request.send();
   final response = await http.Response.fromStream(streamedResponse);
 
   return getResponse(response);
 }
-
+/*
 Future callGETMethod({required String url, String? key}) async {
   return await http.get(Uri.parse(url), headers: commonHeadersToken).then((
     http.Response response,
   ) {
     return getResponse(response);
   });
-}
+}*/
+Future callGETMethod({
+  required String url,
+  Map<String, String>? queryParams,
+  String? key,
+}) async {
+  final uri = Uri.parse(url).replace(queryParameters: queryParams);
 
+  print('==getUrl==${url}');
+  final response = await http.get(
+    uri,
+    headers: await ApiConfig.getCommonHeaders(),
+  );
+
+  return getResponse(response);
+}
 Future getResponse(Response response) async {
   globalStatusCode = response.statusCode;
 

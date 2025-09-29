@@ -4,13 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:neeknots/core/component/price_input_format.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/core/string/string_utils.dart';
-import 'package:neeknots/models/product_model.dart';
+import 'package:neeknots/models/product_model.dart' hide Images, Variants;
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/color/color_utils.dart';
 import '../../core/component/component.dart';
 import '../../main.dart';
+import '../../models/product_details_model.dart';
 import '../../provider/theme_provider.dart';
 
 commonBannerView({
@@ -254,7 +255,7 @@ commonFormView({required ProductProvider provider}) {
 
 commonOtherVariants({
   required ProductProvider provider,
-  required Products products,
+  required ProductDetailsModel products,
 }) {
   return Column(
     spacing: 0,
@@ -328,7 +329,7 @@ commonOtherVariants({
 
 commonVariants({
   required ProductProvider provider,
-  required Products products,
+  required ProductDetailsModel products,
 }) {
   return Column(
     spacing: 0,
