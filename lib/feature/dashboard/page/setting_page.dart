@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/provider/dashboard_provider.dart';
 import 'package:neeknots/provider/login_provider.dart';
 import 'package:neeknots/provider/profile_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
@@ -178,6 +179,7 @@ class _SettingPageState extends State<SettingPage> {
                           confirmText: "Yes",
                           onPressed: () async {
                             await AppConfigCache.clearAll();
+                            context.read<DashboardProvider>().resetTab();
                             context.read<ProductProvider>().reset();
                             context.read<OrdersProvider>().resetData();
                             context.read<CustomerProvider>().reset();

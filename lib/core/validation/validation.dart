@@ -24,14 +24,16 @@ String? validatePassword(String? value) {
   }
   return null;
 }
-String? validatePhoneNumber(String? value) {
-  if (value == null || value.isEmpty) {
+String? validateTenDigitPhone(String? value) {
+  if (value == null || value.trim().isEmpty) {
     return 'Phone number is required';
   }
-  if (!RegExp(r'^\+\d{12}$').hasMatch(value)) {
-    return 'Enter phone number with country code (e.g. +911234567890)';
-  }
-  return null;
+  final input = value.trim();
+
+  // सिर्फ digits allow करो
+  final regExp = RegExp(r'^[0-9]{10}$');
+
+  return regExp.hasMatch(input) ? null : 'Enter exactly 10 digits';
 }
 
 String? validateConfirmPassword(String? value, String password) {

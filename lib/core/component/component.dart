@@ -317,7 +317,7 @@ Widget commonTextField({
         obscureText: obscureText,
         validator: validator,
         initialValue: controller != null ? null : initialValue ?? '',
-        // initialValue: initialValue,-
+         //initialValue: initialValue
         maxLines: maxLines,
         readOnly: readOnly,
         onTap: onTap,

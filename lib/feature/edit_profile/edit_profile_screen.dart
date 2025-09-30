@@ -137,7 +137,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 commonTextField(
                                   hintText: "Phone Number",
                                   maxLines: 1,
-                                  validator: validatePhoneNumber,
+                                  validator: validateTenDigitPhone,
                                   controller: provider.tetPhoneNo,
                                   keyboardType: TextInputType.phone,
                                   prefixIcon: commonPrefixIcon(

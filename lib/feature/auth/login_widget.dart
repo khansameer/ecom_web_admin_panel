@@ -31,7 +31,7 @@ Widget commonLoginView({
         maxLines: 1,
 
         keyboardType: TextInputType.phone,
-        validator: validatePhoneNumber,
+        validator: validateTenDigitPhone,
         prefixIcon: commonPrefixIcon(image: icPhone),
       ),
       const SizedBox(height: 50),

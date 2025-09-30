@@ -250,4 +250,26 @@ class AuthService {
       throw Exception("OTP verification failed: $e");
     }
   }
+
+  /// 🔹 Get all users from Firestore
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
+    try {
+      final querySnapshot = await _firestore.collection("stores").get();
+
+      if (querySnapshot.docs.isEmpty) {
+        return []; // No users found
+      }
+
+      // Map each document to a Map<String, dynamic> including its UID
+      final users = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        data["uid"] = doc.id; // Add UID
+        return data;
+      }).toList();
+
+      return users;
+    } catch (e) {
+      throw Exception("Failed to fetch users: $e");
+    }
+  }
 }

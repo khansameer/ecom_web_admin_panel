@@ -143,53 +143,58 @@ class _SignupScreenState extends State<SignupScreen> {
 
                                     onPressed: () async {
                                       hideKeyboard(context);
-                                      try {
-                                        await signUpProvider.signup(
-                                          email: provider.tetEmail.text.trim(),
 
-                                          storeName: provider.tetStoreName.text
-                                              .trim(),
-                                          websiteUrl: provider.tetWebsiteUrl.text
-                                              .trim(),
-                                          mobile: provider.tetPhone.text.trim(),
-                                          name: provider.tetFullName.text.trim(),
-                                          photo: _pickedImage,
-                                        );
+                                      if(formSignupKey.currentState?.validate()==true){
+                                        try {
+                                          await signUpProvider.signup(
+                                            email: provider.tetEmail.text.trim(),
+
+                                            storeName: provider.tetStoreName.text
+                                                .trim(),
+                                            websiteUrl: provider.tetWebsiteUrl.text
+                                                .trim(),
+                                            mobile: provider.tetPhone.text.trim(),
+                                            name: provider.tetFullName.text.trim(),
+                                            photo: _pickedImage,
+                                          );
 
 
-                                        showCommonDialog(
-                                          title: "Success",
-                                          onPressed: () {
-                                            Timer(
-                                              const Duration(milliseconds: 500),
-                                              () async {
-                                                navigatorKey.currentState
-                                                    ?.pushNamedAndRemoveUntil(
-                                                      RouteName.loginScreen,
-                                                      (Route<dynamic> route) => false,
-                                                    );
-                                              },
-                                            );
-                                          },
-                                          context: context,
-                                          content:
-                                              "Your account is successfully created. You can access it after 24 hours.",
-                                        );
-                                      } catch (e) {
-                                        print('====$e');
-                                        String errorMessage = e
-                                            .toString()
-                                            .split(": ")
-                                            .last;
+                                          showCommonDialog(
+                                            title: "Success",
+                                            onPressed: () {
+                                              Timer(
+                                                const Duration(milliseconds: 500),
+                                                    () async {
+                                                  navigatorKey.currentState
+                                                      ?.pushNamedAndRemoveUntil(
+                                                    RouteName.loginScreen,
+                                                        (Route<dynamic> route) => false,
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            context: context,
+                                            content:
+                                            "Your account is successfully created. You can access it after 24 hours.",
+                                          );
+                                        } catch (e) {
+                                          print('====$e');
+                                          String errorMessage = e
+                                              .toString()
+                                              .split(": ")
+                                              .last;
 
-                                        showCommonDialog(
-                                          title: "Error",
-                                          context: context,
-                                          confirmText: "Close",
-                                          showCancel: false,
-                                          content: errorMessage,
-                                        );
+                                          showCommonDialog(
+                                            title: "Error",
+                                            context: context,
+                                            confirmText: "Close",
+                                            showCancel: false,
+                                            content: errorMessage,
+                                          );
+                                        }
                                       }
+
+
                                     },
                                   ),
                                 ],

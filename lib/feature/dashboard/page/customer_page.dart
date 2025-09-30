@@ -130,9 +130,10 @@ class _CustomersPageState extends State<CustomersPage> {
                               '',
 
                               errorWidget: commonErrorBoxView(
-                                text:
-                                '${data?.firstName?[0].toString()}${data?.lastName?[0].toString()}',
+                                text: '${(data?.firstName?.isNotEmpty ?? false ? data!.firstName![0] : '')}'
+                                    '${(data?.lastName?.isNotEmpty ?? false ? data!.lastName![0] : '')}',
                               ),
+
                             ),
                           ),
                         ),
@@ -171,7 +172,7 @@ class _CustomersPageState extends State<CustomersPage> {
                   },
                 );
               },
-            ):Container(
+            ):SizedBox(
               width: MediaQuery.sizeOf(context).width,
               height: MediaQuery.sizeOf(context).height*0.7,
               child: commonErrorView(

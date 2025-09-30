@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import '../core/firebase/auth_service.dart';
+import '../core/string/string_utils.dart';
 
 class LoginProvider with ChangeNotifier {
   final bool _isFetching = false;
@@ -104,8 +105,7 @@ class LoginProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
 
   String generateOtp() {
-    return (1000  + (DateTime.now().millisecondsSinceEpoch % 9000))
-        .toString();
+    return (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
   }
 
   Future<Map<String, dynamic>> login({
@@ -137,12 +137,9 @@ class LoginProvider with ChangeNotifier {
     required String otp,
     required String userID,
   }) async {
-
-    _setLoading(false);
+    _setLoading(true);
     print('=====eail;#$email');
-    const serviceId = 'service_q3x803q';
-    const templateId = 'template_qh9hhmd';
-    final userId = "BdeTStneobP-p2DNW";
+
     if (email.isEmpty) {
       print('Recipient email is empty!');
       return; // stop execution
@@ -157,9 +154,9 @@ class LoginProvider with ChangeNotifier {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'service_id': serviceId,
-        'template_id': templateId,
-        'user_id': userId,
+        'service_id': otpServiceID,
+        'template_id': otpTemplateID,
+        'user_id': otpPublicID,
         'template_params': {
           'email': email,
           'passcode': otp,
@@ -176,12 +173,16 @@ class LoginProvider with ChangeNotifier {
         "otp_created_at": FieldValue.serverTimestamp(),
         "active_status": false, // Ensure user is inactive until OTP verified
       });
+
+      _setLoading(false);
     } else {
+      _setLoading(false);
       print('Failed to send OTP: ${response.body}');
     }
   }
+
   void resetAll() {
-   // _userData = null;
+    // _userData = null;
 
     _isLoading = false;
 

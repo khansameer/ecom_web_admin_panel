@@ -48,12 +48,12 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions web = FirebaseOptions(
-      apiKey: "AIzaSyAA3Ka_9Jhnncf7mTly2AnJC8VT95MIz_8",
-      authDomain: "yoga-buddy-266417.firebaseapp.com",
-      databaseURL: "https://yoga-buddy-266417.firebaseio.com",
-      projectId: "yoga-buddy-266417",
-      storageBucket: "yoga-buddy-266417.appspot.com",
-      messagingSenderId: "380744735472",
-      appId: "1:380744735472:web:d16f75db3520f6b6234035",
-      measurementId: "G-1J6ZPSTCE5");
+      apiKey: "AIzaSyCOdqy5v0vZpfP59275K6RqCaszeKYhz-0",
+      authDomain: "neeknots-a8758.firebaseapp.com",
+      databaseURL: "https://neeknots-a8758-default-rtdb.firebaseio.com",
+      projectId: "neeknots-a8758",
+      storageBucket: "neeknots-a8758.firebasestorage.app",
+      messagingSenderId: "1027672009884",
+      appId: "1:1027672009884:web:caf81d5b167a2bbf3a9159",
+      measurementId: "G-M3HZWXWJRL");
 }

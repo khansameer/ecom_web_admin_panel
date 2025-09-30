@@ -6,7 +6,6 @@ import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/core/validation/validation.dart';
 import 'package:neeknots/provider/login_provider.dart';
 
-
 Widget commonSignUpView({
   required LoginProvider provider,
   required void Function() onPressed,
@@ -15,11 +14,12 @@ Widget commonSignUpView({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-
       commonTextField(
         keyboardType: TextInputType.name,
-       prefixIcon: commonPrefixIcon(image: icUser),
+        prefixIcon: commonPrefixIcon(image: icUser),
         controller: provider.tetFullName,
+        validator: (value) =>
+            emptyError(value, errorMessage: "Full Name is required"),
         hintText: "Full Name",
       ),
       const SizedBox(height: 20),
@@ -41,41 +41,48 @@ Widget commonSignUpView({
         maxLines: 1,
 
         keyboardType: TextInputType.phone,
-        validator: validatePhoneNumber,
+        validator: validateTenDigitPhone,
         prefixIcon: commonPrefixIcon(image: icPhone),
       ),
       const SizedBox(height: 20),
       commonTextField(
         hintText: "Store Name",
         controller: provider.tetStoreName,
-
+        validator: (value) =>
+            emptyError(value, errorMessage: "Store name is required"),
         maxLines: 1,
 
         keyboardType: TextInputType.text,
-        validator: validatePassword,
+
         prefixIcon: commonPrefixIcon(image: icStore),
       ),
       const SizedBox(height: 20),
       commonTextField(
         hintText: "Website Url",
+
         controller: provider.tetWebsiteUrl,
 
         maxLines: 1,
 
         keyboardType: TextInputType.url,
-        validator: validatePassword,
+
         prefixIcon: commonPrefixIcon(image: icNetwork),
       ),
       const SizedBox(height: 50),
       commonButton(text: "Create", onPressed: onPressed),
       const SizedBox(height: 20),
       commonTextRich(
-          onTap: onPressSignUp,
-          text1: "Already have an account? ",text2: "Login",textStyle1: commonTextStyle(),textStyle2: commonTextStyle(color: colorLogo,fontWeight: FontWeight.w600)),
+        onTap: onPressSignUp,
+        text1: "Already have an account? ",
+        text2: "Login",
+        textStyle1: commonTextStyle(),
+        textStyle2: commonTextStyle(
+          color: colorLogo,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
 
       //commonText(text: "Don't have an account? Signup"),
-
-
     ],
   );
 }

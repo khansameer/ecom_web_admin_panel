@@ -26,18 +26,7 @@ class ApiConfig {
     return "https://$storeName.myshopify.com/admin/api/$versionCode";
   }
 
-/*  static const baseUrl =
-      "https://$storeName.myshopify.com/admin/api/$versionCode";*/
-/*  static final productsUrl = '$baseUrl/products.json';
-  static final ordersUrl = '$baseUrl/orders.json';
-  static final customerUrl = '$baseUrl/customers.json';
-  static final totalCustomerUrl = '$baseUrl/customers/count.json';
-  static final totalProductUrl = '$baseUrl/products/count.json';
-  static final totalOrderUrl = '$baseUrl/orders/count.json';
-  static final getImageUrl = '$baseUrl/products';
-  static final getCustomerImage = '$baseUrl/customers';
-  static final getOrderById = '$baseUrl/orders';*/
-  // ✅ Async getters for endpoints
+
   static Future<String> get productsUrl async =>
       "${await baseUrl}/products.json";
 
