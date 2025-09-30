@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../core/component/component.dart';
-import '../core/firebase/auth_service.dart';
 import '../core/firebase/send_fcm_notification.dart';
 
 class AdminDashboardProvider with ChangeNotifier {

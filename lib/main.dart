@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:neeknots/admin/admin_dashboad.dart';
 import 'package:neeknots/provider/InternetProvider.dart';
 import 'package:neeknots/provider/admin_dashboard_provider.dart';
 import 'package:neeknots/provider/customer_provider.dart';

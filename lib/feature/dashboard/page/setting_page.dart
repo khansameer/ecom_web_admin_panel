@@ -15,7 +15,6 @@ import '../../../core/firebase/auth_service.dart';
 import '../../../core/hive/app_config_cache.dart';
 import '../../../main.dart';
 import '../../../provider/customer_provider.dart';
-import '../../../provider/image_picker_provider.dart';
 import '../../../provider/order_provider.dart';
 import '../../../provider/product_provider.dart';
 
@@ -47,10 +46,6 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final imageProvider = Provider.of<ImagePickerProvider>(
-      context,
-      listen: false,
-    );
     var size = MediaQuery.sizeOf(context);
     return Consumer2<ThemeProvider, ProfileProvider>(
       builder: (context, themeProvider, provider, child) {
