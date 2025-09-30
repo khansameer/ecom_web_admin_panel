@@ -28,6 +28,8 @@ class SignupProvider extends ChangeNotifier {
     required String name,
     required dynamic photo,
   }) async {
+
+    _setLoading(true);
     try {
       _userData = await _authService.signupUser(
         email: email,
@@ -39,7 +41,7 @@ class SignupProvider extends ChangeNotifier {
       );
       notifyListeners();
     } catch (e) {
-      _setLoading(false);
+
       rethrow;
     } finally {
       _setLoading(false);

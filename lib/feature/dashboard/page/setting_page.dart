@@ -177,6 +177,7 @@ class _SettingPageState extends State<SettingPage> {
                         showCommonDialog(
                           confirmText: "Yes",
                           onPressed: () async {
+                            await AppConfigCache.clearAll();
                             context.read<ProductProvider>().reset();
                             context.read<OrdersProvider>().resetData();
                             context.read<CustomerProvider>().reset();

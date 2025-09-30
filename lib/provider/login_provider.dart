@@ -104,7 +104,7 @@ class LoginProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
 
   String generateOtp() {
-    return (100000 + (DateTime.now().millisecondsSinceEpoch % 900000))
+    return (1000  + (DateTime.now().millisecondsSinceEpoch % 9000))
         .toString();
   }
 
@@ -137,6 +137,8 @@ class LoginProvider with ChangeNotifier {
     required String otp,
     required String userID,
   }) async {
+
+    _setLoading(false);
     print('=====eail;#$email');
     const serviceId = 'service_q3x803q';
     const templateId = 'template_qh9hhmd';

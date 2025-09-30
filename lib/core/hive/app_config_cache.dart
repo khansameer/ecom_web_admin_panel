@@ -80,4 +80,17 @@ class AppConfigCache {
     await box.delete(_versionCodeKey);
     await box.delete(_logoUrlKey);
   }
+  static Future<void> clearAll() async {
+    final box = await Hive.openBox(_boxName);
+    await box.delete(_uidKey);
+    await box.delete(_emailKey);
+    await box.delete(_name);
+    await box.delete(_mobileKey);
+    await box.delete(_logoUrlKey);
+
+    await box.delete(_accessTokenKey);
+    await box.delete(_storeNameKey);
+    await box.delete(_versionCodeKey);
+  }
+
 }
