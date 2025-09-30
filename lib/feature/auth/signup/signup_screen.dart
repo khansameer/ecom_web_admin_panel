@@ -143,7 +143,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                                     onPressed: () async {
                                       hideKeyboard(context);
+                                      String fullNumber = provider.tetCountryCodeController.text + provider.tetPhone.text;
 
+                                      print('==========${fullNumber}');
                                       if(formSignupKey.currentState?.validate()==true){
                                         try {
                                           await signUpProvider.signup(
@@ -153,7 +155,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                                 .trim(),
                                             websiteUrl: provider.tetWebsiteUrl.text
                                                 .trim(),
-                                            mobile: provider.tetPhone.text.trim(),
+                                            mobile: fullNumber.trim(),
                                             name: provider.tetFullName.text.trim(),
                                             photo: _pickedImage,
                                           );

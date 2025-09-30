@@ -26,7 +26,9 @@ class LoginProvider with ChangeNotifier {
 
   final tetFullName = TextEditingController();
   final tetEmail = TextEditingController();
-  final tetPhone = TextEditingController();
+  TextEditingController tetPhone = TextEditingController();
+  TextEditingController tetCountryCodeController = TextEditingController(text: "+1");
+
   final tetStoreName = TextEditingController();
   final tetWebsiteUrl = TextEditingController();
   final tetPassword = TextEditingController();

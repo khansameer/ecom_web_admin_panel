@@ -5,6 +5,7 @@ import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/provider/login_provider.dart';
 
+import '../../core/component/PhoneNumberField.dart';
 import '../../core/validation/validation.dart';
 
 Widget commonLoginView({
@@ -24,7 +25,7 @@ Widget commonLoginView({
         hintText: "Email",
       ),
       const SizedBox(height: 20),
-      commonTextField(
+    /*  commonTextField(
         hintText: "Phone No",
         controller: provider.tetPhone,
 
@@ -33,6 +34,18 @@ Widget commonLoginView({
         keyboardType: TextInputType.phone,
         validator: validateTenDigitPhone,
         prefixIcon: commonPrefixIcon(image: icPhone),
+      ),*/
+      PhoneNumberField(
+        phoneController: provider.tetPhone,
+        countryCodeController: provider.tetCountryCodeController,
+        prefixIcon: commonPrefixIcon(image: icPhone),
+        validator: (value) {
+          if (value == null || value.length != 10) {
+            return "Enter 10 digit phone number";
+          }
+          return null;
+        },
+        isCountryCodeEditable: true, // fixed +1
       ),
       const SizedBox(height: 50),
       commonButton(text: "Login", onPressed: onPressed),

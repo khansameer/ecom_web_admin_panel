@@ -84,13 +84,15 @@ class LoginScreen extends StatelessWidget {
 
                                   onPressed: () async {
                                     hideKeyboard(context);
+                                    String fullNumber = provider.tetCountryCodeController.text + provider.tetPhone.text;
 
+                                    print('=========${fullNumber}');
                                     if (formLoginKey.currentState?.validate() ==
                                         true) {
                                       try {
                                         final userData = await provider.login(
                                           email: provider.tetEmail.text.trim(),
-                                          mobile: provider.tetPhone.text.trim(),
+                                          mobile: fullNumber.trim(),
                                         );
 
                                         navigatorKey.currentState
