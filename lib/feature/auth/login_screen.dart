@@ -41,28 +41,7 @@ class LoginScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Align(
-                                  alignment: Alignment.topRight,
-                                  child: Row(
 
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      commonInkWell(
-                                        onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminDashboardScreen()));
-                                  },
-                                        child: Container(
-                                          alignment: Alignment.topRight,
-                                            padding: EdgeInsets.symmetric(vertical: 8,horizontal: 20),
-
-                                            decoration: commonBoxDecoration(
-                                                color: colorLogo
-                                            ),
-                                            child: commonText(text: "Admin",color: Colors.white)),
-                                      ),
-                                    ],
-                                  ),
-                                ),
 
 
                                 SizedBox(height: 20,),
@@ -71,6 +50,7 @@ class LoginScreen extends StatelessWidget {
                                   child: commonAssetImage(
                                     icAppLogo,
 
+                                    height: 72,
 
                                     width: size.width * 0.7,
                                   ),
@@ -140,6 +120,31 @@ class LoginScreen extends StatelessWidget {
                                       }
                                     }
                                   },
+                                ),
+
+                                SizedBox(height: 50,),
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Row(
+
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      commonInkWell(
+                                        onTap: (){
+                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminDashboardScreen()));
+                                        },
+                                        child: Container(
+                                            alignment: Alignment.topRight,
+                                            padding: EdgeInsets.symmetric(vertical: 8,horizontal: 20),
+
+                                            decoration: commonBoxDecoration(
+                                              borderColor: colorLogo,
+                                                color: colorLogo.withValues(alpha: 0.1)
+                                            ),
+                                            child: commonText(text: "Admin",color: colorLogo,fontWeight: FontWeight.w600)),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
