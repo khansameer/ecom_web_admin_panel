@@ -13,7 +13,8 @@ const String icStore="$iconLoginPath/store.png";
 const String icUser="$iconLoginPath/user.png";
 const String icNetwork="$iconLoginPath/network.png";
 //const String icAppLogo="$iconLoginPath/app_logo.jpg";
-const String icAppLogo="$iconLoginPath/applogo.png";
+//const String icAppLogo="$iconLoginPath/applogo.png";
+const String icAppLogo="$iconLoginPath/ic_new_logo.png";
 
 //==============================dashboard=============================
 const String iconDashboardPath="$basePath/dashboard";

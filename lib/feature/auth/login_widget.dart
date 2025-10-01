@@ -5,7 +5,7 @@ import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/provider/login_provider.dart';
 
-import '../../core/component/PhoneNumberField.dart';
+import '../../core/component/phone_number_field.dart';
 import '../../core/validation/validation.dart';
 
 Widget commonLoginView({

@@ -26,6 +26,7 @@ class SignupProvider extends ChangeNotifier {
     required String websiteUrl,
     required String mobile,
     required String countryCode,
+    required String logoUrl,
     required String name,
     required dynamic photo,
   }) async {
@@ -34,6 +35,7 @@ class SignupProvider extends ChangeNotifier {
     try {
       _userData = await _authService.signupUser(
         email: email,
+        logoUrl: logoUrl,
         storeName: storeName,
         websiteUrl: websiteUrl,
         countryCode:countryCode ,

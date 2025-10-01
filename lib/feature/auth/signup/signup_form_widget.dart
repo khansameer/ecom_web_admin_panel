@@ -6,7 +6,7 @@ import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/core/validation/validation.dart';
 import 'package:neeknots/provider/login_provider.dart';
 
-import '../../../core/component/PhoneNumberField.dart';
+import '../../../core/component/phone_number_field.dart';
 
 Widget commonSignUpView({
   required LoginProvider provider,
@@ -92,6 +92,18 @@ Widget commonSignUpView({
         keyboardType: TextInputType.text,
 
         prefixIcon: commonPrefixIcon(image: icStore),
+      ),
+      const SizedBox(height: 20),
+      commonTextField(
+        hintText: "Logo Url",
+
+        controller: provider.tetLogoUrl,
+
+        maxLines: 1,
+
+        keyboardType: TextInputType.url,
+
+        prefixIcon: commonPrefixIcon(image: icNetwork),
       ),
       const SizedBox(height: 20),
       commonTextField(

@@ -1,13 +1,14 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/common_bottom_navbar.dart';
 import 'package:neeknots/core/component/component.dart';
-import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/feature/dashboard/page/customer_page.dart';
 import 'package:neeknots/feature/dashboard/page/home_page.dart';
 import 'package:neeknots/feature/dashboard/page/order_page.dart';
 import 'package:neeknots/feature/dashboard/page/product_page.dart';
 import 'package:neeknots/feature/dashboard/page/setting_page.dart';
+import 'package:neeknots/main.dart';
 import 'package:neeknots/provider/customer_provider.dart';
 import 'package:neeknots/provider/dashboard_provider.dart';
 import 'package:neeknots/provider/order_provider.dart';
@@ -18,7 +19,6 @@ import 'package:provider/provider.dart';
 import '../../core/firebase/auth_service.dart';
 import '../../core/hive/app_config_cache.dart';
 import '../../provider/product_provider.dart';
-import 'dashboard_widget.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -44,6 +44,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return HomePage();
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -53,23 +54,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> init() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-
       String? storedEmailOrMobile = await AppConfigCache.getName();
       String? id = await AppConfigCache.getID();
-      print('=== $storedEmailOrMobile');
-      print('=== $id');
 
-      // update provider
-      context.read<DashboardProvider>().setName(storedEmailOrMobile);
-
-
-   /*   final authService = AuthService();
-      await authService.updateFcm(
-        context: context,
-        uid: provider.userData?['id'] ?? '',
-      );*/
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      final provider = Provider.of<DashboardProvider>(navigatorKey.currentContext!, listen: false);
+      provider.setName(storedEmailOrMobile);
+      final authService = AuthService();
+      await authService.updateFcm(userID: id ?? '', fcmToken: fcmToken ?? '');
     });
   }
+
   String getInitials(String name) {
     if (name.isEmpty) return '';
     List<String> parts = name.trim().split(' ');
@@ -79,17 +74,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return parts[0][0] + parts[1][0]; // First + Last initials
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<DashboardProvider, ThemeProvider>(
       builder: (context, provider, themeProvider, child) {
-
         return Stack(
           children: [
-
-
             commonScaffold(
-
               backgroundColor: themeProvider.isDark
                   ? colorDarkBgColor
                   : Colors.white,
@@ -114,7 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         borderWidth: 2,
                         icDummyUser,
                         size: 40,
-                      )*/SizedBox(
+                      )*/ SizedBox(
                         width: 45,
                         height: 45,
                         child: CircleAvatar(
@@ -122,10 +114,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           child: commonCircleNetworkImage(
                             '',
 
-                           errorWidget: commonErrorBoxView(
-                              text: (provider.name?.isNotEmpty ?? false ?getInitials(provider.name??'') : ''),
+                            errorWidget: commonErrorBoxView(
+                              text: (provider.name?.isNotEmpty ?? false
+                                  ? getInitials(provider.name ?? '')
+                                  : ''),
                             ),
-
                           ),
                         ),
                       ),
@@ -181,12 +174,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
 
-            context.watch<ProductProvider>().isFetching ||   context.watch<OrdersProvider>().isFetching || context.watch<CustomerProvider>().isFetching
+            context.watch<ProductProvider>().isFetching ||
+                    context.watch<OrdersProvider>().isFetching ||
+                    context.watch<CustomerProvider>().isFetching
                 ? Container(
-               color:  Colors.black.withValues(alpha: 0.01),
-                width: MediaQuery.sizeOf(context).width,
-                height: MediaQuery.sizeOf(context).height,
-                child: showLoaderList11())
+                    color: Colors.black.withValues(alpha: 0.01),
+                    width: MediaQuery.sizeOf(context).width,
+                    height: MediaQuery.sizeOf(context).height,
+                    child: showLoaderList11(),
+                  )
                 : SizedBox.shrink(),
           ],
         );

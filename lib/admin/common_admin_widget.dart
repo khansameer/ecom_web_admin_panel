@@ -3,7 +3,7 @@ import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/provider/admin_dashboard_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../core/component/PhoneNumberField.dart';
+import '../core/component/phone_number_field.dart';
 import '../core/component/component.dart';
 import '../core/image/image_utils.dart';
 import '../core/validation/validation.dart';

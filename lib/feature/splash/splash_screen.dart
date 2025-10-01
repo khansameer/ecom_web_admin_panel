@@ -46,7 +46,6 @@ class _SplashScreenState extends State<SplashScreen> {
     try {
       String? storedEmailOrMobile =
           await AppConfigCache.getStoredEmailOrMobile();
-      print('======${storedEmailOrMobile}');
 
       if (storedEmailOrMobile == null || storedEmailOrMobile.isEmpty) {
         navigatorKey.currentState?.pushNamedAndRemoveUntil(
@@ -62,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
       setState(() {
         _logoUrl = userData['logo_url'];
       });
-      print('=====${userData}');
+
       if (userData.isNotEmpty == true && userData['active_status']==true) {
         await AppConfigCache.saveUser(
           uid:userData['uid'],
@@ -100,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       });*/
     } catch (e) {
-      print('-----e$e');
+
       String errorMessage = e
           .toString()
           .split(": ")
@@ -144,23 +143,18 @@ class _SplashScreenState extends State<SplashScreen> {
           return commonAppBackground(
             child: Center(
               child: commonNetworkImage(
-                errorWidget: SizedBox(
-                  width: size.width * 0.8,
-                  height: 100,
-                  child: Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadiusGeometry.circular(15),
-                      child: commonAssetImage(
-                        icAppLogo,
-                        width: size.width * 0.7,
-                        height: 100,
-                      ),
-                    ),
+                errorWidget: Center(
+                  child: commonAssetImage(
+
+                    icAppLogo,
+                    width: size.width * 0.7,
+
+                    height: 72,
                   ),
                 ),
                 fit: BoxFit.scaleDown,
                 _logoUrl ?? '',
-                size: size.width * 0.8,
+                size: size.width * 0.7,
               ),
             ),
           );
