@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
+
 import 'package:html/parser.dart' as html_parser;
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/image/image_utils.dart';
@@ -813,21 +813,6 @@ Container commonAppBackground({required Widget child}) {
   );
 }
 
-commonSvgWidget({
-  required String path,
-  double? width,
-  double? height,
-  Color? color,
-}) {
-  return SvgPicture.asset(
-    path,
-    width: width,
-    height: height,
-    colorFilter: color != null
-        ? ColorFilter.mode(color, BlendMode.srcIn)
-        : null,
-  );
-}
 
 commonHeadingText({
   String? text,

@@ -39,9 +39,9 @@ class _SettingPageState extends State<SettingPage> {
     final profile = Provider.of<ProfileProvider>(context, listen: false);
     await profile.loadUserData(); // <-- await here
 
-    print(
+    /*print(
       '==userData===${profile.userData.toString()}',
-    ); // Now it will have value
+    ); */// Now it will have value
   }
 
   @override
@@ -57,7 +57,8 @@ class _SettingPageState extends State<SettingPage> {
               children: [
                 SizedBox(height: 50),
                 CachedNetworkImage(
-                  height: 120,
+                  height: 150,
+                  fit: BoxFit.cover,
                   width: size.width * 0.7,
                   imageUrl: provider.userData?['logo_url'] ?? '',
 

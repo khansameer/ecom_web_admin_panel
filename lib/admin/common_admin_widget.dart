@@ -3,6 +3,7 @@ import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/provider/admin_dashboard_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../core/component/PhoneNumberField.dart';
 import '../core/component/component.dart';
 import '../core/image/image_utils.dart';
 import '../core/validation/validation.dart';
@@ -30,6 +31,7 @@ class _State extends State<CommonAdminWidget> {
     widget.provider.tetFullName.text = widget.data["name"];
     widget.provider.tetEmail.text = widget.data["email"];
     widget.provider.tetPhone.text = widget.data["mobile"];
+    widget.provider.tetCountryCodeController.text = widget.data["country_code"];
     widget.provider.tetStoreName.text = widget.data["store_name"];
     widget.provider.tetAccessToken.text = widget.data["accessToken"];
     widget.provider.tetVersionCode.text = widget.data["version_code"];
@@ -66,7 +68,22 @@ class _State extends State<CommonAdminWidget> {
         ),
 
         const SizedBox(height: 20),
-        commonTextField(
+        PhoneNumberField(
+          fillColor: Colors.grey.withValues(alpha: 0.1),
+          filled: true,
+          phoneController:  widget.provider.tetPhone,
+          countryCodeController: widget.provider.tetCountryCodeController,
+          prefixIcon: commonPrefixIcon(image: icPhone),
+          validator: (value) {
+            if (value == null || value.length != 10) {
+              return "Enter 10 digit phone number";
+            }
+            return null;
+          },
+          isCountryCodeEditable: false, // fixed +1
+          isPhoneEditable: false, // fixed +1
+        ),
+        /*commonTextField(
           hintText: "Phone No",
           controller: widget.provider.tetPhone,
           readOnly: true,
@@ -77,7 +94,7 @@ class _State extends State<CommonAdminWidget> {
           keyboardType: TextInputType.phone,
           validator: validateTenDigitPhone,
           prefixIcon: commonPrefixIcon(image: icPhone),
-        ),
+        ),*/
         const SizedBox(height: 20),
         commonTextField(
           hintText: "Store Name",
@@ -98,7 +115,7 @@ class _State extends State<CommonAdminWidget> {
 
           keyboardType: TextInputType.text,
 
-          prefixIcon: commonPrefixIcon(image: icStore),
+          prefixIcon: commonPrefixIcon(image: icAccessToken),
         ),
 
         const SizedBox(height: 20),
@@ -110,7 +127,7 @@ class _State extends State<CommonAdminWidget> {
 
           keyboardType: TextInputType.text,
 
-          prefixIcon: commonPrefixIcon(image: icStore),
+          prefixIcon: commonPrefixIcon(image: icVersionCode),
         ),
         const SizedBox(height: 20),
         commonTextField(
@@ -121,7 +138,7 @@ class _State extends State<CommonAdminWidget> {
 
           keyboardType: TextInputType.text,
 
-          prefixIcon: commonPrefixIcon(image: icStore),
+          prefixIcon: commonPrefixIcon(image: icAppLogoImage),
         ),
         const SizedBox(height: 20),
         commonTextField(
@@ -136,8 +153,9 @@ class _State extends State<CommonAdminWidget> {
         ),
         const SizedBox(height: 20),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            commonText(text: "Status"),
+            commonText(text: "Account Status:"),
             Consumer<AdminDashboardProvider>(
               builder: (context, provider, child) {
                 return Switch(

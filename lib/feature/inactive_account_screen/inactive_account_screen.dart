@@ -28,9 +28,9 @@ class InactiveAccountScreen extends StatelessWidget {
                     children: [
                       // App Logo (Optional)
                       // Block Icon
-                      commonSvgWidget(
+                      commonAssetImage(
+                        icAppLogo,
                         color: themeProvider.isDark ? Colors.white : colorLogo,
-                        path: icLogo,
                         width: size.width * 0.6,
                       ),
                       const SizedBox(height: 40),

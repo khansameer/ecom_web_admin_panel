@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/notification_provider.dart';
@@ -22,6 +22,7 @@ class NotificationService {
 
   static String? token;
   static bool _permissionRequested = false;
+
   @pragma('vm:entry-point')
   void initNotificationListeners() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
@@ -48,16 +49,6 @@ class NotificationService {
           (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
         );
 
-        /* await NotificationStorage.saveNotification(
-          LocalNotification(
-            id: message.messageId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-            title: message.notification?.title ?? message.data['title'] ?? 'New Notification',
-            body: message.notification?.body ?? message.data['body'] ?? '',
-            category: safeData['category'] ?? '',
-            receivedAt: DateTime.now(),
-            data: safeData,
-          ),
-        );*/
         final notification = LocalNotification(
           id:
               message.messageId ??
@@ -76,7 +67,7 @@ class NotificationService {
         final context = _navigatorKey.currentContext;
         if (context != null) {
           Provider.of<NotificationProvider>(
-            context,
+            _navigatorKey.currentContext!,
             listen: false,
           ).addNotification(notification);
         } else {
@@ -299,7 +290,7 @@ class NotificationService {
     final context = _navigatorKey.currentContext;
     if (context != null) {
       Provider.of<NotificationProvider>(
-        context,
+        _navigatorKey.currentContext!,
         listen: false,
       ).addNotification(notification1);
     } else {
@@ -324,22 +315,13 @@ class NotificationService {
 
     switch (data['category']) {
       case 'join_class':
-        _navigatorKey.currentState?.pushNamed(
-          RouteName.dashboardScreen,
-          arguments: data['id'],
-        );
+        _navigatorKey.currentState?.pushNamed(RouteName.loginScreen);
         break;
       case 'create_class':
-        _navigatorKey.currentState?.pushNamed(
-          RouteName.dashboardScreen,
-          arguments: data['id'],
-        );
+        _navigatorKey.currentState?.pushNamed(RouteName.loginScreen);
         break;
       case 'update_class':
-        _navigatorKey.currentState?.pushNamed(
-          RouteName.dashboardScreen,
-          arguments: data['id'],
-        );
+        _navigatorKey.currentState?.pushNamed(RouteName.loginScreen);
         break;
       case 'chat':
         /* _navigatorKey.currentState?.push(
@@ -354,13 +336,10 @@ class NotificationService {
             ),
           ),
         );*/
-        _navigatorKey.currentState?.pushNamed(
-          RouteName.dashboardScreen,
-          arguments: data['id'],
-        );
+        _navigatorKey.currentState?.pushNamed(RouteName.loginScreen);
         break;
       default:
-        _navigatorKey.currentState?.pushNamed(RouteName.dashboardScreen);
+        _navigatorKey.currentState?.pushNamed(RouteName.loginScreen);
     }
   }
 }

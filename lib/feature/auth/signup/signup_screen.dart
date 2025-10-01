@@ -69,11 +69,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                   SizedBox(height: size.height * 0.08),
                                   Align(
                                     alignment: AlignmentGeometry.center,
-                                    child: commonSvgWidget(
-                                      color: themeProvider.isDark
-                                          ? Colors.white
-                                          : colorLogo,
-                                      path: icLogo,
+                                    child: commonAssetImage(    icAppLogo,
+
+
                                       width: size.width * 0.6,
                                     ),
                                   ),
@@ -104,38 +102,14 @@ class _SignupScreenState extends State<SignupScreen> {
                                   ),
 
                                   const SizedBox(height: 5),
-                                 /* GestureDetector(
-                                    onTap: _pickImage,
-                                    child: CircleAvatar(
-                                      radius: 50,
-                                      backgroundImage:
-                                      _pickedImage != null ? FileImage(_pickedImage!) : null,
-                                      child: _pickedImage == null
-                                          ? const Icon(Icons.camera_alt, size: 40)
-                                          : null,
-                                    ),
-                                  ),*/
-            /*
-                                  commonButton(text: "Otp", onPressed: ()  async {
 
-                                    try {
-                                      print('====');
-                                      await signUpProvider.sendOtpBoth(
-                                        email: "pathansameerahmed@gmail.com",
-                                        phone: "+917984512507",
-                                      );
-                                      print("OTP send initiated ✅");
-                                    } catch (e) {
-                                      print('--e#$e');
-                                    }
-                                  }),*/
                                   SizedBox(height: 20,),
                                   commonSignUpView(
                                     provider: provider,
                                     onPressSignUp: TapGestureRecognizer()
                                       ..onTap = () {
                                         hideKeyboard(context);
-
+                                        context.read<LoginProvider>().resetState();
                                         navigatorKey.currentState?.pushNamed(
                                           RouteName.loginScreen,
                                         );
@@ -149,13 +123,14 @@ class _SignupScreenState extends State<SignupScreen> {
                                       if(formSignupKey.currentState?.validate()==true){
                                         try {
                                           await signUpProvider.signup(
+                                            countryCode: provider.tetCountryCodeController.text,
                                             email: provider.tetEmail.text.trim(),
 
                                             storeName: provider.tetStoreName.text
                                                 .trim(),
                                             websiteUrl: provider.tetWebsiteUrl.text
                                                 .trim(),
-                                            mobile: fullNumber.trim(),
+                                            mobile: provider.tetPhone.text,
                                             name: provider.tetFullName.text.trim(),
                                             photo: _pickedImage,
                                           );
@@ -172,6 +147,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                                     RouteName.loginScreen,
                                                         (Route<dynamic> route) => false,
                                                   );
+
+
+                                                  context.read<LoginProvider>().resetState();
                                                 },
                                               );
                                             },

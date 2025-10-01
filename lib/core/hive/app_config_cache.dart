@@ -61,6 +61,29 @@ class AppConfigCache {
     return box.get(_mobileKey);
   }
 
+  static Future<String?> getName() async {
+    final box = await Hive.openBox(_boxName);
+    // Prefer email if available, else mobile
+    String? name = box.get(_name);
+    if (name != null && name.isNotEmpty) return name;
+    return box.get(_emailKey);
+  }
+  static Future<String?> getID() async {
+    final box = await Hive.openBox(_boxName);
+    // Prefer email if available, else mobile
+    //String? id = box.get(_uidKey);
+
+    return box.get(_uidKey);
+  }
+  static Future<String?> getLogo() async {
+    final box = await Hive.openBox(_boxName);
+    // Prefer email if available, else mobile
+    String logo = box.get(_logoUrlKey);
+    if (logo.isNotEmpty) return logo;
+    return box.get(_name);
+  }
+
+
   /// Load all config
   static Future<Map<String, String>> loadConfig() async {
     final box = await Hive.openBox(_boxName);

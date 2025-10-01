@@ -9,6 +9,7 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
+import '../../admin/admin_dashboad.dart';
 import 'login_widget.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -40,20 +41,38 @@ class LoginScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Row(
+
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      commonInkWell(
+                                        onTap: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminDashboardScreen()));
+                                  },
+                                        child: Container(
+                                          alignment: Alignment.topRight,
+                                            padding: EdgeInsets.symmetric(vertical: 8,horizontal: 20),
+
+                                            decoration: commonBoxDecoration(
+                                                color: colorLogo
+                                            ),
+                                            child: commonText(text: "Admin",color: Colors.white)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
 
 
-                               /* commonButton(text: "Admin", onPressed: (){
-
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminDashboardScreen()));
-                                }),*/
+                                SizedBox(height: 20,),
                                 Align(
                                   alignment: AlignmentGeometry.center,
-                                  child: commonSvgWidget(
-                                    color: themeProvider.isDark
-                                        ? Colors.white
-                                        : colorLogo,
-                                    path: icLogo,
-                                    width: size.width * 0.6,
+                                  child: commonAssetImage(
+                                    icAppLogo,
+
+
+                                    width: size.width * 0.7,
                                   ),
                                 ),
                                 SizedBox(height: size.height * 0.08),
@@ -76,7 +95,7 @@ class LoginScreen extends StatelessWidget {
                                   onPressSignUp: TapGestureRecognizer()
                                     ..onTap = () {
                                       hideKeyboard(context);
-
+                                      context.read<LoginProvider>().resetState();
                                       navigatorKey.currentState?.pushNamed(
                                         RouteName.signupScreen,
                                       );
@@ -91,8 +110,9 @@ class LoginScreen extends StatelessWidget {
                                         true) {
                                       try {
                                         final userData = await provider.login(
+                                          countryCode: provider.tetCountryCodeController.text,
                                           email: provider.tetEmail.text.trim(),
-                                          mobile: fullNumber.trim(),
+                                          mobile: provider.tetPhone.text,
                                         );
 
                                         navigatorKey.currentState

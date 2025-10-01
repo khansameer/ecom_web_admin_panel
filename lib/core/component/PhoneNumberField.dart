@@ -6,9 +6,12 @@ class PhoneNumberField extends StatelessWidget {
   final TextEditingController? countryCodeController;
   final String countryCode;
   final String hintText;
+  final Color? fillColor;
+  final bool? filled;
   final String? Function(String?)? validator;
   final Widget? prefixIcon;
   final bool isCountryCodeEditable;
+  final bool isPhoneEditable;
 
   const PhoneNumberField({
     super.key,
@@ -17,20 +20,23 @@ class PhoneNumberField extends StatelessWidget {
     this.countryCode = "+1",
     this.hintText = "Phone No",
     this.validator,
+    this.fillColor,
+    this.filled=false,
     this.prefixIcon,
     this.isCountryCodeEditable = false,
+    this.isPhoneEditable = false,
   });
 
   @override
   Widget build(BuildContext context) {
-  /*  final countryController =
-        countryCodeController ?? TextEditingController(text: countryCode);
-*/
+
     return Row(
       children: [
         SizedBox(
           width: 70,
           child: commonTextField(
+            fillColor: fillColor,
+            filled:filled??false ,
             controller: countryCodeController,
             keyboardType: TextInputType.phone,
             enabled: isCountryCodeEditable, hintText: '',
@@ -42,6 +48,9 @@ class PhoneNumberField extends StatelessWidget {
           child: commonTextField(
             controller: phoneController,
             maxLines: 1,
+            fillColor: fillColor,
+            enabled: isCountryCodeEditable,
+            filled:filled??false ,
             keyboardType: TextInputType.phone,
             validator: validator,
             hintText: hintText,

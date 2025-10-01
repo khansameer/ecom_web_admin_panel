@@ -25,6 +25,7 @@ class SignupProvider extends ChangeNotifier {
     required String storeName,
     required String websiteUrl,
     required String mobile,
+    required String countryCode,
     required String name,
     required dynamic photo,
   }) async {
@@ -35,6 +36,7 @@ class SignupProvider extends ChangeNotifier {
         email: email,
         storeName: storeName,
         websiteUrl: websiteUrl,
+        countryCode:countryCode ,
         mobile: mobile,
         name: name,
         photo: photo,

@@ -21,6 +21,7 @@ class AuthService {
     required String websiteUrl,
     required String mobile,
     required String name,
+     String? countryCode,
     File? photo,
   }) async {
     try {
@@ -59,6 +60,7 @@ class AuthService {
         "version_code": '',
         "logo_url": '',
         "photo": photoUrl,
+        "country_code": countryCode??"+1",
         "fcm_token": fcmToken ?? "",
         "active_status": false,
         "created_at": FieldValue.serverTimestamp(),
@@ -76,6 +78,7 @@ class AuthService {
   Future<Map<String, dynamic>> loginUser({
     required String email,
     required String mobile,
+    required String countryCode,
   }) async {
     try {
       // Check Firestore for a document matching BOTH email and mobile
@@ -83,8 +86,8 @@ class AuthService {
           .collection("stores")
           .where("email", isEqualTo: email)
           .where("mobile", isEqualTo: mobile)
+          .where("country_code", isEqualTo: countryCode)
           .get();
-
       if (query.docs.isEmpty) {
         throw "User not found with this email and mobile number";
       }
@@ -250,7 +253,28 @@ class AuthService {
       throw Exception("OTP verification failed: $e");
     }
   }
+  Future<void> updateFcm({
+    required String userID,
+    required String fcmToken,
+  }) async {
+    try {
+      // 1️⃣ Get the user document from Firestore
+      final docRef = _firestore.collection("stores").doc(userID);
+      final docSnapshot = await docRef.get();
 
+      if (!docSnapshot.exists) {
+        throw "User not found";
+      }
+
+      await docRef.update({
+        "fcm_token": fcmToken,
+
+      });
+
+    } catch (e) {
+      throw Exception("OTP verification failed: $e");
+    }
+  }
   /// 🔹 Get all users from Firestore
   Future<List<Map<String, dynamic>>> getAllUsers() async {
     try {

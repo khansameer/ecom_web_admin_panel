@@ -1,6 +1,6 @@
 const String basePath="assets/icons";
 const String basePathJson="assets/json";
-const String icLogo="$basePath/ic_logo.svg";
+//const String icLogo="$basePath/ic_logo.svg";
 const String jsonFile="$basePathJson/neeknots-a8758-72a634b64427.json";
 //==============================Login=============================
 const String iconLoginPath="$basePath/login";
@@ -29,6 +29,9 @@ const String icTotalSale="$iconDashboardPath/trend.png";
 const String icTotalUser="$iconDashboardPath/ic_total_user.png";
 const String icPen="$iconDashboardPath/ic_pen.png";
 const String icNoData="$iconDashboardPath/ic_no_data.png";
+const String icVersionCode="$iconDashboardPath/web-programming.png";
+const String icAccessToken="$iconDashboardPath/security-key.png";
+const String icAppLogoImage="$iconDashboardPath/logo-design.png";
 
 
 //==============================Product=============================

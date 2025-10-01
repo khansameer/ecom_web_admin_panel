@@ -113,16 +113,24 @@ class LoginProvider with ChangeNotifier {
   Future<Map<String, dynamic>> login({
     required String email,
     required String mobile,
+    required String countryCode,
   }) async {
     _setLoading(true);
     try {
-      _userData = await _authService.loginUser(email: email, mobile: mobile);
+      _userData = await _authService.loginUser(email: email, mobile: mobile,countryCode: countryCode);
 
       notifyListeners();
       if (_userData?.isNotEmpty == true) {
         String otp = generateOtp();
+        final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+        print('OTP sent successfully!');
+        await _firestore.collection("stores").doc(userData?['uid']).update({
+          "otp": otp,
+          "otp_created_at": FieldValue.serverTimestamp(),
+          "active_status": false, // Ensure user is inactive until OTP verified
+        });
 
-        await sendOtpEmail(email: email, userID: userData?['uid'], otp: otp);
+      //  await sendOtpEmail(email: email, userID: userData?['uid'], otp: otp);
       }
 
       return _userData ?? {}; // 🔹 return the user data

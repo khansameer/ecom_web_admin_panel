@@ -10,6 +10,7 @@ class AdminDashboardProvider with ChangeNotifier {
   final tetFullName = TextEditingController();
   final tetEmail = TextEditingController();
   final tetPhone = TextEditingController();
+  final tetCountryCodeController = TextEditingController();
   final tetStoreName = TextEditingController();
   final tetWebsiteUrl = TextEditingController();
   final tetAccessToken = TextEditingController();

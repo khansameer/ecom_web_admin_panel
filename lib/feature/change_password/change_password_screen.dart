@@ -44,11 +44,12 @@ class ChangePasswordScreen extends StatelessWidget {
                           children: [
                             Align(
                               alignment: AlignmentGeometry.center,
-                              child: commonSvgWidget(
+                              child: commonAssetImage(
+                                icAppLogo,
                                 color: themeProvider.isDark
                                     ? Colors.white
                                     : colorLogo,
-                                path: icLogo,
+
                                 width: size.width * 0.6,
                               ),
                             ),

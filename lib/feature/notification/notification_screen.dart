@@ -19,7 +19,7 @@ class NotificationScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: commonAppBackground(
-        child: Padding(
+        child: Container()/*Padding(
           padding: const EdgeInsets.all(16.0),
           child: commonListViewBuilder(
             items: provider.notifications,
@@ -53,7 +53,7 @@ class NotificationScreen extends StatelessWidget {
               );
             },
           ),
-        ),
+        )*/,
       ),
     );
   }

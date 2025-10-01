@@ -15,6 +15,8 @@ import 'package:neeknots/provider/profile_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/firebase/auth_service.dart';
+import '../../core/hive/app_config_cache.dart';
 import '../../provider/product_provider.dart';
 import 'dashboard_widget.dart';
 
@@ -42,11 +44,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return HomePage();
     }
   }
+  @override
+  void initState() {
+    super.initState();
 
+    init();
+  }
+
+  Future<void> init() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+
+      String? storedEmailOrMobile = await AppConfigCache.getName();
+      String? id = await AppConfigCache.getID();
+      print('=== $storedEmailOrMobile');
+      print('=== $id');
+
+      // update provider
+      context.read<DashboardProvider>().setName(storedEmailOrMobile);
+
+
+   /*   final authService = AuthService();
+      await authService.updateFcm(
+        context: context,
+        uid: provider.userData?['id'] ?? '',
+      );*/
+    });
+  }
+  String getInitials(String name) {
+    if (name.isEmpty) return '';
+    List<String> parts = name.trim().split(' ');
+    if (parts.length == 1) {
+      return parts[0][0]; // Only first name
+    } else {
+      return parts[0][0] + parts[1][0]; // First + Last initials
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer2<DashboardProvider, ThemeProvider>(
       builder: (context, provider, themeProvider, child) {
+
         return Stack(
           children: [
 
@@ -62,7 +99,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : colorLogo,
 
                 centerTitle: true,
-                actions: [notificationWidget(), SizedBox(width: 16)],
+                actions: [/*notificationWidget(), SizedBox(width: 16)*/],
                 title: provider.appbarTitle ?? "Home",
                 context: context,
                 leading: Container(
@@ -71,12 +108,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: commonInkWell(
                     onTap: () => provider.setIndex(4),
                     child: Center(
-                      child: commonCircleAssetImage(
+                      child: /*commonCircleAssetImage(
 
                         borderColor: Colors.white,
                         borderWidth: 2,
                         icDummyUser,
                         size: 40,
+                      )*/SizedBox(
+                        width: 45,
+                        height: 45,
+                        child: CircleAvatar(
+                          radius: 100,
+                          child: commonCircleNetworkImage(
+                            '',
+
+                           errorWidget: commonErrorBoxView(
+                              text: (provider.name?.isNotEmpty ?? false ?getInitials(provider.name??'') : ''),
+                            ),
+
+                          ),
+                        ),
                       ),
                     ),
                   ),

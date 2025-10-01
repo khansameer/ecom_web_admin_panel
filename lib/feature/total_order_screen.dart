@@ -72,7 +72,7 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
                                 // orderProvider.getOrderList(financialStatus: "paid");
                               },
                               value: orderProvider.totalPaid,
-                              icon: icLogo,
+                              icon:     icAppLogo,
                               title: "Paid",
                               color: orderProvider.selectedTab == "Paid"
                                   ? Colors.green
@@ -90,7 +90,7 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
                                 );*/
                               },
                               value: orderProvider.totalPending,
-                              icon: icLogo,
+                              icon:     icAppLogo,
                               title: "Pending",
                               color: orderProvider.selectedTab == "Pending"
                                   ? Colors.red
@@ -108,7 +108,7 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
                                 );*/
                               },
                               value: orderProvider.totalShipping,
-                              icon: icLogo,
+                              icon:     icAppLogo,
                               title: "Shipping",
                               color: orderProvider.selectedTab == "Shipping"
                                   ? Colors.blue
@@ -126,7 +126,7 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
                                 );*/
                               },
                               value: orderProvider.totalRefunded,
-                              icon: icLogo,
+                              icon:     icAppLogo,
                               title: "Refunded",
                               color: orderProvider.selectedTab == "Refunded"
                                   ? Colors.blue

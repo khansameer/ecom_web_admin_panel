@@ -93,12 +93,12 @@ class _SplashScreenState extends State<SplashScreen> {
         }
 
 
-      Timer(const Duration(seconds: 3), () {
+    /*  Timer(const Duration(seconds: 3), () {
         navigatorKey.currentState?.pushNamedAndRemoveUntil(
           RouteName.dashboardScreen,
           (Route<dynamic> route) => false,
         );
-      });
+      });*/
     } catch (e) {
       print('-----e$e');
       String errorMessage = e
