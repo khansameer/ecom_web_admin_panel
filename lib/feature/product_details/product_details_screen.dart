@@ -310,62 +310,57 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               commonButton(
                                                 text: "Update",
                                                 onPressed: () {
-                                                  if (provider
-                                                      .tetDesc
-                                                      .text
-                                                      .isNotEmpty) {
-                                                    provider.setIsImageUpdating(
-                                                      true,
-                                                    );
-                                                    final variantsPayload = provider
-                                                        .productDetailsModel
-                                                        ?.variants
-                                                        ?.map((variant) {
-                                                          return {
-                                                            "id": variant.id,
-                                                            "price": provider
-                                                                .tetPrice
-                                                                .text,
-                                                            "inventory_quantity":
-                                                                int.tryParse(
-                                                                  provider
-                                                                      .qtyControllers[variant
-                                                                          .id]!
-                                                                      .text,
-                                                                ) ??
-                                                                0,
-                                                          };
-                                                        })
-                                                        .toList();
+                                                  provider.setIsImageUpdating(
+                                                    true,
+                                                  );
+                                                  final variantsPayload = provider
+                                                      .productDetailsModel
+                                                      ?.variants
+                                                      ?.map((variant) {
+                                                    return {
+                                                      "id": variant.id,
+                                                      "price": provider
+                                                          .tetPrice
+                                                          .text,
+                                                      "inventory_quantity":
+                                                      int.tryParse(
+                                                        provider
+                                                            .qtyControllers[variant
+                                                            .id]!
+                                                            .text,
+                                                      ) ??
+                                                          0,
+                                                    };
+                                                  })
+                                                      .toList();
+                                                  provider
+                                                      .updateProductById(
+                                                    title: provider
+                                                        .tetName
+                                                        .text,
+                                                    description: provider
+                                                        .tetDesc
+                                                        .text,
+                                                    productId: int.parse(
+                                                      widget.productId,
+                                                    ),
+                                                    variants:
+                                                    variantsPayload,
+                                                  )
+                                                      .then((onValue) {
+                                                    init();
                                                     provider
-                                                        .updateProductById(
-                                                          title: provider
-                                                              .tetName
-                                                              .text,
-                                                          description: provider
-                                                              .tetDesc
-                                                              .text,
-                                                          productId: int.parse(
-                                                            widget.productId,
-                                                          ),
-                                                          variants:
-                                                              variantsPayload,
-                                                        )
-                                                        .then((onValue) {
-                                                          init();
-                                                          provider
-                                                              .setIsImageUpdating(
-                                                                false,
-                                                              );
-                                                          navigator.pop();
-                                                        })
-                                                        .catchError((onError) {
-                                                          provider
-                                                              .setIsImageUpdating(
-                                                                false,
-                                                              );
-                                                        });
-                                                  }
+                                                        .setIsImageUpdating(
+                                                      false,
+                                                    );
+                                                    navigator.pop();
+                                                  })
+                                                      .catchError((onError) {
+                                                    provider
+                                                        .setIsImageUpdating(
+                                                      false,
+                                                    );
+                                                  });
                                                 },
                                               ),
                                               SizedBox(height: 30),
