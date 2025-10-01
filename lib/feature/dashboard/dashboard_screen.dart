@@ -112,12 +112,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: CircleAvatar(
                           radius: 100,
                           child: commonCircleNetworkImage(
+
                             '',
+
+                            color:themeProvider.isDark?Colors.white: colorDarkBgColor,
 
                             errorWidget: commonErrorBoxView(
                               text: (provider.name?.isNotEmpty ?? false
                                   ? getInitials(provider.name ?? '')
                                   : ''),
+
                             ),
                           ),
                         ),

@@ -501,7 +501,14 @@ commonTopProductListView({void Function()? onTap}) {
                           ? MediaQuery.sizeOf(context).width - 30
                           : MediaQuery.sizeOf(context).width - 80,
                       image: data.image?.src ?? '',
-                      onTap: () {},
+                      onTap: () {
+                        if (data.id != null) {
+                          navigatorKey.currentState?.pushNamed(
+                            RouteName.productDetailsScreen,
+                            arguments: data.id.toString(),
+                          );
+                        }
+                      },
                       price: data.variants?.isNotEmpty == true
                           ? '$rupeeIcon${data.variants?.first.price}'
                           : '$rupeeIcon 0',

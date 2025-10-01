@@ -5,14 +5,18 @@ import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/core/validation/validation.dart';
 import 'package:neeknots/provider/login_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/component/phone_number_field.dart';
+import '../../../main.dart';
+import '../../../provider/theme_provider.dart';
 
 Widget commonSignUpView({
   required LoginProvider provider,
   required void Function() onPressed,
   GestureRecognizer? onPressSignUp,
 }) {
+  final themeProvider = Provider.of<ThemeProvider>(navigatorKey.currentContext!);
   return Column(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
@@ -124,9 +128,9 @@ Widget commonSignUpView({
         onTap: onPressSignUp,
         text1: "Already have an account? ",
         text2: "Login",
-        textStyle1: commonTextStyle(),
+        textStyle1: commonTextStyle(color: themeProvider.isDark?Colors.white:Colors.black),
         textStyle2: commonTextStyle(
-          color: colorLogo,
+          color: themeProvider.isDark?Colors.white:colorLogo,
           fontWeight: FontWeight.w600,
         ),
       ),

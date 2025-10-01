@@ -83,6 +83,7 @@ class _HomePageState extends State<HomePage> {
                     builder: (context, provider, child) {
                       return commonTopProductListView(
                         onTap: () {
+
                           provider.setIndex(0);
                         },
                       );

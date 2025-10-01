@@ -3,7 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 const Color colorButton1 = Color.fromRGBO(55, 161, 218, 1);
-const Color colorLogo = Color.fromRGBO(113, 79, 64, 1.0);
+//const Color colorLogo = Color.fromRGBO(113, 79, 64, 1.0);
+const Color colorLogo = Color.fromRGBO(0, 0, 0, 1);
 const Color colorButton = Color.fromRGBO(100, 141, 219, 1);
 const Color colorStripe = Color.fromRGBO(99, 91, 255, 1);
 const Color colorPaypal = Color.fromRGBO(0, 48, 135, 1);

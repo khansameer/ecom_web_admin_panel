@@ -123,7 +123,7 @@ class LoginScreen extends StatelessWidget {
                                 ),
 
                                 SizedBox(height: 50,),
-                                Align(
+                               /* Align(
                                   alignment: Alignment.bottomCenter,
                                   child: Row(
 
@@ -141,11 +141,11 @@ class LoginScreen extends StatelessWidget {
                                               borderColor: colorLogo,
                                                 color: colorLogo.withValues(alpha: 0.1)
                                             ),
-                                            child: commonText(text: "Admin",color: colorLogo,fontWeight: FontWeight.w600)),
+                                            child: commonText(text: "Admin View",color: colorLogo,fontWeight: FontWeight.w600)),
                                       ),
                                     ],
                                   ),
-                                ),
+                                ),*/
                               ],
                             ),
                           ),

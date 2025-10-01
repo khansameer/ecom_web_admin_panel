@@ -143,6 +143,7 @@ class _SplashScreenState extends State<SplashScreen> {
           return commonAppBackground(
             child: Center(
               child: commonNetworkImage(
+                decoration: BoxDecoration(),
                 errorWidget: Center(
                   child: commonAssetImage(
 

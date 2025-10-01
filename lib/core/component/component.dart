@@ -1053,6 +1053,7 @@ Widget commonCircleNetworkImage(
       String ?errorPath,
       BoxShape? shape,
   Color borderColor = Colors.white,
+  Color ?color,
   BoxFit fit = BoxFit.cover,
   Widget? placeholder,
   Widget? errorWidget,
@@ -1067,6 +1068,7 @@ Widget commonCircleNetworkImage(
     height: size,
     padding: EdgeInsets.all(borderWidth),
     decoration: BoxDecoration(
+      color: color,
       shape:shape?? BoxShape.circle,
       border: Border.all(color: borderColor, width: borderWidth),
     ),
@@ -1096,6 +1098,7 @@ Widget commonNetworkImage(
   double borderWidth = 0,
   Color borderColor = Colors.white,
   BoxFit fit = BoxFit.cover,
+      Decoration? decoration,
   Widget? placeholder,
   Widget? errorWidget,
   String? text,
@@ -1110,7 +1113,7 @@ Widget commonNetworkImage(
     width: size,
     height: size,
     padding: EdgeInsets.all(borderWidth),
-    decoration: BoxDecoration(
+    decoration: decoration??BoxDecoration(
       shape: shape,
       border: Border.all(color: borderColor, width: borderWidth),
       borderRadius: shape == BoxShape.rectangle
@@ -1259,6 +1262,8 @@ Widget commonTextRich({
   TextStyle? textStyle2,
   GestureRecognizer? onTap,
 }) {
+
+  final themeProvider = Provider.of<ThemeProvider>(navigatorKey.currentContext!);
   return Text.rich(
     textAlign: textAlign ?? TextAlign.center,
     TextSpan(
