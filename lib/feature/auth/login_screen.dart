@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:neeknots/admin/admin_dashboad.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
@@ -9,7 +10,6 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
-import '../../admin/admin_dashboad.dart';
 import 'login_widget.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -103,9 +103,10 @@ class LoginScreen extends StatelessWidget {
 
                                   onPressed: () async {
                                     hideKeyboard(context);
-                                    String fullNumber = provider.tetCountryCodeController.text + provider.tetPhone.text;
+                                    String fullNumber =
+                                        provider.tetCountryCodeController.text +
+                                        provider.tetPhone.text;
 
-                                    print('=========${fullNumber}');
                                     if (formLoginKey.currentState?.validate() ==
                                         true) {
                                       try {

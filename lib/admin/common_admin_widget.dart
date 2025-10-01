@@ -176,8 +176,11 @@ class _State extends State<CommonAdminWidget> {
           text: "Update",
           onPressed: () async {
             print('======${widget.data["uid"]}');
-            await widget.provider.updateUser(docId: widget.data["uid"],token: widget.data['fcm_token']);
-
+            print('======${widget.data["fcm_token"]}');
+            await widget.provider.updateUser(
+              docId: widget.data["uid"],
+              token: widget.data['fcm_token'],
+            );
 
             Navigator.pop(context);
             //widget.provider.updateUser( widget.data["uid"]);

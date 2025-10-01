@@ -43,7 +43,7 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return commonPopScope(
-            onBack: (){
+            onBack: () {
               context.read<LoginProvider>().resetState();
             },
             child: Stack(
@@ -79,12 +79,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                   Center(
                                     child: Column(
                                       children: [
-
-
                                         commonHeadingText(
-                                          text: "Create your Shopify Account",
-                                          fontSize: 22,
-                                          fontWeight: FontWeight.w700,
+                                          text:
+                                              "Create your Ecommerce manager account",
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
                                           color: themeProvider.isDark
                                               ? Colors.white
                                               : colorLogo,
@@ -117,24 +116,33 @@ class _SignupScreenState extends State<SignupScreen> {
 
                                     onPressed: () async {
                                       hideKeyboard(context);
-                                      String fullNumber = provider.tetCountryCodeController.text + provider.tetPhone.text;
+                                      String fullNumber =
+                                          provider
+                                              .tetCountryCodeController
+                                              .text +
+                                          provider.tetPhone.text;
 
                                       print('==========${fullNumber}');
-                                      if(formSignupKey.currentState?.validate()==true){
+                                      if (formSignupKey.currentState
+                                              ?.validate() ==
+                                          true) {
                                         try {
                                           await signUpProvider.signup(
-                                            countryCode: provider.tetCountryCodeController.text,
-                                            email: provider.tetEmail.text.trim(),
-
-                                            storeName: provider.tetStoreName.text
+                                            email: provider.tetEmail.text
                                                 .trim(),
-                                            websiteUrl: provider.tetWebsiteUrl.text
+
+                                            storeName: provider
+                                                .tetStoreName
+                                                .text
+                                                .trim(),
+                                            websiteUrl: provider
+                                                .tetWebsiteUrl
+                                                .text
                                                 .trim(),
                                             mobile: provider.tetPhone.text,
                                             name: provider.tetFullName.text.trim(),
                                             photo: _pickedImage,
                                           );
-
 
                                           showCommonDialog(
                                             title: "Success",
@@ -155,7 +163,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                             },
                                             context: context,
                                             content:
-                                            "Your account is successfully created. You can access it after 24 hours.",
+                                                "Your account is successfully created. You can access it after 24 hours.",
                                           );
                                         } catch (e) {
                                           print('====$e');
@@ -173,8 +181,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                           );
                                         }
                                       }
-
-
                                     },
                                   ),
                                 ],
@@ -186,7 +192,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                 ),
-                signUpProvider.isLoading?showLoaderList():SizedBox.shrink()
+                signUpProvider.isLoading ? showLoaderList() : SizedBox.shrink(),
               ],
             ),
           );
