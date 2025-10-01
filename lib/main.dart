@@ -54,25 +54,24 @@ List<SingleChildWidget> providers = [
   ),
 
   ChangeNotifierProvider<InternetProvider>(create: (_) => InternetProvider()),
-  ChangeNotifierProvider<AdminDashboardProvider>(create: (_) => AdminDashboardProvider()),
+  ChangeNotifierProvider<AdminDashboardProvider>(
+    create: (_) => AdminDashboardProvider(),
+  ),
 ];
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
-
-  await Firebase.initializeApp(
-    name: "LeekNote",
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  await NotificationService.initializeApp(navigatorKey: navigatorKey);
-
-  FirebaseMessaging.onBackgroundMessage(
-    NotificationService.firebaseMessagingBackgroundHandler,
-  );
-
+  try {
+    await Hive.initFlutter();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    await NotificationService.initializeApp(navigatorKey: navigatorKey);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  } catch (e, s) {
+    debugPrint('🔥 Initialization error: $e\n$s');
+  }
   runApp(
     MultiProvider(
       providers: providers,
@@ -98,7 +97,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       themeMode: themeProvider.isDark ? ThemeMode.dark : ThemeMode.light,
       initialRoute: RouteName.splashScreen,
-     // home: AdminDashboardScreen(),
+      // home: AdminDashboardScreen(),
       onGenerateRoute: RouteGenerate.onGenerateRoute,
     );
   }

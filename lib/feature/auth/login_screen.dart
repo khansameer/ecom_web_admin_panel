@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:neeknots/admin/admin_dashboad.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
@@ -40,12 +41,18 @@ class LoginScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-
-
-                               /* commonButton(text: "Admin", onPressed: (){
-
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminDashboardScreen()));
-                                }),*/
+                                // commonButton(
+                                //   text: "Admin",
+                                //   onPressed: () {
+                                //     Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //         builder: (context) =>
+                                //             AdminDashboardScreen(),
+                                //       ),
+                                //     );
+                                //   },
+                                // ),
                                 Align(
                                   alignment: AlignmentGeometry.center,
                                   child: commonSvgWidget(
@@ -84,9 +91,10 @@ class LoginScreen extends StatelessWidget {
 
                                   onPressed: () async {
                                     hideKeyboard(context);
-                                    String fullNumber = provider.tetCountryCodeController.text + provider.tetPhone.text;
+                                    String fullNumber =
+                                        provider.tetCountryCodeController.text +
+                                        provider.tetPhone.text;
 
-                                    print('=========${fullNumber}');
                                     if (formLoginKey.currentState?.validate() ==
                                         true) {
                                       try {

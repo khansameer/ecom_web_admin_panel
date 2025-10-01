@@ -315,12 +315,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           fontWeight: fontWeight ?? FontWeight.w400,
           text: "$title:",
         ),
-        view ??
-            commonText(
-              fontSize: 12,
-              fontWeight: fontWeight ?? FontWeight.w400,
-              text: value ?? '',
-            ),
+        Flexible(
+          child:
+              view ??
+              commonText(
+                fontSize: 12,
+                fontWeight: fontWeight ?? FontWeight.w400,
+                text: value ?? '',
+              ),
+        ),
       ],
     );
   }
