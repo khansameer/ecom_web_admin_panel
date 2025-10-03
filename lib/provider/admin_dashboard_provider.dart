@@ -124,4 +124,101 @@ class AdminDashboardProvider with ChangeNotifier {
       _setUpdating(false);
     }
   }
+
+  List<Map<String, dynamic>> _contacts = [];
+  List<Map<String, dynamic>> get contacts => _contacts;
+  Future<void> getAllContactList() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final querySnapshot = await _firestore.collection("contact_us").get();
+
+      if (querySnapshot.docs.isEmpty) {
+        _contacts = [];
+      } else {
+        _contacts = querySnapshot.docs.map((doc) {
+          final data = doc.data();
+          data["uid"] = doc.id; // add UID
+          return data;
+        }).toList();
+      }
+    } catch (e) {
+      debugPrint("❌ Failed to fetch users: $e");
+      _contacts = [];
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  int _contactCount = 0;
+
+
+  int get contactCount => _contactCount;
+
+
+/*  Future<void> getContactUsCount() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final aggregateQuery =
+      await _firestore.collection("contact_us").count().get();
+
+      _contactCount = aggregateQuery.count??0;
+    } catch (e) {
+      debugPrint("❌ Failed to fetch count: $e");
+      _contactCount = 0;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }*/
+  Future<void> getUnseenContactCount() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      // Sirf unseen contacts count karo
+      final aggregateQuery = await _firestore
+          .collection("contact_us")
+          .where("isSeen", isEqualTo: false) // ✅ filter
+          .count()
+          .get();
+
+      _contactCount = aggregateQuery.count ?? 0;
+    } catch (e) {
+      debugPrint("❌ Failed to fetch unseen count: $e");
+      _contactCount = 0;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> markAllAsSeen() async {
+    try {
+      WriteBatch batch = _firestore.batch();
+
+      // Sare contacts lekar unpe batch update lagao
+      final querySnapshot = await _firestore.collection("contact_us").get();
+
+      for (var doc in querySnapshot.docs) {
+        batch.update(doc.reference, {"isSeen": true});
+      }
+
+      await batch.commit();
+
+      // Local list update bhi kar dete hain
+      for (var c in _contacts) {
+        c["isSeen"] = true;
+      }
+      notifyListeners();
+
+      debugPrint("✅ All contacts marked as seen");
+    } catch (e) {
+      debugPrint("❌ Failed to mark all as seen: $e");
+    }
+  }
 }

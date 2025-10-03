@@ -23,12 +23,12 @@ class OtpVerificationScreen extends StatefulWidget {
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final TextEditingController _emailOtpController = TextEditingController();
   final TextEditingController _phoneOtpController = TextEditingController();
-  @override
+  /*@override
   void dispose() {
     _emailOtpController.dispose();
     _phoneOtpController.dispose();
     super.dispose();
-  }
+  }*/
   Future<void> _validateOtp() async {
     String emailOtp = _emailOtpController.text.trim();
     String phoneOtp = _phoneOtpController.text.trim();

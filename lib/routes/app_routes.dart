@@ -18,4 +18,5 @@ class RouteName {
   static const String salesDetailsScreen = "/SalesDetailsScreen";
   static const String otpVerificationScreen = "/OtpVerificationScreen";
   static const String inactiveAccountScreen = "/InactiveAccountScreen";
+  static const String contactUsScreen = "/ContactUsScreen";
 }

@@ -62,17 +62,38 @@ class _OrdersPageState extends State<OrderPage> {
                       final filters = [
                         FilterItem(
                           label: "Status",
-                          options: [
+                          /* options: [
                             "All",
                             "Authorized",
                             "Paid",
                             "Partially Paid",
                             "Refunded",
                             "Voided",
+                          ],*/
+                          options: [
+                         /*   "All",
+                            "Today’s Order",
+                            "Open Order",
+                            "Closed Orders",
+                            "Pending to Charge",
+                            "Pending Shipment",
+                            "Shipped",
+                            "Awaiting Return",
+                            "Completed",*/
+                            "All",
+                            "Today’s Order",
+                            "Open Order",
+                            "Closed Orders",
+                            "Pending To Charge",
+                            "Pending Shipment",
+                            "Shipped",
+                            "Awaiting Return",
+                            "Completed",
                           ],
                           selectedValue: provider.selectedStatus
                               .toString()
-                              .toCapitalize(), // 👈 provider से लो
+                              .toCapitalize(), // 👈 provider से लो*/
+                          // selectedValue: provider.selectedStatus,
                         ),
                       ];
 
@@ -84,14 +105,58 @@ class _OrdersPageState extends State<OrderPage> {
                           provider.getOrderList(
                             loadMore: false,
                             financialStatus: null,
+                            createdMinDate: null,
+                            createdMaxDate: null,
+                            status: null,
+                            fulfillmentStatus: null
+                            /*  financialStatus: null,*/
                           );
                         },
                         onApply: () {
-                          final selectedStatus = filters.first.selectedValue
-                              .toLowerCase();
+                          final selectedStatus = filters.first.selectedValue.toLowerCase().trim();
 
-                          provider.filterByStatus(selectedStatus);
-                        },
+                          final now = DateTime.now().toUtc();
+                          final todayStart = "${now.toIso8601String().split("T")[0]}T00:00:00Z";
+                          final todayEnd = "${now.toIso8601String().split("T")[0]}T23:59:59Z";
+
+                          final statusMap = {
+                            "closed orders": {"status": "closed"},
+                            "open order": {"status": "open"},
+                            "today's order": {
+                              "createdMinDate": todayStart,
+                              "createdMaxDate": todayEnd
+                            },
+                            "today’s order": { // handle special apostrophe
+                              "createdMinDate": todayStart,
+                              "createdMaxDate": todayEnd
+                            },
+                            "pending to charge": {"financialStatus": "pending"},
+                            "pending shipment": {
+                              "status": "open",
+                              "fulfillmentStatus": "unshipped,partial"
+                            },
+                            "shipped": {"fulfillmentStatus": "fulfilled"},
+                            "awaiting return": {"financialStatus": "refunded"},
+                            "completed": {
+                              "financialStatus": "paid",
+                              "fulfillmentStatus": "fulfilled"
+                            },
+                          };
+
+                          final params = statusMap[selectedStatus];
+                          if (params != null) {
+                            provider.filterByStatus(
+                              value: selectedStatus,
+                              status: params["status"],
+                              financialStatus: params["financialStatus"],
+                              fulfillmentStatus: params["fulfillmentStatus"],
+                              createdMinDate: params["createdMinDate"],
+                              createdMaxDate: params["createdMaxDate"],
+                            );
+                          }
+
+                        }
+
                       );
                     },
                   ),
@@ -111,7 +176,7 @@ class _OrdersPageState extends State<OrderPage> {
                     }
                     return false;
                   },
-                  child: ListView.builder(
+                  child:provider.filterOrderList.isNotEmpty? ListView.builder(
                     padding: const EdgeInsets.only(left: 0, right: 0, top: 10),
                     itemCount:
                         provider.filterOrderList.length +
@@ -163,7 +228,7 @@ class _OrdersPageState extends State<OrderPage> {
                         );
                       }
                     },
-                  ),
+                  ):commonErrorView(text: "Order Not Found."),
                 ),
               ),
             ],

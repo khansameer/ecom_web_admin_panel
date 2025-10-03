@@ -53,6 +53,7 @@ dependencies:
   http: ^1.5.0
   intl: ^0.20.2
   html: ^0.15.6
+  url_launcher: ^6.3.2
   cloud_firestore: ^6.0.2
   firebase_auth: ^6.1.0
   firebase_storage: ^13.0.2

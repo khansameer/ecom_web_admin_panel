@@ -33,6 +33,7 @@ const String icNoData="$iconDashboardPath/ic_no_data.png";
 const String icVersionCode="$iconDashboardPath/web-programming.png";
 const String icAccessToken="$iconDashboardPath/security-key.png";
 const String icAppLogoImage="$iconDashboardPath/logo-design.png";
+const String icContact="$iconDashboardPath/ic_contact.png";
 
 
 //==============================Product=============================

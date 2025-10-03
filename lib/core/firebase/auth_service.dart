@@ -297,4 +297,44 @@ class AuthService {
       throw Exception("Failed to fetch users: $e");
     }
   }
+
+
+  Future<void> insetContactUSForm({
+    required String email,
+
+    required String message,
+    required String mobile,
+    required String name,
+
+  }) async {
+    try {
+
+      final docRef = _firestore.collection("contact_us").doc();
+      String uid = docRef.id;
+
+
+      // Get FCM token
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+      // Save user data
+      Map<String, dynamic> userData = {
+
+        "uid": uid,
+        "email": email,
+        "mobile": mobile,
+        "name": name,
+        "message": message,
+        "isSeen": false  , // 👈 ye flag add karna hoga
+        "fcm_token": fcmToken ?? "",
+        "created_at": FieldValue.serverTimestamp(),
+      };
+      await docRef.set(userData);
+    /*  userData["uid"] = uid; // return uid
+      return userData;*/
+    } catch (e) {
+      throw Exception("Signup failed: $e");
+    }
+  }
+
+
 }

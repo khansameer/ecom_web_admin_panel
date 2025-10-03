@@ -151,7 +151,7 @@ class OrdersProvider with ChangeNotifier {
 
   int get totalOrderCount => _totalOrderCount;
 
- /* Future<void> getTotalOrderCount({
+  /* Future<void> getTotalOrderCount({
     DateTime? startDate,
     DateTime? endDate,
   }) async {
@@ -173,7 +173,6 @@ class OrdersProvider with ChangeNotifier {
     _isFetching = false;
     notifyListeners();
   }*/
-
 
   Future<void> getTotalOrderCount({
     DateTime? startDate,
@@ -212,11 +211,9 @@ class OrdersProvider with ChangeNotifier {
     // Format as ISO 8601
     final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
-    final url = "${await  ApiConfig.totalOrderUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax";
-    final response = await callGETMethod(
-      url:
-      url,
-    );
+    final url =
+        "${await ApiConfig.totalOrderUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax";
+    final response = await callGETMethod(url: url);
 
     if (globalStatusCode == 200) {
       final data = json.decode(response);
@@ -352,11 +349,9 @@ class OrdersProvider with ChangeNotifier {
     // Format as ISO 8601
     final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
-    final url = "${await ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax";
-    final response = await callGETMethod(
-      url:
-      url,
-    );
+    final url =
+        "${await ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax";
+    final response = await callGETMethod(url: url);
 
     if (globalStatusCode == 200) {
       _orderModelByDate = OrderModel.fromJson(json.decode(response));
@@ -437,22 +432,45 @@ class OrdersProvider with ChangeNotifier {
   Future<Map<String, dynamic>> getOrderPagination({
     String? pageInfo,
     String? financialStatus,
+    String? status,
     String? limit,
+    String? fulfillmentStatus,
+    String? createdMinDate,
+    String? createdMaxDate,
   }) async {
-    final queryParams = {
+    print('==createdMinDate==${createdMinDate}');
+    print('==createdMinDate==${createdMaxDate}');
+    /*final queryParams = {
       'limit': limit ?? '10',
       if (pageInfo != null)
         'page_info': pageInfo
       else if (financialStatus != null)
         'financial_status': financialStatus
+      else if (status != null)
+        'status': status
+      else if (createdMinDate != null)
+        'created_at_min': createdMinDate
+      else if (createdMaxDate != null)
+        'created_at_max': createdMinDate
       else
         'status': 'any',
+    };*/
+    final queryParams = {
+      'limit': limit?.toString() ?? '10',
+
+      if (pageInfo != null) 'page_info': pageInfo,
+      if (financialStatus != null) 'financial_status': financialStatus,
+      if (status != null) 'status': status,
+      if (createdMinDate != null) 'created_at_min': createdMinDate,
+      if (fulfillmentStatus != null) 'fulfillment_status': fulfillmentStatus,
+      if (createdMaxDate != null) 'created_at_max': createdMaxDate,
     };
 
+    print('==queryParams==${queryParams}');
     final baseUrl = await ApiConfig.baseUrl;
 
     final uri = Uri.parse(
-        "$baseUrl/orders.json"
+      "$baseUrl/orders.json",
     ).replace(queryParameters: queryParams);
 
     final response = await http.get(
@@ -460,7 +478,7 @@ class OrdersProvider with ChangeNotifier {
       headers: await ApiConfig.getCommonHeaders(),
     );
 
-
+    print('=======OrderUrl$uri');
     if (response.statusCode != 200) {
       throw Exception("Error fetching orders: ${response.body}");
     }
@@ -487,15 +505,37 @@ class OrdersProvider with ChangeNotifier {
     return {"orders": orders, "nextPageInfo": nextPageInfo};
   }
 
-  void filterByStatus(String status) {
-    String apiStatus = status.toLowerCase().replaceAll(' ', '_');
+  void filterByStatus({
+    String? status,
+    String? value,
+    String? financialStatus,
+    String? fulfillmentStatus,
+    String? createdMinDate,
+    String? createdMaxDate,
+  }) {
+    String apiStatus = status.toString().toLowerCase().replaceAll(' ', '_');
     if (status == "all") {
-      getOrderList(loadMore: false, financialStatus: null);
+      getOrderList(
+        loadMore: false,
+        financialStatus: null,
+        status: null,
+        createdMaxDate: null,
+        createdMinDate: null,
+        fulfillmentStatus: null,
+      );
     } else {
-      getOrderList(loadMore: false, financialStatus: apiStatus);
+      print('==click');
+      getOrderList(
+        loadMore: false,
+        status: apiStatus,
+        createdMinDate: createdMinDate,
+        createdMaxDate: createdMaxDate,
+        financialStatus: financialStatus,
+        fulfillmentStatus: fulfillmentStatus,
+      );
     }
 
-    _selectedStatus = status;
+    _selectedStatus = value ?? 'all';
     notifyListeners();
     //_applyFilters();
   }
@@ -510,7 +550,11 @@ class OrdersProvider with ChangeNotifier {
   Future<void> getOrderList({
     bool loadMore = false,
     String? financialStatus,
+    String? fulfillmentStatus,
+    String? status,
     String? limit,
+    String? createdMinDate,
+    String? createdMaxDate,
   }) async {
     if (_isFetching) return;
     if (!loadMore) _ordersList.clear(); // clear only on initial load
@@ -522,6 +566,10 @@ class OrdersProvider with ChangeNotifier {
       final result = await getOrderPagination(
         financialStatus: financialStatus,
         limit: limit,
+        status: status,
+        fulfillmentStatus: fulfillmentStatus,
+        createdMaxDate: createdMaxDate,
+        createdMinDate: createdMinDate,
         pageInfo: loadMore ? _nextPageInfo : null,
       );
 

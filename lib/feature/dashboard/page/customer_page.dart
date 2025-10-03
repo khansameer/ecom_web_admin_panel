@@ -137,7 +137,7 @@ class _CustomersPageState extends State<CustomersPage> {
                             ),
                           ),
                         ),
-                        title: '${data?.firstName} ${data?.lastName}',
+                        title: '${data?.firstName.toString().toCapitalize()} ${data?.lastName.toString().toCapitalize()}',
                         subtitleView: commonText(
                           text: data?.email ?? '',
                           fontSize: 12,

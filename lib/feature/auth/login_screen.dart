@@ -123,7 +123,7 @@ class LoginScreen extends StatelessWidget {
                                 ),
 
                                 SizedBox(height: 50,),
-                               /* Align(
+                                Align(
                                   alignment: Alignment.bottomCenter,
                                   child: Row(
 
@@ -145,7 +145,7 @@ class LoginScreen extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                ),*/
+                                ),
                               ],
                             ),
                           ),

@@ -1166,7 +1166,7 @@ commonBoxView({required Widget contentView, required String title}) {
   );
 }
 
-commonErrorBoxView({required String text}) {
+commonErrorBoxView({required String text,Color ? colorText}) {
   return Container(
     decoration: commonBoxDecoration(
       borderColor: colorBorder,
@@ -1179,7 +1179,7 @@ commonErrorBoxView({required String text}) {
         text: text,
         fontWeight: FontWeight.w700,
         fontSize: 14,
-        color: colorLogo,
+        color: colorText??colorLogo,
       ),
     ),
   );

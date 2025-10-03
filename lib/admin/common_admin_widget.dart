@@ -7,6 +7,9 @@ import '../core/component/phone_number_field.dart';
 import '../core/component/component.dart';
 import '../core/image/image_utils.dart';
 import '../core/validation/validation.dart';
+import '../main.dart';
+import '../provider/dashboard_provider.dart';
+import '../routes/app_routes.dart';
 
 class CommonAdminWidget extends StatefulWidget {
   const CommonAdminWidget({
@@ -192,3 +195,48 @@ class _State extends State<CommonAdminWidget> {
     );
   }
 }
+notificationWidget({ String ? value}) {
+  return commonInkWell(
+    onTap: () {
+      navigatorKey.currentState?.pushNamed(RouteName.notificationScreen);
+    },
+    child: Consumer<DashboardProvider>(
+      builder: (context, provider, child) {
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            commonPrefixIcon(
+              image: icNotification,
+              width: 24,
+              height: 24,
+              colorIcon: Colors.white,
+            ),
+
+            Positioned(
+              right: -4,
+              top: -9,
+              child: Container(
+                width: 20,
+                height: 20,
+                decoration: commonBoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: commonText(
+
+                    text: value??"0",
+                    fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    ),
+  );
+}
+

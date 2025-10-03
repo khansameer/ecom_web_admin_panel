@@ -73,7 +73,7 @@ commonOrderView({
                     ),
                   ),
                 ),
-                commonOrderItemView(
+              /*  commonOrderItemView(
                   colorValue: provider.isDark ? Colors.white : colorTextDesc,
                   text: "Delivery Status",
 
@@ -97,7 +97,7 @@ commonOrderView({
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                ),
+                ),*/
                 commonOrderItemView(
                   colorValue: Colors.blueAccent,
                   text: "Total",

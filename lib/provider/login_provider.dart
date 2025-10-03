@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/main.dart';
 
 import '../core/firebase/auth_service.dart';
 import '../core/string/string_utils.dart';
@@ -26,8 +28,11 @@ class LoginProvider with ChangeNotifier {
 
   final tetFullName = TextEditingController();
   final tetEmail = TextEditingController();
+  final tetMessage = TextEditingController();
   TextEditingController tetPhone = TextEditingController();
-  TextEditingController tetCountryCodeController = TextEditingController(text: "+1");
+  TextEditingController tetCountryCodeController = TextEditingController(
+    text: "+1",
+  );
 
   final tetStoreName = TextEditingController();
   final tetWebsiteUrl = TextEditingController();
@@ -74,6 +79,8 @@ class LoginProvider with ChangeNotifier {
     tetWebsiteUrl.clear();
     tetPassword.clear();
     tetCurrentPassword.clear();
+    tetMessage.clear();
+    tetLogoUrl.clear();
     tetNewPassword.clear();
     tetConfirmPassword.clear();
     super.dispose();
@@ -91,6 +98,8 @@ class LoginProvider with ChangeNotifier {
     tetCurrentPassword.clear();
     tetNewPassword.clear();
     tetConfirmPassword.clear();
+    tetMessage.clear();
+    tetLogoUrl.clear();
     _isLoading = false;
     _obscurePassword = true;
 
@@ -118,13 +127,17 @@ class LoginProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     try {
-      _userData = await _authService.loginUser(email: email, mobile: mobile,countryCode: countryCode);
+      _userData = await _authService.loginUser(
+        email: email,
+        mobile: mobile,
+        countryCode: countryCode,
+      );
 
       notifyListeners();
       if (_userData?.isNotEmpty == true) {
         String otp = generateOtp();
 
-       await sendOtpEmail(email: email, userID: userData?['uid'], otp: otp);
+        await sendOtpEmail(email: email, userID: userData?['uid'], otp: otp);
       }
 
       return _userData ?? {}; // 🔹 return the user data
@@ -204,8 +217,56 @@ class LoginProvider with ChangeNotifier {
     tetPassword.clear();
     tetCurrentPassword.clear();
     tetNewPassword.clear();
-    tetConfirmPassword.clear();
+    tetNewPassword.clear();
+    tetMessage.clear();
 
     notifyListeners();
+  }
+
+  Future<void> addContactUsData({
+    required String email,
+    required String name,
+
+    required String mobile,
+
+    required String message,
+  }) async {
+    _setLoading(true);
+    try {
+      await _authService.insetContactUSForm(
+        email: email,
+        message: message,
+        mobile: mobile,
+        name: name,
+      );
+
+
+      showCommonDialog(title: "Success", context: navigatorKey.currentContext!,content: "Your message has been sent successfully.",
+
+      showCancel: false,
+        onPressed: (){
+          resetAll();
+          navigatorKey.currentState?.pop(); // ✅ Close dialog
+          navigatorKey.currentState?.pop(); // ✅ Navigate back to previous screen
+        },
+        confirmText: "Close"
+      );
+
+      notifyListeners();
+
+
+
+      _setLoading(false);
+    } catch (e) {
+      showCommonDialog(title: "Error", context: navigatorKey.currentContext!,content: "Failed to send message.",
+
+          showCancel: false,
+
+          confirmText: "Close"
+      );
+
+    } finally {
+      _setLoading(false);
+    }
   }
 }

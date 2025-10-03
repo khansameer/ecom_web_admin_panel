@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/contact_us/contact_us_screen.dart';
 import 'package:neeknots/feature/auth/otp_verification_screen.dart';
 import 'package:neeknots/feature/auth/signup/signup_screen.dart';
 import 'package:neeknots/feature/change_password/change_password_screen.dart';
@@ -85,6 +86,9 @@ class RouteGenerate {
 
       case RouteName.inactiveAccountScreen:
         return MaterialPageRoute(builder: (_) => const InactiveAccountScreen());
+
+      case RouteName.contactUsScreen:
+        return MaterialPageRoute(builder: (_) => const ContactUsScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }

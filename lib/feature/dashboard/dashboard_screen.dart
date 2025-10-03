@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/common_bottom_navbar.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/feature/dashboard/page/customer_page.dart';
 import 'package:neeknots/feature/dashboard/page/home_page.dart';
 import 'package:neeknots/feature/dashboard/page/order_page.dart';
@@ -14,6 +15,7 @@ import 'package:neeknots/provider/dashboard_provider.dart';
 import 'package:neeknots/provider/order_provider.dart';
 import 'package:neeknots/provider/profile_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
+import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/firebase/auth_service.dart';
@@ -91,7 +93,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : colorLogo,
 
                 centerTitle: true,
-                actions: [/*notificationWidget(), SizedBox(width: 16)*/],
+                actions: [
+
+                  IconButton(
+
+                      onPressed: (){
+
+                        navigatorKey.currentState?.pushNamed(RouteName.contactUsScreen);
+                      }, icon: commonAssetImage(icContact,color: Colors.white,width: 30,height: 30))
+                  /*notificationWidget(), SizedBox(width: 16)*/],
                 title: provider.appbarTitle ?? "Home",
                 context: context,
                 leading: Container(
@@ -115,11 +125,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                             '',
 
-                            color:themeProvider.isDark?Colors.white: colorDarkBgColor,
+                            color:themeProvider.isDark?colorDarkBgColor: Colors.black,
 
                             errorWidget: commonErrorBoxView(
+                              colorText: themeProvider.isDark?Colors.white: Colors.white,
                               text: (provider.name?.isNotEmpty ?? false
-                                  ? getInitials(provider.name ?? '')
+                                  ? getInitials(provider.name.toString().toUpperCase())
                                   : ''),
 
                             ),

@@ -66,5 +66,10 @@
 
     <key>NSUserNotificationUsageDescription</key>
     <string>This app needs notification permission</string>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>sms</string>
+      <string>tel</string>
+    </array>
 </dict>
 </plist>
