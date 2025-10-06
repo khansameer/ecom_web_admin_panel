@@ -32,6 +32,23 @@ homeTopView({
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(height: 5,),
+          Row(
+            children: [
+              Expanded(
+                flex: 5,
+                child: commonText(
+                  text: "Store Summary",
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+
+
+            ],
+          ),
+          SizedBox(height: 5,),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -40,7 +57,7 @@ homeTopView({
                   color: colorSale,
                   provider: provider,
                   icon: icTotalSale,
-                  title: "Today Sales",
+                  title: "Today's Orders",
                   subtitle: "$rupeeIcon$totalOrderPrice",
                   onTap: () {
                     navigatorKey.currentState?.pushNamed(
@@ -65,7 +82,7 @@ homeTopView({
                     );
                   },
                   icon: icProductMenu,
-                  title: "Total Product",
+                  title: "Total Products",
 
                   value: totalProduct,
                 ),
@@ -84,7 +101,7 @@ homeTopView({
                     );
                   },
                   provider: provider,
-                  title: "Total  Order",
+                  title: "Total  Orders",
                   leftText: '',
 
                   value: totalOrder,
@@ -101,7 +118,7 @@ homeTopView({
                   provider: provider,
                   icon: icTotalUser,
                   leftText: '',
-                  title: "Total Customer",
+                  title: "Total Customers",
 
                   value: totalCustomer,
                 ),
@@ -210,6 +227,7 @@ _commonDashboardView({
 homeGraphView({required bool isSaleDetails}) {
   return Consumer2<ThemeProvider, OrdersProvider>(
     builder: (context, themeProvider, orderProvider, child) {
+
       final data = orderProvider.orderModelByDate?.orders ?? [];
       final chartData = data.map((order) {
         return SalesData(
@@ -228,7 +246,7 @@ homeGraphView({required bool isSaleDetails}) {
                       Expanded(
                         flex: 5,
                         child: commonText(
-                          text: "Summary Sales",
+                          text: "Order Summary",
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -241,7 +259,7 @@ homeGraphView({required bool isSaleDetails}) {
                           child: CommonDropdown(
                             borderRadius: 5,
                             initialValue: orderProvider.selectedRange,
-                            items: ["Today", "Week", "Month"],
+                            items: ["Today", "This Week", "This Month"],
 
                             onChanged: (String? newValue) {
                               if (newValue != null) {
@@ -338,8 +356,18 @@ homeGraphView({required bool isSaleDetails}) {
                       ? SizedBox.shrink()
                       : chartData.isNotEmpty
                       ? SfCartesianChart(
+
                           plotAreaBorderWidth: 0,
                           primaryXAxis: CategoryAxis(
+                           /* axisLabelFormatter: (AxisLabelRenderDetails details) {
+                              final label = details.text.replaceAll(RegExp(r'[^0-9]'), ''); // remove non-numeric
+                              final allowed = ['1', '5', '10', '15', '20', '25', '30'];
+                              if (allowed.contains(label)) {
+                                return ChartAxisLabel(details.text, details.textStyle);
+                              }
+                              return  ChartAxisLabel('', TextStyle());
+                            },*/
+                            interval: 5, // 👈 Show every 5th day label
                             labelStyle: commonTextStyle(
                               fontSize: 12,
                               color: themeProvider.isDark
@@ -390,18 +418,33 @@ homeGraphView({required bool isSaleDetails}) {
                                 },
                           ),
                           series: <CartesianSeries<SalesData, String>>[
-                            ColumnSeries<SalesData, String>(
-                              color: Colors.orange.withValues(alpha: 0.3),
+                            SplineAreaSeries<SalesData, String>(
+                              animationDuration: 1500, // in milliseconds (1.5 seconds)
+                              animationDelay: 300,     // optional delay before animation starts
+
+                          /*    gradient: LinearGradient(
+                                colors: [Colors.orange.withValues(alpha: 0.4), Colors.orange],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              ),*/
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFFF9800), Color(0xFFFFC107)],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
                               borderColor: Colors.orange,
+                              borderWidth: 2,
+                              color: Colors.orange.withValues(alpha: 0.5),
+                              /*borderColor: Colors.orange,
                               borderWidth: 2,
 
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(12),
                                 topRight: Radius.circular(12),
-                              ),
-                              width: 0.5,
+                              ),*/
+                              //width: 0.5,
                               // bar thickness (0.5 = 50% of available slot)
-                              spacing: 0.2,
+                            //  spacing: 0.2,
                               // gap between bars
                               markerSettings: const MarkerSettings(
                                 isVisible: true,
@@ -430,7 +473,7 @@ homeGraphView({required bool isSaleDetails}) {
                             ),
                           ],
                         )
-                      :commonErrorView(text: "Data Not Found");
+                      :commonErrorView(text: errorMsg);
                 },
               ),
             ),

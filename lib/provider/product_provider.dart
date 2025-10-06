@@ -229,8 +229,7 @@ class ProductProvider with ChangeNotifier {
         _currentPage = 0;
       }
 
-      String url =
-          '${ await ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc';
+      String url = '${ await ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc&status=$status';
       if (status != null && status.isNotEmpty) url += "&status=$status";
       if (_lastId != null) url += '&since_id=$_lastId';
 
@@ -248,6 +247,8 @@ class ProductProvider with ChangeNotifier {
 
           if (newItems.isNotEmpty) {
             _products.addAll(newItems);
+            _products.sort((a, b) => (a.title ?? '').compareTo(b.title ?? ''));
+
             _lastId = newItems.last.id;
             _currentPage++;
             debugPrint("📄 Loaded page: $_currentPage");

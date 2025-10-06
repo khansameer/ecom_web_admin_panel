@@ -48,7 +48,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     // Phone OTP validation
 
-    if (phoneOtp.isEmpty) {
+    /*if (phoneOtp.isEmpty) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text("Please enter Phone OTP")));
@@ -58,7 +58,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         const SnackBar(content: Text("Phone OTP must be 4 digits")),
       );
       return;
-    }
+    }*/
     final provider = Provider.of<SignupProvider>(context, listen: false);
     try {
       final data = await provider.verifyOtp(
@@ -170,7 +170,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                   Padding(
                                     padding: const EdgeInsets.only(
                                       top: 10.0,
-                                      bottom: 20,
+                                      bottom: 30,
                                     ),
                                     child: commonText(
                                       text: "Enter Email OTP",
@@ -194,7 +194,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                     },
                                   ),
         
-                                  Padding(
+                              /*    Padding(
                                     padding: const EdgeInsets.only(
                                       top: 10.0,
                                       bottom: 20,
@@ -205,8 +205,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-        
-                                  CommonPinCodeField(
+        */
+                                  /*CommonPinCodeField(
                                     controller: _phoneOtpController,
                                     activeFillColor: colorLogo,
                                     inactiveFillColor: colorBorder,
@@ -219,7 +219,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                     onChanged: (val) {
                                       print("Changed: $val");
                                     },
-                                  ),
+                                  ),*/
                                 ],
                               ),
                             ),

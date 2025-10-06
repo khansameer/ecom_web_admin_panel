@@ -586,7 +586,7 @@ Center commonErrorView({String? text}) {
         commonAssetImage(icNoData, width: 100, height: 100),
         commonText(
           textAlign: TextAlign.center,
-          text: text ?? "No data Found",
+          text: text ?? errorMsg,
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: Colors.black.withValues(alpha: 0.5),

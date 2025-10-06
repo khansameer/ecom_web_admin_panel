@@ -409,11 +409,11 @@ class OrdersProvider with ChangeNotifier {
     DateTime startDate;
     DateTime endDate = now;
 
-    if (range == "Week") {
+    if (range == "This Week") {
       startDate = now.subtract(
         Duration(days: now.weekday - 1),
       ); // start of week
-    } else if (range == "Month") {
+    } else if (range == "This Month") {
       startDate = DateTime(now.year, now.month, 1); // start of month
     } else {
       DateTime now = DateTime.now();

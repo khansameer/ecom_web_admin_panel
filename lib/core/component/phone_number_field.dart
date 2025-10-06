@@ -18,7 +18,7 @@ class PhoneNumberField extends StatelessWidget {
     required this.phoneController,
     this.countryCodeController,
     this.countryCode = "+1",
-    this.hintText = "Phone No",
+    this.hintText = "Mobile No",
     this.validator,
     this.fillColor,
     this.filled=false,

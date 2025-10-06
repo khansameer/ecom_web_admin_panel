@@ -83,10 +83,10 @@ class LoginScreen extends StatelessWidget {
 
                                   onPressed: () async {
                                     hideKeyboard(context);
-                                    String fullNumber =
+                                   /* String fullNumber =
                                         provider.tetCountryCodeController.text +
                                         provider.tetPhone.text;
-
+*/
                                     if (formLoginKey.currentState?.validate() ==
                                         true) {
                                       try {
@@ -103,6 +103,7 @@ class LoginScreen extends StatelessWidget {
                                               (Route<dynamic> route) => false,
                                             );
                                       } catch (e) {
+                                        print('======Z$e');
                                         // 🔹 Extract readable error
                                         String errorMessage = e
                                             .toString()

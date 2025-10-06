@@ -39,7 +39,7 @@ Widget commonSignUpView({
         hintText: "Email Address",
       ),
 
-      const SizedBox(height: 20),
+     const SizedBox(height: 20),
       /*  commonTextField(
         hintText: "Phone No",
         controller: provider.tetPhone,
@@ -73,7 +73,7 @@ Widget commonSignUpView({
           ),
         ],
       ),*/
-      PhoneNumberField(
+    PhoneNumberField(
         phoneController: provider.tetPhone,
         countryCodeController: provider.tetCountryCodeController,
         prefixIcon: commonPrefixIcon(image: icPhone),
@@ -87,7 +87,7 @@ Widget commonSignUpView({
       ),
       const SizedBox(height: 20),
       commonTextField(
-        hintText: "Store Name",
+        hintText: "Store Name/Website Url",
         controller: provider.tetStoreName,
         validator: (value) =>
             emptyError(value, errorMessage: "Store name is required"),
@@ -97,7 +97,7 @@ Widget commonSignUpView({
 
         prefixIcon: commonPrefixIcon(image: icStore),
       ),
-      const SizedBox(height: 20),
+     /* const SizedBox(height: 20),
       commonTextField(
         hintText: "Logo Url",
 
@@ -108,8 +108,8 @@ Widget commonSignUpView({
         keyboardType: TextInputType.url,
 
         prefixIcon: commonPrefixIcon(image: icNetwork),
-      ),
-      const SizedBox(height: 20),
+      ),*/
+     /* const SizedBox(height: 20),
       commonTextField(
         hintText: "Website Url",
 
@@ -120,7 +120,7 @@ Widget commonSignUpView({
         keyboardType: TextInputType.url,
 
         prefixIcon: commonPrefixIcon(image: icNetwork),
-      ),
+      ),*/
       const SizedBox(height: 50),
       commonButton(text: "Create", onPressed: onPressed),
       const SizedBox(height: 20),
