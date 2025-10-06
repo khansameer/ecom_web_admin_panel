@@ -77,6 +77,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                 ),
               ),
             ),
+            SizedBox(height: 10,)
           ],
         ),
       ),

@@ -42,7 +42,7 @@ customerDetailsInfo({required Customer customer}) {
                 value: "$rupeeIcon${"${customer.totalSpent}"}",
               ),
               _buildRow(title: "Order", value: '${customer.ordersCount}'),
-              _buildRow(
+             /* _buildRow(
                 padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                 colorText: provider.getStatusColor(
                   customer.emailMarketingConsent?.state ?? '',
@@ -59,7 +59,7 @@ customerDetailsInfo({required Customer customer}) {
                 title: "Status",
                 value:
                     '${customer.emailMarketingConsent?.state.toString().toCapitalize().replaceAll("_", " ")}',
-              ),
+              ),*/
             ],
           ),
         ),

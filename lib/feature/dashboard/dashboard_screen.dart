@@ -18,6 +18,7 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
+import '../../admin/common_admin_widget.dart';
 import '../../core/firebase/auth_service.dart';
 import '../../core/hive/app_config_cache.dart';
 import '../../provider/product_provider.dart';
@@ -60,7 +61,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       String? id = await AppConfigCache.getID();
 
       String? fcmToken = await FirebaseMessaging.instance.getToken();
-      final provider = Provider.of<DashboardProvider>(navigatorKey.currentContext!, listen: false);
+      final provider = Provider.of<DashboardProvider>(
+        navigatorKey.currentContext!,
+        listen: false,
+      );
       provider.setName(storedEmailOrMobile);
       final authService = AuthService();
       await authService.updateFcm(userID: id ?? '', fcmToken: fcmToken ?? '');
@@ -94,14 +98,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                 centerTitle: true,
                 actions: [
-
                   IconButton(
+                    onPressed: () {
+                      navigatorKey.currentState?.pushNamed(
+                        RouteName.contactUsScreen,
+                      );
+                    },
+                    icon: commonAssetImage(
+                      icContact,
+                      color: Colors.white,
+                      width: 30,
+                      height: 30,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  notificationWidget(
+                    onTap: (){
+                      navigatorKey.currentState?.pushNamed(
+                        RouteName.otpVerificationScreen,
+                        arguments: {
+                          'uid':"sa"
 
-                      onPressed: (){
-
-                        navigatorKey.currentState?.pushNamed(RouteName.contactUsScreen);
-                      }, icon: commonAssetImage(icContact,color: Colors.white,width: 30,height: 30))
-                  /*notificationWidget(), SizedBox(width: 16)*/],
+                        },
+                      );
+                    }
+                  ), SizedBox(width: 16)
+                ],
                 title: provider.appbarTitle ?? "Home",
                 context: context,
                 leading: Container(
@@ -122,17 +144,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         child: CircleAvatar(
                           radius: 100,
                           child: commonCircleNetworkImage(
-
                             '',
 
-                            color:themeProvider.isDark?colorDarkBgColor: Colors.black,
+                            color: themeProvider.isDark
+                                ? colorDarkBgColor
+                                : Colors.black,
 
                             errorWidget: commonErrorBoxView(
-                              colorText: themeProvider.isDark?Colors.white: Colors.white,
+                              colorText: themeProvider.isDark
+                                  ? Colors.white
+                                  : Colors.white,
                               text: (provider.name?.isNotEmpty ?? false
-                                  ? getInitials(provider.name.toString().toUpperCase())
+                                  ? getInitials(
+                                      provider.name.toString().toUpperCase(),
+                                    )
                                   : ''),
-
                             ),
                           ),
                         ),

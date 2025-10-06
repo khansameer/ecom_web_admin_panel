@@ -39,7 +39,7 @@ homeTopView({
                 flex: 5,
                 child: commonText(
                   text: "Store Summary",
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -247,7 +247,7 @@ homeGraphView({required bool isSaleDetails}) {
                         flex: 5,
                         child: commonText(
                           text: "Order Summary",
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -496,7 +496,7 @@ commonTopProductListView({void Function()? onTap}) {
               Expanded(
                 child: commonText(
                   text: "Top Products",
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -592,7 +592,7 @@ commonTopOrderListView({void Function()? onTap}) {
               Expanded(
                 child: commonText(
                   text: "Top Orders",
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),

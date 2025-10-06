@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -41,6 +42,7 @@ class LoginProvider with ChangeNotifier {
   final tetCurrentPassword = TextEditingController();
   final tetNewPassword = TextEditingController();
   final tetConfirmPassword = TextEditingController();
+  final tetOTP = TextEditingController();
 
   bool _obscureCurrentPassword = true;
 
@@ -71,18 +73,19 @@ class LoginProvider with ChangeNotifier {
 
   @override
   void dispose() {
-    resetState();
-    tetFullName.clear();
-    tetEmail.clear();
-    tetPhone.clear();
-    tetStoreName.clear();
-    tetWebsiteUrl.clear();
-    tetPassword.clear();
-    tetCurrentPassword.clear();
-    tetMessage.clear();
-    tetLogoUrl.clear();
-    tetNewPassword.clear();
-    tetConfirmPassword.clear();
+    tetFullName.dispose();
+    tetEmail.dispose();
+    tetPhone.dispose();
+    tetStoreName.dispose();
+    tetWebsiteUrl.dispose();
+    tetPassword.dispose();
+    tetCurrentPassword.dispose();
+    tetNewPassword.dispose();
+    tetConfirmPassword.dispose();
+    tetMessage.dispose();
+    tetLogoUrl.dispose();
+    tetOTP.dispose(); // ✅ dispose here only
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -98,6 +101,7 @@ class LoginProvider with ChangeNotifier {
     tetCurrentPassword.clear();
     tetNewPassword.clear();
     tetConfirmPassword.clear();
+    tetOTP.clear();
     tetMessage.clear();
     tetLogoUrl.clear();
     _isLoading = false;
@@ -279,4 +283,84 @@ class LoginProvider with ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  bool _canResend = false;
+  int _secondsRemaining = 10;
+  Timer? _timer;
+
+  bool get canResend => _canResend;
+  int get secondsRemaining => _secondsRemaining;
+
+  void startResendTimer() {
+    _canResend = false;
+    _secondsRemaining = 10;
+    _timer?.cancel();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_secondsRemaining > 1) {
+        _secondsRemaining--;
+      } else {
+        _timer?.cancel();
+        _canResend = true;
+      }
+      notifyListeners();
+    });
+
+    notifyListeners();
+  }
+
+  Future<Map<String, dynamic>?> verifyOtp({
+    required String userID,
+    required String enteredOtp,
+  }) async {
+    _setLoading(true);
+    try {
+      _userData = await _authService.verifyOtp(
+        userID: userID,
+        enteredOtp: enteredOtp,
+      );
+      notifyListeners();
+      return _userData;
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> resendOtp({required String userId, required String email}) async {
+    if (!_canResend) return;
+    _setLoading(true);
+    notifyListeners();
+
+    try {
+      // 🔹 Your actual resend API call here
+      await Future.delayed(const Duration(seconds: 2)); // simulate network delay
+      if (_userData?.isNotEmpty == true) {
+        String otp = generateOtp();
+         await sendOtpEmail(email: email, userID: userId, otp: otp);
+        final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+        print('OTP sent successfully!');
+        await _firestore.collection("stores").doc(userId).update({
+          "otp": otp,
+          "otp_created_at": FieldValue.serverTimestamp(),
+          "active_status": false, // Ensure user is inactive until OTP verified
+        });
+
+
+
+      }
+      _startNewCycle();
+    } catch (e) {
+      debugPrint("Resend OTP failed: $e");
+    } finally {
+      _setLoading(false);
+      notifyListeners();
+    }
+  }
+  void _startNewCycle() {
+    startResendTimer();
+  }
+
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../core/firebase/auth_service.dart';
@@ -52,26 +54,6 @@ class SignupProvider extends ChangeNotifier {
     }
   }
 
-  Future<Map<String, dynamic>?> verifyOtp({
-    required String userID,
-    required String enteredOtp,
-  }) async {
-    _setLoading(true);
-    try {
-      _userData = await _authService.verifyOtp(
-        userID: userID,
-        enteredOtp: enteredOtp,
-      );
-      notifyListeners();
-      return _userData;
-    } catch (e) {
-      _setLoading(false);
-      rethrow;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
 
   void resetAll() {
     _userData = null;
@@ -80,4 +62,6 @@ class SignupProvider extends ChangeNotifier {
     // reset any other temporary variables here
     notifyListeners();
   }
+
+
 }

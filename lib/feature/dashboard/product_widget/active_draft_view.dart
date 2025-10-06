@@ -56,7 +56,7 @@ class _ActiveDraftViewState extends State<ActiveDraftView> {
       builder: (context,provider,child) {
         return Column(
           children: [
-            Padding(
+      /*      Padding(
             padding: const EdgeInsets.only(
               top: 18.0,
               left: 18,
@@ -70,7 +70,7 @@ class _ActiveDraftViewState extends State<ActiveDraftView> {
                 height: 16,
               ),
 
-            /*  suffixIcon: IconButton(
+            *//*  suffixIcon: IconButton(
                 icon: commonPrefixIcon(
                   image: icProductFilter,
                   width: 20,
@@ -105,15 +105,16 @@ class _ActiveDraftViewState extends State<ActiveDraftView> {
                     },
                   );
                 },
-              ),*/
+              ),*//*
               onChanged: (value) => provider.setSearchQuery(value),
             ),
-          ),
+          ),*/
             Expanded(
               child: provider.filteredProducts.isNotEmpty
                   ? ListView.builder(
+
                 controller: _scrollController,
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.only(left: 0,right: 0),
                 itemCount: provider.hasMore && provider.searchQuery.isEmpty
                     ? provider.filteredProducts.length + 1
                     : provider.filteredProducts.length,
@@ -134,7 +135,7 @@ class _ActiveDraftViewState extends State<ActiveDraftView> {
                     return commonProductListView(
                       margin: const EdgeInsets.symmetric(
                         vertical: 6,
-                        horizontal: 8,
+                        horizontal: 0,
                       ),
                       image: data.image?.src ?? '',
                       onTap: () {

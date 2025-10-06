@@ -41,10 +41,7 @@ class LoginScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-
-
-
-                                SizedBox(height: 20,),
+                                SizedBox(height: 20),
                                 Align(
                                   alignment: AlignmentGeometry.center,
                                   child: commonAssetImage(
@@ -75,7 +72,9 @@ class LoginScreen extends StatelessWidget {
                                   onPressSignUp: TapGestureRecognizer()
                                     ..onTap = () {
                                       hideKeyboard(context);
-                                      context.read<LoginProvider>().resetState();
+                                      context
+                                          .read<LoginProvider>()
+                                          .resetState();
                                       navigatorKey.currentState?.pushNamed(
                                         RouteName.signupScreen,
                                       );
@@ -83,7 +82,7 @@ class LoginScreen extends StatelessWidget {
 
                                   onPressed: () async {
                                     hideKeyboard(context);
-                                   /* String fullNumber =
+                                    /* String fullNumber =
                                         provider.tetCountryCodeController.text +
                                         provider.tetPhone.text;
 */
@@ -91,17 +90,17 @@ class LoginScreen extends StatelessWidget {
                                         true) {
                                       try {
                                         final userData = await provider.login(
-                                          countryCode: provider.tetCountryCodeController.text,
+                                          countryCode: provider
+                                              .tetCountryCodeController
+                                              .text,
                                           email: provider.tetEmail.text.trim(),
                                           mobile: provider.tetPhone.text,
                                         );
 
-                                        navigatorKey.currentState
-                                            ?.pushNamedAndRemoveUntil(
-                                              RouteName.otpVerificationScreen,
-                                              arguments: userData,
-                                              (Route<dynamic> route) => false,
-                                            );
+                                        navigatorKey.currentState?.pushNamed(
+                                          RouteName.otpVerificationScreen,
+                                          arguments: userData,
+                                        );
                                       } catch (e) {
                                         print('======Z$e');
                                         // 🔹 Extract readable error
@@ -123,26 +122,41 @@ class LoginScreen extends StatelessWidget {
                                   },
                                 ),
 
-                                SizedBox(height: 50,),
+                                SizedBox(height: 50),
                                 Align(
                                   alignment: Alignment.bottomCenter,
                                   child: Row(
-
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       commonInkWell(
-                                        onTap: (){
-                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminDashboardScreen()));
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AdminDashboardScreen(),
+                                            ),
+                                          );
                                         },
                                         child: Container(
-                                            alignment: Alignment.topRight,
-                                            padding: EdgeInsets.symmetric(vertical: 8,horizontal: 20),
+                                          alignment: Alignment.topRight,
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 8,
+                                            horizontal: 20,
+                                          ),
 
-                                            decoration: commonBoxDecoration(
-                                              borderColor: colorLogo,
-                                                color: colorLogo.withValues(alpha: 0.1)
+                                          decoration: commonBoxDecoration(
+                                            borderColor: colorLogo,
+                                            color: colorLogo.withValues(
+                                              alpha: 0.1,
                                             ),
-                                            child: commonText(text: "Admin View",color: colorLogo,fontWeight: FontWeight.w600)),
+                                          ),
+                                          child: commonText(
+                                            text: "Admin View",
+                                            color: colorLogo,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),

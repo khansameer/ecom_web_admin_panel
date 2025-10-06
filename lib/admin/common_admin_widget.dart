@@ -195,9 +195,9 @@ class _State extends State<CommonAdminWidget> {
     );
   }
 }
-notificationWidget({ String ? value}) {
+notificationWidget({ String ? value,void Function()? onTap}) {
   return commonInkWell(
-    onTap: () {
+    onTap: onTap??() {
       navigatorKey.currentState?.pushNamed(RouteName.notificationScreen);
     },
     child: Consumer<DashboardProvider>(

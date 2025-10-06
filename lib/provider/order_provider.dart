@@ -212,7 +212,7 @@ class OrdersProvider with ChangeNotifier {
     final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
     final url =
-        "${await ApiConfig.totalOrderUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax";
+        "${await ApiConfig.totalOrderUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax&status=any";
     final response = await callGETMethod(url: url);
 
     if (globalStatusCode == 200) {
@@ -243,11 +243,22 @@ class OrdersProvider with ChangeNotifier {
     try {
       final url = '${await ApiConfig.getOrderById}/$orderID.json';
 
+      print('=============${url}');
       final response = await callGETMethod(url: url);
 
       _orderDetailsModel = orderDetails.OrderDetailsModel.fromJson(
         json.decode(response),
       );
+
+
+
+    /* // final deliveryStatus = order['fulfillment_status']; // usually "fulfilled", "unfulfilled", or null
+      final deliveryMethod = _orderDetailsModel?.orderData?.shippingLine != null && _orderDetailsModel?.orderData?.shippingLine?.isNotEmpty==true
+          ? _orderDetailsModel?.orderData?.shippingLine![0].title
+          : 'N/A';
+
+      print('---deliveryStatus----${_orderDetailsModel?.orderData?.fulfillmentStatus??''}');
+      print('---deliveryMethod----${deliveryMethod}');*/
 
       final orderData = _orderDetailsModel?.orderData;
       if (orderData != null && orderData.lineItems != null) {
@@ -350,7 +361,7 @@ class OrdersProvider with ChangeNotifier {
     final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
     final url =
-        "${await ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax";
+        "${await ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax&status=any" ;
     final response = await callGETMethod(url: url);
 
     if (globalStatusCode == 200) {
@@ -438,8 +449,7 @@ class OrdersProvider with ChangeNotifier {
     String? createdMinDate,
     String? createdMaxDate,
   }) async {
-    print('==createdMinDate==${createdMinDate}');
-    print('==createdMinDate==${createdMaxDate}');
+
     /*final queryParams = {
       'limit': limit ?? '10',
       if (pageInfo != null)
@@ -457,6 +467,7 @@ class OrdersProvider with ChangeNotifier {
     };*/
     final queryParams = {
       'limit': limit?.toString() ?? '10',
+      'status': 'any',
 
       if (pageInfo != null) 'page_info': pageInfo,
       if (financialStatus != null) 'financial_status': financialStatus,
@@ -594,6 +605,43 @@ class OrdersProvider with ChangeNotifier {
 
       return matchesSearch;
     }).toList();
+  }
+  String getDeliveryStatus(OrderData order) {
+    if (order.fulfillments != null && order.fulfillments!.isNotEmpty) {
+      // Check if tracking exists
+      final hasTracking = order.fulfillments!
+          .any((f) => f.trackingNumber != null && f.trackingNumber!.isNotEmpty);
+      if (hasTracking) return 'Tracking Added / Shipped';
+    }
+
+    switch (order.fulfillmentStatus) {
+      case 'fulfilled':
+        return 'Delivered';
+      case 'partial':
+        return 'Partially Delivered';
+      case 'unfulfilled':
+        return 'Pending';
+      default:
+        return '-';
+    }
+  }
+
+  String getPaymentStatus(OrderData order) {
+    // Agar financial_status available hai
+    switch (order.financialStatus) {
+      case 'paid':
+        return 'Paid';
+      case 'pending':
+        return 'Pending Payment';
+      case 'refunded':
+        return 'Refunded';
+      case 'partially_refunded':
+        return 'Partially Refunded';
+      case 'authorized':
+        return 'Authorized';
+      default:
+        return 'N/A';
+    }
   }
 }
 

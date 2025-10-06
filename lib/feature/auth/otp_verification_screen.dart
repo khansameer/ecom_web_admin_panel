@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/provider/login_provider.dart';
 import 'package:neeknots/provider/signup_provider.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -21,19 +22,29 @@ class OtpVerificationScreen extends StatefulWidget {
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
-  final TextEditingController _emailOtpController = TextEditingController();
-  final TextEditingController _phoneOtpController = TextEditingController();
+  /*final TextEditingController _emailOtpController = TextEditingController();
+  final TextEditingController _phoneOtpController = TextEditingController();*/
   /*@override
   void dispose() {
     _emailOtpController.dispose();
     _phoneOtpController.dispose();
     super.dispose();
   }*/
+  @override
+  void dispose() {
+    //_emailOtpController.dispose();
+    super.dispose();
+  }
+
   Future<void> _validateOtp() async {
-    String emailOtp = _emailOtpController.text.trim();
-    String phoneOtp = _phoneOtpController.text.trim();
+    /* String emailOtp = _emailOtpController.text.trim();
+    String phoneOtp = _phoneOtpController.text.trim();*/
 
     // Email OTP validation
+
+    final provider = Provider.of<LoginProvider>(context, listen: false);
+
+    String emailOtp = provider.tetOTP.text.trim();
     if (emailOtp.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -59,11 +70,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       );
       return;
     }*/
-    final provider = Provider.of<SignupProvider>(context, listen: false);
+
     try {
       final data = await provider.verifyOtp(
         userID: widget.userData['uid'] ?? '',
-        enteredOtp: _emailOtpController.text,
+        enteredOtp: emailOtp,
       );
       if (data?.isNotEmpty == true) {
         await AppConfigCache.saveUser(
@@ -100,6 +111,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<LoginProvider>(context, listen: false).startResendTimer();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return commonScaffold(
       appBar: commonAppBar(
@@ -108,144 +127,196 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         centerTitle: true,
       ),
       body: commonAppBackground(
-        child: Consumer2<ThemeProvider, SignupProvider>(
-          builder: (context, themeProvider, provider, child) {
-            return Stack(
-              children: [
-                ListView(
-                  physics: BouncingScrollPhysics(),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        spacing: 20,
-                        children: [
-                          SizedBox(height: 30),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              commonHeadingText(
-                                text: "OTP Verification",
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700,
-                                color: themeProvider.isDark
-                                    ? Colors.white
-                                    : colorLogo,
-                              ),
-        
-                              const SizedBox(height: 10),
-                              commonDescriptionText(
-                                textAlign: TextAlign.center,
-                                text:
-                                    "We have sent OTPs to your registered email (${widget.userData["email"]}) "
-                                    "and mobile number (${widget.userData["mobile"]}).\n"
-                                    "Please enter them below to verify your account.",
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 0),
-        
-                          /*commonTextField(
-                            controller: _emailOtpController,
-                            hintText: "Email OTP",
-                          ),
-                          commonTextField(
-                            controller: _mobileOtpController,
-                            hintText: "Mobile OTP",
-                          ),
-        */
-                          Container(
-                            decoration: commonBoxDecoration(
-                              borderColor: colorBorder,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(0.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-        
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 10.0,
-                                      bottom: 30,
-                                    ),
-                                    child: commonText(
-                                      text: "Enter Email OTP",
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-        
-                                  CommonPinCodeField(
-                                    controller: _emailOtpController,
-                                    activeFillColor: colorLogo,
-                                    inactiveFillColor: colorBorder,
-                                    selectedFillColor: colorLogo.withValues(
-                                      alpha: 0.2,
-                                    ),
-                                    onCompleted: (code) {
-                                      print("Entered OTP: $code");
-                                    },
-                                    onChanged: (val) {
-                                      print("Changed: $val");
-                                    },
-                                  ),
-        
-                              /*    Padding(
-                                    padding: const EdgeInsets.only(
-                                      top: 10.0,
-                                      bottom: 20,
-                                    ),
-                                    child: commonText(
-                                      text: "Enter Phone OTP",
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-        */
-                                  /*CommonPinCodeField(
-                                    controller: _phoneOtpController,
-                                    activeFillColor: colorLogo,
-                                    inactiveFillColor: colorBorder,
-                                    selectedFillColor: colorLogo.withValues(
-                                      alpha: 0.2,
-                                    ),
-                                    onCompleted: (code) {
-                                      print("Entered OTP: $code");
-                                    },
-                                    onChanged: (val) {
-                                      print("Changed: $val");
-                                    },
-                                  ),*/
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 0),
-                          commonTextRich(
-                            text1: "If you didn’t receive a code! ",
-                            text2: "Resend",
-                            onTap: TapGestureRecognizer()..onTap = () {},
+        child: Consumer3<ThemeProvider, SignupProvider, LoginProvider>(
+          builder: (context, themeProvider, provider, loginProvider, child) {
+            return commonPopScope(
+              onBack: (){
+                loginProvider.resetState();
+              },
+              child: Stack(
+                children: [
+                  ListView(
+                    physics: BouncingScrollPhysics(),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          spacing: 20,
+                          children: [
+                            SizedBox(height: 30),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                commonHeadingText(
+                                  text: "OTP Verification",
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                  color: themeProvider.isDark
+                                      ? Colors.white
+                                      : colorLogo,
+                                ),
 
-                            textStyle1: commonTextStyle(color: themeProvider.isDark?Colors.white:Colors.black),
-                            textStyle2: commonTextStyle(
-                              color: themeProvider.isDark?Colors.white:colorLogo,
-                              fontWeight: FontWeight.w600,
+                                const SizedBox(height: 10),
+                                commonDescriptionText(
+                                  textAlign: TextAlign.center,
+                                  text:
+                                      "We have sent OTPs to your registered email (${widget.userData["email"]}) "
+                                      "and mobile number (${widget.userData["mobile"]}).\n"
+                                      "Please enter them below to verify your account.",
+                                ),
+                              ],
                             ),
-                          ),
-                          SizedBox(height: 10),
-        
-                          commonButton(text: "Verify", onPressed: _validateOtp),
-                        ],
+                            SizedBox(height: 0),
+
+                            /*commonTextField(
+                              controller: _emailOtpController,
+                              hintText: "Email OTP",
+                            ),
+                            commonTextField(
+                              controller: _mobileOtpController,
+                              hintText: "Mobile OTP",
+                            ),
+                      */
+                            Container(
+                              decoration: commonBoxDecoration(
+                                borderColor: colorBorder,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(0.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 10.0,
+                                        bottom: 30,
+                                      ),
+                                      child: commonText(
+                                        text: "Enter Email OTP",
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+
+                                    Align(
+                                      alignment: AlignmentGeometry.center,
+                                      child: CommonPinCodeField(
+                                        controller: loginProvider.tetOTP,
+                                        activeFillColor: colorLogo,
+                                        inactiveFillColor: colorBorder,
+                                        selectedFillColor: colorLogo.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        onCompleted: (code) {
+                                          print("Entered OTP: $code");
+                                        },
+                                        onChanged: (val) {
+                                          print("Changed: $val");
+                                        },
+                                      ),
+                                    ),
+
+                                    /*    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: 10.0,
+                                        bottom: 20,
+                                      ),
+                                      child: commonText(
+                                        text: "Enter Phone OTP",
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                      */
+                                    /*CommonPinCodeField(
+                                      controller: _phoneOtpController,
+                                      activeFillColor: colorLogo,
+                                      inactiveFillColor: colorBorder,
+                                      selectedFillColor: colorLogo.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      onCompleted: (code) {
+                                        print("Entered OTP: $code");
+                                      },
+                                      onChanged: (val) {
+                                        print("Changed: $val");
+                                      },
+                                    ),*/
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 0),
+                            /*commonTextRich(
+                              text1: "If you didn’t receive a code! ",
+                              text2: "Resend",
+                              onTap: TapGestureRecognizer()..onTap = () {},
+
+                              textStyle1: commonTextStyle(color: themeProvider.isDark?Colors.white:Colors.black),
+                              textStyle2: commonTextStyle(
+                                color: themeProvider.isDark?Colors.white:colorLogo,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),*/
+                            Consumer<LoginProvider>(
+                              builder: (context, provider, _) {
+                                return commonTextRich(
+                                  text1: provider.canResend
+                                      ? "Didn’t receive a code? "
+                                      : "Resend available in ${provider.secondsRemaining}s ",
+                                  text2: provider.canResend ? "Resend" : "",
+                                  onTap: provider.canResend
+                                      ? (TapGestureRecognizer()
+                                          ..onTap = () async {
+                                            await provider.resendOtp(
+                                              userId: widget.userData['uid'],
+                                              email: widget.userData["email"],
+                                            );
+                                            // await provider.resendOtp(userId: widget.userData['uid'],email: "pathansameerahmed@gmail.com");
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  "OTP resent successfully!",
+                                                ),
+                                              ),
+                                            );
+                                          })
+                                      : (TapGestureRecognizer()..onTap = null),
+                                  textStyle1: commonTextStyle(
+                                    color: themeProvider.isDark
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                  textStyle2: commonTextStyle(
+                                    color: provider.canResend
+                                        ? (themeProvider.isDark
+                                              ? Colors.white
+                                              : colorLogo)
+                                        : Colors.grey,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                );
+                              },
+                            ),
+                            SizedBox(height: 10),
+
+                            commonButton(text: "Verify", onPressed: _validateOtp),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                provider.isLoading ? showLoaderList() : SizedBox.shrink(),
-              ],
+                    ],
+                  ),
+                  provider.isLoading || loginProvider.isLoading
+                      ? showLoaderList()
+                      : SizedBox.shrink(),
+                ],
+              ),
             );
           },
         ),

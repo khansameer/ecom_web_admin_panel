@@ -3,6 +3,7 @@ import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +55,7 @@ class _CustomersPageState extends State<CustomersPage> {
                 height: 16,
               ),
 
-              suffixIcon: IconButton(
+            /*  suffixIcon: IconButton(
                 icon: commonPrefixIcon(
                   image: icProductFilter,
                   width: 20,
@@ -86,7 +87,7 @@ class _CustomersPageState extends State<CustomersPage> {
                     },
                   );
                 },
-              ),
+              ),*/
               onChanged: (value) => provider.setSearchQuery(value),
             ),
           ),
@@ -110,7 +111,47 @@ class _CustomersPageState extends State<CustomersPage> {
                         borderColor: colorBorder,
                       ),
                       margin: EdgeInsets.all(5),
-                      child: commonListTile(
+                      padding: EdgeInsets.all(10),
+                      child:
+                      commonInkWell(
+                        onTap: (){
+                          Navigator.pushNamed(
+                            context,
+                            RouteName.customerDetail,
+                            arguments: data,
+                          );
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Name
+                            commonText(
+                              fontSize: 16,
+                              text:
+                              '${data?.firstName?.toCapitalize() ?? ''} ${data?.lastName?.toCapitalize() ?? ''}',
+                              fontWeight: FontWeight.w600,
+                            ),
+
+                            const SizedBox(height: 4),
+
+                            // Email
+                            commonText(
+                              text: data?.email ?? '',
+                              fontSize: 14,
+                            ),
+
+                            const SizedBox(height: 5),
+
+                            // Table-like info
+                            Column(
+                              children: [
+                                _infoRow(label: 'Total Orders',value:  '${data?.ordersCount ?? 0}',color: colorLogo),
+                                _infoRow(label: 'Total Spent', value: '$rupeeIcon${data?.totalSpent ?? "0.00"}'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      )/*commonListTile(
                         onTap: () {
                           Navigator.pushNamed(
                             context,
@@ -167,7 +208,7 @@ class _CustomersPageState extends State<CustomersPage> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
+                      ),*/
                     );
                   },
                 );
@@ -182,6 +223,35 @@ class _CustomersPageState extends State<CustomersPage> {
           ),
 
 
+        ],
+      ),
+    );
+  }
+  Widget _infoRow({required String label, required String value,Color ?color}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: commonText(
+              text: label,
+              fontSize: 14,
+              color: colorTextDesc1,
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 4,horizontal: 15),
+            decoration: commonBoxDecoration(
+              color: color?.withValues(alpha: 0.05)??Colors.blueAccent.withValues(alpha: 0.05)
+            ),
+            child: commonText(
+              text: value,
+              fontSize: 14,
+              color:color?? Colors.blueAccent,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );

@@ -51,13 +51,14 @@ commonProductListView({
                     children: [
                       commonText(
                         text: productName,
+                        fontSize: 13,
                         fontWeight: FontWeight.w600,
                         color: provider.isDark ? Colors.white : colorLogo,
                       ),
                       commonText(
                         text: price ?? '',
                         fontWeight: FontWeight.w600,
-                        fontSize: 13,
+                        fontSize: 12,
                         color: Colors.blueAccent,
                       ),
 

@@ -191,8 +191,12 @@ commonHeadingView({String? title, required bool isPayment}) {
   );
 }
 
+
 orderInfo({required OrderData order}) {
   final themeProvider = Provider.of<ThemeProvider>(
+    navigatorKey.currentContext!,
+  );
+  final provider = Provider.of<OrdersProvider>(
     navigatorKey.currentContext!,
   );
   return Container(
@@ -222,13 +226,27 @@ orderInfo({required OrderData order}) {
                 fontSize: 14,
 
                 fontWeight: FontWeight.w600,
-                title: "Order Status",
-                value: order.financialStatus.toString().toCapitalize(),
+                title: "Delivery Status",
+                // value: order.financialStatus.toString().toCapitalize(),
+                value: provider.getDeliveryStatus(order),
                 //colorText: orderProvider.getStatusColor(order.status),
               ),
               _buildRow(
+                fontSize: 14,
+
+                fontWeight: FontWeight.w600,
+                title: "Delivery Method",
+               // value: order.financialStatus.toString().toCapitalize(),
+                value: order.shippingLine != null && order.shippingLine?.isNotEmpty==true
+                    ? order.shippingLine![0].title
+                    : 'Shipping',
+                //colorText: orderProvider.getStatusColor(order.status),
+              ),
+
+
+              _buildRow(
                 title: "Payment Status",
-                value: '',
+                value: provider.getPaymentStatus(order),
                 //   value: order.paymentStatus ?? '',
                 fontWeight: FontWeight.w600,
                 /*  colorText: orderProvider.getPaymentStatusColor(
