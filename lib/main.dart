@@ -27,7 +27,9 @@ import 'provider/theme_provider.dart';
 
 @pragma('vm:entry-point') // important for background isolate
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
   log(
     "📩 BG Notification received: ${message.messageId}, data: ${message.data}",
   );
@@ -64,9 +66,13 @@ Future<void> main() async {
 
   try {
     await Hive.initFlutter();
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    // Only initialize Firebase if not already initialized
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+
     await NotificationService.initializeApp(navigatorKey: navigatorKey);
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } catch (e, s) {
