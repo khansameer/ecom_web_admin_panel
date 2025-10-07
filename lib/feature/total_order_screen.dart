@@ -23,6 +23,7 @@ class TotalOrderScreen extends StatefulWidget {
 }
 
 class _TotalOrderScreenState extends State<TotalOrderScreen> {
+  /*
   @override
   void initState() {
     super.initState();
@@ -38,13 +39,29 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
 
       postMdl.resetData();
       postMdl.orderCountStatusValue();
+      postMdl.getAllFilterOrderList();
+    });
+  }
+*/
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  Future<void> init() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final postMdl = Provider.of<OrdersProvider>(context, listen: false);
+
+      postMdl.resetData1();
+      await postMdl.getAllFilterOrderList1();
+      await postMdl.orderCountStatusValue();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final orderProvider = Provider.of<OrdersProvider>(context, listen: true);
-
     return commonScaffold(
       appBar: commonAppBar(
         title: "Total Orders",
@@ -52,106 +69,54 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
         centerTitle: true,
       ),
       body: commonAppBackground(
-        child: Consumer<ThemeProvider>(
-          builder: (context, provider, child) {
+        child: Consumer2<ThemeProvider, OrdersProvider>(
+          builder: (context, provider, orderProvider, child) {
             return Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Dashboard Tabs
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: _commonDashboardView(
+                      SizedBox(
+                        height: 120,
+                        child: commonListViewBuilder(
+                          shrinkWrap: true,
+
+                          scrollDirection: Axis.horizontal,
+                          items: orderProvider.allOrderFilterList,
+                          itemBuilder: (context, index, data) {
+                            final data =
+                                orderProvider.allOrderFilterList[index];
+                            final title = data['title'];
+                            final value =
+                                orderProvider.orderStatusCounts[title] ?? 0;
+                            return _commonDashboardView(
                               provider: provider,
                               onTap: () {
-                                orderProvider.setSelectedTab("Paid");
-                                // orderProvider.getOrderList(financialStatus: "paid");
+                                orderProvider.setSelectedTab(title);
+                                debugPrint(
+                                  "-- Selected Tab: $title, Value: $value",
+                                );
                               },
-                              value: orderProvider.totalPaid,
-                              icon:     icAppLogo,
-                              title: "Paid",
-                              color: orderProvider.selectedTab == "Paid"
+                              value: value,
+                              icon: icAppLogo,
+                              title: title,
+                              color: orderProvider.selectedTab == title
                                   ? Colors.green
-                                  : Colors.grey, // highlight active
-                            ),
-                          ),
-                          Expanded(
-                            child: _commonDashboardView(
-                              provider: provider,
-                              onTap: () {
-                                orderProvider.setSelectedTab("Pending");
-
-                                /*orderProvider.getOrderList(
-                                  financialStatus: "pending",
-                                );*/
-                              },
-                              value: orderProvider.totalPending,
-                              icon:     icAppLogo,
-                              title: "Pending",
-                              color: orderProvider.selectedTab == "Pending"
-                                  ? Colors.red
                                   : Colors.grey,
-                            ),
-                          ),
-
-                          Expanded(
-                            child: _commonDashboardView(
-                              provider: provider,
-                              onTap: () {
-                                orderProvider.setSelectedTab("Shipping");
-                                /* orderProvider.getOrderList(
-                                  financialStatus: "shipping",
-                                );*/
-                              },
-                              value: orderProvider.totalShipping,
-                              icon:     icAppLogo,
-                              title: "Shipping",
-                              color: orderProvider.selectedTab == "Shipping"
-                                  ? Colors.blue
-                                  : Colors.grey,
-                            ),
-                          ),
-
-                          Expanded(
-                            child: _commonDashboardView(
-                              provider: provider,
-                              onTap: () {
-                                orderProvider.setSelectedTab("Refunded");
-                                /* orderProvider.getOrderList(
-                                  financialStatus: "refunded",
-                                );*/
-                              },
-                              value: orderProvider.totalRefunded,
-                              icon:     icAppLogo,
-                              title: "Refunded",
-                              color: orderProvider.selectedTab == "Refunded"
-                                  ? Colors.blue
-                                  : Colors.grey,
-                            ),
-                          ),
-                        ],
+                            );
+                          },
+                        ),
                       ),
 
-                      // List Show According to Selected Tab
-                      // List Show According to Selected Tab
-                      if (orderProvider.selectedTab == "Paid")
-                        _paidListWidget(orderProvider),
-                      if (orderProvider.selectedTab == "Pending")
-                        _paidListWidget(orderProvider),
-                      if (orderProvider.selectedTab == "Cancel")
-                        _paidListWidget(orderProvider),
-                      if (orderProvider.selectedTab == "Shipping")
-                        _paidListWidget(orderProvider),
-                      if (orderProvider.selectedTab == "Refunded")
-                        _paidListWidget(orderProvider),
+                      // Use Expanded correctly
+                      Expanded(child: _paidListWidget(orderProvider)),
                     ],
                   ),
                 ),
-                orderProvider.isFetching?showLoaderList():SizedBox.shrink()
+                orderProvider.isFetching || orderProvider.isLoading ?showLoaderList():SizedBox.shrink()
               ],
             );
           },
@@ -163,70 +128,69 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
   Widget _paidListWidget(OrdersProvider provider) {
     final orders = provider.selectedOrders; // ✅ selectedTab ki list aayegi
 
-    return Expanded(
-      child: orders.isEmpty?commonErrorView():ListView.builder(
-        shrinkWrap: true,
+    return ListView.builder(
+      shrinkWrap: true,
 
-        padding: const EdgeInsets.all(0),
-        itemCount: orders.length,
-        // null to [] convert
-        itemBuilder: (context, index) {
-          if (index < orders.length) {
-            var data = orders[index];
-            return commonOrderView(
-              margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-              onTap: () {
-                navigatorKey.currentState?.pushNamed(
-                  RouteName.orderDetailsScreen,
-                  arguments: data.id,
-                );
-              },
-              colorTextStatus: provider.getPaymentStatusColor(
-                data.financialStatus.toString().toCapitalize(),
+
+      padding: const EdgeInsets.all(0),
+      itemCount: orders.length,
+
+      itemBuilder: (context, index) {
+        if (index < orders.length) {
+          var data = orders[index];
+          return commonOrderView(
+            margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+            onTap: () {
+              navigatorKey.currentState?.pushNamed(
+                RouteName.orderDetailsScreen,
+                arguments: data.id,
+              );
+            },
+            colorTextStatus: provider.getPaymentStatusColor(
+              data.financialStatus.toString().toCapitalize(),
+            ),
+            decoration: commonBoxDecoration(
+              borderRadius: 4,
+
+              color: provider
+                  .getPaymentStatusColor(
+                    data.financialStatus.toString().toCapitalize(),
+                  )
+                  .withValues(alpha: 0.1),
+            ),
+
+            orderID: data.customer?.firstName != null
+                ? '${data.customer?.firstName}  ${data.customer?.lastName}'
+                : noCustomer,
+            image: data.name ?? '',
+            //productName:'${ data?.customer?.firstName}  ${ data?.customer?.lastName}',
+            productName: '${data.lineItems?.length} Items',
+            status: data.financialStatus.toString().toCapitalize(),
+            price: double.parse(data.subtotalPrice?.toString() ?? '0'),
+            date: formatDateTime(
+              data.createdAt ?? '',
+            ), //data.date.toLocal().toString(),
+          );
+        } else {
+          // 🔹 Loader sirf infinite scroll (search off) me
+          if (provider.searchQuery.isEmpty && provider.hasMore) {
+            // Trigger next page
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              provider.getOrderList();
+            });
+
+            return const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(
+                child: CupertinoActivityIndicator(color: Colors.black),
               ),
-              decoration: commonBoxDecoration(
-                borderRadius: 4,
-
-                color: provider
-                    .getPaymentStatusColor(
-                      data.financialStatus.toString().toCapitalize(),
-                    )
-                    .withValues(alpha: 0.1),
-              ),
-
-              orderID: data.customer?.firstName != null
-                  ? '${data.customer?.firstName}  ${data.customer?.lastName}'
-                  : noCustomer,
-              image: data.name ?? '',
-              //productName:'${ data?.customer?.firstName}  ${ data?.customer?.lastName}',
-              productName: '${data.lineItems?.length} Items',
-              status: data.financialStatus.toString().toCapitalize(),
-              price: double.parse(data.subtotalPrice?.toString() ?? '0'),
-              date: formatDateTime(
-                data.createdAt ?? '',
-              ), //data.date.toLocal().toString(),
             );
           } else {
-            // 🔹 Loader sirf infinite scroll (search off) me
-            if (provider.searchQuery.isEmpty && provider.hasMore) {
-              // Trigger next page
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                provider.getOrderList();
-              });
-
-              return const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(
-                  child: CupertinoActivityIndicator(color: Colors.black),
-                ),
-              );
-            } else {
-              // 🔹 Agar search ya no more data
-              return const SizedBox.shrink();
-            }
+            // 🔹 Agar search ya no more data
+            return const SizedBox.shrink();
           }
-        },
-      ),
+        }
+      },
     );
   }
 
@@ -242,9 +206,9 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
     return commonInkWell(
       onTap: onTap,
       child: Container(
-
-        margin: EdgeInsets.all(5),
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        width: 120,
+        margin: EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.symmetric(vertical: 0),
         decoration: commonBoxDecoration(
           color:
               color?.withValues(alpha: 0.05) ??
@@ -264,7 +228,8 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
               Container(
                 width: 40,
                 height: 40,
-                padding: EdgeInsets.all(2), // border thickness
+                padding: EdgeInsets.all(2),
+                // border thickness
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
@@ -279,7 +244,7 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
                     endValue: value,
                     duration: Duration(seconds: 2),
                     style: commonTextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: color,
                     ),
@@ -287,12 +252,12 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
                 ),
               ),
               commonText(
+                textAlign: TextAlign.center,
                 color: provider.isDark ? Colors.white : colorLogo,
                 text: title?.toCapitalize() ?? "Paid".toCapitalize(),
-                fontSize: 12,
+                fontSize: 9,
                 fontWeight: FontWeight.w600,
               ),
-
             ],
           ),
         ),

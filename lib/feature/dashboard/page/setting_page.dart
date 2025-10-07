@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:neeknots/admin/admin_dashboad.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
@@ -162,6 +163,44 @@ class _SettingPageState extends State<SettingPage> {
                   image: icPassword,
                   provider: themeProvider,
                   text: "Delete Account",
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      commonInkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AdminDashboardScreen(),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          alignment: Alignment.topRight,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 20,
+                          ),
+
+                          decoration: commonBoxDecoration(
+                            borderColor: colorLogo,
+                            color: colorLogo.withValues(
+                              alpha: 0.1,
+                            ),
+                          ),
+                          child: commonText(
+                            text: "Admin View",
+                            color: colorLogo,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(height: 30),
                 Row(

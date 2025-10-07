@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:neeknots/admin/order_filter_screen.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
@@ -61,6 +62,31 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       children: [
 
 
+                        SizedBox(height: 10,),
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 12.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                commonButton(
+                                  height: 45,
+                                    width: 150,
+                                    fontSize: 12,
+                                    text: "Order Filter", onPressed: (){ Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        OrderFilterScreen(),
+                                  ),
+                                );}),
+                              ],
+                            ),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: commonTextField(

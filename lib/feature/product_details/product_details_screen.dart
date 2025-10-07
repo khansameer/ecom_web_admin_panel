@@ -4,7 +4,6 @@ import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/models/product_details_model.dart';
-import 'package:neeknots/models/product_model.dart';
 import 'package:neeknots/provider/product_provider.dart';
 import 'package:neeknots/service/gloable_status_code.dart';
 import 'package:provider/provider.dart';
@@ -42,10 +41,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             .then((value) {
               if (globalStatusCode == 200) {
                 //print("data = ${provider.product?.title ?? ''}");
-                provider.productImages = provider.productDetailsModel?.images ?? [];
-                provider.fetchImagesForProduct(provider.productDetailsModel ?? ProductDetailsModel());
+                provider.productImages =
+                    provider.productDetailsModel?.images ?? [];
+                provider.fetchImagesForProduct(
+                  provider.productDetailsModel ?? ProductDetailsModel(),
+                );
                 //For Update
-                provider.tetName.text = provider.productDetailsModel?.title ?? '';
+                provider.tetName.text =
+                    provider.productDetailsModel?.title ?? '';
                 provider.tetDesc.text = removeHtmlTags(
                   provider.productDetailsModel?.bodyHtml ?? '',
                 );
@@ -71,6 +74,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   }
 
   void getProductDetail() {}
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ProductProvider>(context);
@@ -98,7 +102,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 },
                 child: ListView(
                   children: [
-
                     commonBannerView(
                       provider: provider,
                       images: provider.productImages,
@@ -133,7 +136,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 children: [
                                   Expanded(
                                     child: commonText(
-                                      text: provider.productDetailsModel?.title ?? '',
+                                      text:
+                                          provider.productDetailsModel?.title ??
+                                          '',
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       color: themeProvider.isDark
@@ -186,7 +191,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                         commonText(
                                           textAlign: TextAlign.right,
-                                          text: provider.productDetailsModel?.status ?? '',
+                                          text:
+                                              provider
+                                                  .productDetailsModel
+                                                  ?.status ??
+                                              '',
                                           fontWeight: FontWeight.w500,
                                           fontSize: 12,
                                           color: provider.getStatusColor(
@@ -220,11 +229,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           SizedBox(height: 15),
                           commonOtherVariants(
                             provider: provider,
-                            products: provider.productDetailsModel ?? ProductDetailsModel(),
+                            products:
+                                provider.productDetailsModel ??
+                                ProductDetailsModel(),
                           ),
                           commonVariants(
                             provider: provider,
-                            products: provider.productDetailsModel ?? ProductDetailsModel(),
+                            products:
+                                provider.productDetailsModel ??
+                                ProductDetailsModel(),
                           ),
                           SizedBox(height: 30),
 
@@ -289,8 +302,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               // ),
                                               /**
                                                * provider
-                                                                .priceControllers[variant
-                                                                    .id]
+                                                  .priceControllers[variant
+                                                  .id]
                                                */
                                               _commonHeading(text: "Status"),
                                               SizedBox(height: 16),
@@ -317,50 +330,50 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                       .productDetailsModel
                                                       ?.variants
                                                       ?.map((variant) {
-                                                    return {
-                                                      "id": variant.id,
-                                                      "price": provider
-                                                          .tetPrice
-                                                          .text,
-                                                      "inventory_quantity":
-                                                      int.tryParse(
-                                                        provider
-                                                            .qtyControllers[variant
-                                                            .id]!
-                                                            .text,
-                                                      ) ??
-                                                          0,
-                                                    };
-                                                  })
+                                                        return {
+                                                          "id": variant.id,
+                                                          "price": provider
+                                                              .tetPrice
+                                                              .text,
+                                                          "inventory_quantity":
+                                                              int.tryParse(
+                                                                provider
+                                                                    .qtyControllers[variant
+                                                                        .id]!
+                                                                    .text,
+                                                              ) ??
+                                                              0,
+                                                        };
+                                                      })
                                                       .toList();
                                                   provider
                                                       .updateProductById(
-                                                    title: provider
-                                                        .tetName
-                                                        .text,
-                                                    description: provider
-                                                        .tetDesc
-                                                        .text,
-                                                    productId: int.parse(
-                                                      widget.productId,
-                                                    ),
-                                                    variants:
-                                                    variantsPayload,
-                                                  )
+                                                        title: provider
+                                                            .tetName
+                                                            .text,
+                                                        description: provider
+                                                            .tetDesc
+                                                            .text,
+                                                        productId: int.parse(
+                                                          widget.productId,
+                                                        ),
+                                                        variants:
+                                                            variantsPayload,
+                                                      )
                                                       .then((onValue) {
-                                                    init();
-                                                    provider
-                                                        .setIsImageUpdating(
-                                                      false,
-                                                    );
-                                                    navigator.pop();
-                                                  })
+                                                        init();
+                                                        provider
+                                                            .setIsImageUpdating(
+                                                              false,
+                                                            );
+                                                        navigator.pop();
+                                                      })
                                                       .catchError((onError) {
-                                                    provider
-                                                        .setIsImageUpdating(
-                                                      false,
-                                                    );
-                                                  });
+                                                        provider
+                                                            .setIsImageUpdating(
+                                                              false,
+                                                            );
+                                                      });
                                                 },
                                               ),
                                               SizedBox(height: 30),

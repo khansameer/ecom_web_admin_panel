@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:neeknots/core/component/component.dart';
@@ -76,6 +77,12 @@ class OrdersProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void resetData1() {
+    orderStatusCounts.updateAll((key, value) => 0);
+    _ordersByStatus.clear();
+    notifyListeners();
+  }
+
   void resetData() {
     filterOrderList.clear();
     _searchQuery = "";
@@ -89,10 +96,10 @@ class OrdersProvider with ChangeNotifier {
   Map<String, List<Order>> get ordersByStatus => _ordersByStatus;
 
   // selected tab orders
-  List<Order> get selectedOrders =>
-      _ordersByStatus[selectedTab.toLowerCase()] ?? [];
+  /*List<Order> get selectedOrders =>
+      _ordersByStatus[selectedTab.toLowerCase()] ?? [];*/
 
-  Future<void> orderCountStatusValue({
+  Future<void> orderCountStatusValue1({
     int? limit,
     String? financialStatus,
   }) async {
@@ -113,6 +120,68 @@ class OrdersProvider with ChangeNotifier {
         final data = json.decode(response); // ✅ now .body works
 
         final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
+        int todaysOrderCount = 0;
+        int openOrderCount = 0;
+        int closedOrderCount = 0;
+        int pendingToChargeCount = 0;
+        int pendingShipmentCount = 0;
+        int shippedCount = 0;
+        int awaitingReturnCount = 0;
+        int completedCount = 0;
+        final todayStart = DateTime.now().toUtc().subtract(
+          Duration(
+            hours: DateTime.now().hour,
+            minutes: DateTime.now().minute,
+            seconds: DateTime.now().second,
+          ),
+        );
+        final todayEnd = todayStart.add(const Duration(days: 1));
+
+        for (var order in fetchedOrders) {
+          final status = order.financialStatus?.toLowerCase() ?? 'unknown';
+          final createdAt = DateTime.parse(
+            order.createdAt ?? DateTime.now().toString(),
+          );
+
+          // Total counts by financial status
+          if (status == 'paid') totalPaid++;
+          if (status == 'pending') totalPending++;
+          if (status == 'refunded') totalRefunded++;
+          if (status == 'shipping') totalShipping++;
+          if (status == 'cancelled') totalCancel++;
+
+          // Custom status counts
+          if (createdAt.isAfter(todayStart) && createdAt.isBefore(todayEnd))
+            todaysOrderCount++;
+          if (status == 'pending') pendingToChargeCount++; // example mapping
+          if (status == 'shipping') pendingShipmentCount++;
+          if (status == 'shipped') shippedCount++;
+          if (status == 'completed') completedCount++;
+          // Map awaiting return depending on your data, example:
+          if (status == 'awaiting_return') awaitingReturnCount++;
+          // Closed Orders example: maybe cancelled + refunded
+          if (status == 'cancelled' || status == 'refunded') closedOrderCount++;
+          // Open Orders: all others that are not closed
+          if (!(status == 'cancelled' ||
+              status == 'refunded' ||
+              status == 'completed'))
+            openOrderCount++;
+        }
+
+        debugPrint("===== ORDER COUNTS =====");
+        debugPrint("Today’s Order: $todaysOrderCount");
+        debugPrint("Open Order: $openOrderCount");
+        debugPrint("Closed Orders: $closedOrderCount");
+        debugPrint("Pending To Charge: $pendingToChargeCount");
+        debugPrint("Pending Shipment: $pendingShipmentCount");
+        debugPrint("Shipped: $shippedCount");
+        debugPrint("Awaiting Return: $awaitingReturnCount");
+        debugPrint("Completed: $completedCount");
+        debugPrint("Total Paid: $totalPaid");
+        debugPrint("Total Pending: $totalPending");
+        debugPrint("Total Refunded: $totalRefunded");
+        debugPrint("Total Shipping: $totalShipping");
+        debugPrint("Total Cancel: $totalCancel");
 
         totalPaid = fetchedOrders
             .where((e) => e.financialStatus?.toLowerCase() == 'paid')
@@ -145,6 +214,123 @@ class OrdersProvider with ChangeNotifier {
       _isFetching = false;
       notifyListeners();
     }
+  }
+
+  Map<String, int> orderStatusCounts = {
+    "Today’s Order": 0,
+    "Open Order": 0,
+    "Closed Orders": 0,
+    "Pending To Charge": 0,
+    "Pending Shipment": 0,
+    "Shipped": 0,
+    "Awaiting Return": 0,
+    "Completed": 0,
+  };
+
+  Future<void> orderCountStatusValue() async {
+    _isFetching = true;
+    notifyListeners();
+
+    try {
+      String url =
+          '${await ApiConfig.ordersUrl}?status=any&limit=$_limit&order=id+asc';
+      final response = await callGETMethod(url: url);
+
+      if (response != null) {
+        final data = json.decode(response);
+        final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
+
+        // Initialize counts dynamically from filter list
+        Map<String, int> tempCounts = {
+          for (var filter in allOrderFilterList) filter['title']!: 0,
+        };
+        _ordersByStatus.clear();
+
+        final todayStart = DateTime.now().subtract(
+          Duration(
+            hours: DateTime.now().hour,
+            minutes: DateTime.now().minute,
+            seconds: DateTime.now().second,
+          ),
+        );
+        final todayEnd = todayStart.add(const Duration(days: 1));
+
+        for (var order in fetchedOrders) {
+          final status = order.financialStatus?.toLowerCase() ?? 'unknown';
+          final createdAt = DateTime.parse(
+            order.createdAt ?? DateTime.now().toString(),
+          );
+
+          for (var filter in allOrderFilterList) {
+            final title = filter['title']!;
+
+            bool match = false;
+            switch (title) {
+              case "Today’s Order":
+                match =
+                    createdAt.isAfter(todayStart) &&
+                    createdAt.isBefore(todayEnd);
+                break;
+              case "Open Order":
+                match =
+                    !(status == 'cancelled' ||
+                        status == 'refunded' ||
+                        status == 'completed');
+                break;
+              case "Closed Orders":
+                match = status == 'cancelled' || status == 'refunded';
+                break;
+              case "Pending To Charge":
+                match = status == 'pending' || status == 'paid';
+                break;
+              case "Pending Shipment":
+                match = status == 'shipping';
+                break;
+              case "Shipped":
+                match = status == 'shipped';
+                break;
+              case "Awaiting Return":
+                match = status == 'awaiting_return';
+                break;
+              case "Completed":
+                match = status == 'completed';
+                break;
+              default:
+                match = status == title.toLowerCase();
+            }
+
+            if (match) {
+              tempCounts[title] = tempCounts[title]! + 1;
+              _ordersByStatus.putIfAbsent(title.toLowerCase(), () => []);
+              _ordersByStatus[title.toLowerCase()]!.add(order);
+            }
+          }
+        }
+
+        orderStatusCounts = tempCounts;
+
+        // Logs
+       // debugPrint("===== ORDER COUNTS =====");
+        orderStatusCounts.forEach((key, value) {
+         // debugPrint("$key : $value");
+        });
+
+        _isFetching = false;
+        notifyListeners();
+      }
+    } catch (e) {
+      _isFetching = false;
+      notifyListeners();
+      debugPrint("Error calculating order counts: $e");
+    } finally {
+      _isFetching = false;
+      notifyListeners();
+    }
+  }
+
+  List<Order> get selectedOrders {
+    if (selectedTab.isEmpty || _ordersByStatus.isEmpty) return [];
+    return _ordersByStatus[selectedTab.toLowerCase()] ?? [];
   }
 
   int _totalOrderCount = 0;
@@ -243,22 +429,11 @@ class OrdersProvider with ChangeNotifier {
     try {
       final url = '${await ApiConfig.getOrderById}/$orderID.json';
 
-      print('=============${url}');
       final response = await callGETMethod(url: url);
 
       _orderDetailsModel = orderDetails.OrderDetailsModel.fromJson(
         json.decode(response),
       );
-
-
-
-    /* // final deliveryStatus = order['fulfillment_status']; // usually "fulfilled", "unfulfilled", or null
-      final deliveryMethod = _orderDetailsModel?.orderData?.shippingLine != null && _orderDetailsModel?.orderData?.shippingLine?.isNotEmpty==true
-          ? _orderDetailsModel?.orderData?.shippingLine![0].title
-          : 'N/A';
-
-      print('---deliveryStatus----${_orderDetailsModel?.orderData?.fulfillmentStatus??''}');
-      print('---deliveryMethod----${deliveryMethod}');*/
 
       final orderData = _orderDetailsModel?.orderData;
       if (orderData != null && orderData.lineItems != null) {
@@ -361,7 +536,7 @@ class OrdersProvider with ChangeNotifier {
     final createdAtMin = Uri.encodeComponent(utcStart.toIso8601String());
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
     final url =
-        "${await ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax&status=any" ;
+        "${await ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax&status=any";
     final response = await callGETMethod(url: url);
 
     if (globalStatusCode == 200) {
@@ -449,22 +624,6 @@ class OrdersProvider with ChangeNotifier {
     String? createdMinDate,
     String? createdMaxDate,
   }) async {
-
-    /*final queryParams = {
-      'limit': limit ?? '10',
-      if (pageInfo != null)
-        'page_info': pageInfo
-      else if (financialStatus != null)
-        'financial_status': financialStatus
-      else if (status != null)
-        'status': status
-      else if (createdMinDate != null)
-        'created_at_min': createdMinDate
-      else if (createdMaxDate != null)
-        'created_at_max': createdMinDate
-      else
-        'status': 'any',
-    };*/
     final queryParams = {
       'limit': limit?.toString() ?? '10',
       'status': 'any',
@@ -491,6 +650,10 @@ class OrdersProvider with ChangeNotifier {
 
     print('=======OrderUrl$uri');
     if (response.statusCode != 200) {
+      _isFetching = false;
+      notifyListeners();
+
+      print('=======OrderUrl$_isFetching');
       throw Exception("Error fetching orders: ${response.body}");
     }
 
@@ -512,7 +675,8 @@ class OrdersProvider with ChangeNotifier {
         }
       }
     }
-
+    _isFetching = false;
+    notifyListeners();
     return {"orders": orders, "nextPageInfo": nextPageInfo};
   }
 
@@ -606,11 +770,13 @@ class OrdersProvider with ChangeNotifier {
       return matchesSearch;
     }).toList();
   }
+
   String getDeliveryStatus(OrderData order) {
     if (order.fulfillments != null && order.fulfillments!.isNotEmpty) {
       // Check if tracking exists
-      final hasTracking = order.fulfillments!
-          .any((f) => f.trackingNumber != null && f.trackingNumber!.isNotEmpty);
+      final hasTracking = order.fulfillments!.any(
+        (f) => f.trackingNumber != null && f.trackingNumber!.isNotEmpty,
+      );
       if (hasTracking) return 'Tracking Added / Shipped';
     }
 
@@ -643,6 +809,68 @@ class OrdersProvider with ChangeNotifier {
         return 'N/A';
     }
   }
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  bool _isLoading = false;
+  List<Map<String, dynamic>> _allOrderFilterList = [];
+
+  bool get isLoading => _isLoading;
+
+  List<Map<String, dynamic>> get allOrderFilterList => _allOrderFilterList;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  Future<void> getAllFilterOrderList() async {
+    _setLoading(true);
+    try {
+      final querySnapshot = await _firestore.collection("order_filter").get();
+      _allOrderFilterList = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        data["uid"] = doc.id;
+        return data;
+      }).toList();
+    } catch (e) {
+      debugPrint("Error fetching filters: $e");
+    }
+    _setLoading(false);
+  }
+
+  Future<void> getAllFilterOrderList1() async {
+    _setLoading(true);
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('order_filter')
+          .where('status', isEqualTo: true) // ✅ fetch only active ones
+          .get();
+
+      _allOrderFilterList = snapshot.docs.map((doc) {
+        return {"title": doc['title'] ?? '', "status": doc['status'] ?? ''};
+      }).toList();
+
+      // Initialize counts to 0
+      orderStatusCounts = {for (var f in allOrderFilterList) f['title']!: 0};
+
+      // ✅ Set default tab to 0th index after fetching list
+      if (_allOrderFilterList.isNotEmpty) {
+        selectedTab = _allOrderFilterList.first['title'];
+        debugPrint("Default selected tab: $selectedTab");
+      }
+      _setLoading(false);
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      notifyListeners();
+      debugPrint("Error fetching filter list: $e");
+    }
+  }
+
+  /// Return only filters where status == true
+  List<Map<String, dynamic>> get activeFilters =>
+      _allOrderFilterList.where((f) => f["status"] == true).toList();
 }
 
 class SalesData {
