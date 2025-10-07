@@ -20,13 +20,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="yXN-I6-26a">
-                                <rect key="frame" x="46" y="391" width="300" height="70"/>
+                                <rect key="frame" x="46.666666666666657" y="396" width="300" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="OTF-Ea-Pjc"/>
+                                    <constraint firstAttribute="width" constant="300" id="OWj-ZD-lth"/>
+                                </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="yXN-I6-26a" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Fed-Ub-sFb"/>
-                            <constraint firstItem="yXN-I6-26a" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Ose-eH-kL8"/>
+                            <constraint firstItem="yXN-I6-26a" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="7EO-DH-chv"/>
+                            <constraint firstItem="yXN-I6-26a" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Scp-of-PdF"/>
                         </constraints>
                     </view>
                 </viewController>
