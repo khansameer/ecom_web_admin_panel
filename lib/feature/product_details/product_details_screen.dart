@@ -113,6 +113,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         if (path != null) {
                           provider.uploadProductImage(
                             imagePath: path,
+                            productName: provider.productDetailsModel?.title ??
+                                '',
                             productId: int.parse(widget.productId),
                           );
                         }

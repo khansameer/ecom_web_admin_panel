@@ -19,12 +19,13 @@ import '../../../core/string/string_utils.dart';
 import '../order_widget/common_order_widget.dart';
 import '../product_widget/common_product_widget.dart';
 
-homeTopView({
+Widget homeTopView({
   required int totalProduct,
   required int totalOrder,
   required int totalCustomer,
   required int totalSaleOrder,
   required double totalOrderPrice,
+  required int totalPendingRequest,
 }) {
   return Consumer<ThemeProvider>(
     builder: (context, provider, child) {
@@ -123,33 +124,73 @@ homeTopView({
               ),
             ],
           ),
-          Container(
-            margin: EdgeInsets.all(5),
-            padding: const EdgeInsets.all(16),
-            decoration: commonBoxDecoration(
-              color: Colors.amber.withValues(alpha: 0.05),
-              borderColor: Colors.amber.withValues(alpha: 0.3),
-              borderRadius: 10,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: commonText(
-                    text: "Pending Aproval",
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    textAlign: TextAlign.left,
-                    color: provider.isDark ? Colors.white : colorText,
+          commonInkWell(
+            onTap: () {
+              navigatorKey.currentState?.pushNamed(
+                RouteName.pendingRequestScreen,
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.all(5),
+              padding: const EdgeInsets.all(16),
+              decoration: commonBoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.05),
+                borderColor: Colors.amber.withValues(alpha: 0.3),
+                borderRadius: 10,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(2), // border thickness
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color:  Colors.amber, // border color
+                              width: 1.5, // border width
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            radius: 20,
+
+                            backgroundColor: Colors.white,
+                            child: Center(
+                              child: commonAssetImage(
+                                icEmail,
+                                width: 24,
+                                height: 24,
+                                color: Colors.amber,
+                              ),
+                            ),
+                          ),
+                        ),
+                        commonText(
+                          text: "Pending Approval",
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          textAlign: TextAlign.left,
+                          color: provider.isDark ? Colors.white : colorText,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                commonText(
-                  text: "02",
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  textAlign: TextAlign.left,
-                  color: provider.isDark ? Colors.white : colorText,
-                ),
-              ],
+
+                  AnimatedCounter(
+                    leftText: '',
+                    rightText: '',
+                    endValue: totalPendingRequest,
+                    duration: Duration(seconds: 2),
+                    style: commonTextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: provider.isDark ? Colors.white : colorTextDesc1,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -158,7 +199,7 @@ homeTopView({
   );
 }
 
-_commonDashboardView({
+Widget _commonDashboardView({
   Color? color,
   required ThemeProvider provider,
   required String icon,
@@ -250,7 +291,7 @@ _commonDashboardView({
   );
 }
 
-homeGraphView({required bool isSaleDetails}) {
+Widget homeGraphView({required bool isSaleDetails}) {
   return Consumer2<ThemeProvider, OrdersProvider>(
     builder: (context, themeProvider, orderProvider, child) {
       final data = orderProvider.orderModelByDate?.orders ?? [];
@@ -442,10 +483,10 @@ homeGraphView({required bool isSaleDetails}) {
                           ),
                           series: <CartesianSeries<SalesData, String>>[
                             SplineAreaSeries<SalesData, String>(
-                              animationDuration:
-                                  1500, // in milliseconds (1.5 seconds)
-                              animationDelay:
-                                  300, // optional delay before animation starts
+                              animationDuration: 1500,
+                              // in milliseconds (1.5 seconds)
+                              animationDelay: 300,
+                              // optional delay before animation starts
                               /*    gradient: LinearGradient(
                                 colors: [Colors.orange.withValues(alpha: 0.4), Colors.orange],
                                 begin: Alignment.topCenter,
@@ -508,7 +549,7 @@ homeGraphView({required bool isSaleDetails}) {
   );
 }
 
-commonTopProductListView({void Function()? onTap}) {
+Widget commonTopProductListView({void Function()? onTap}) {
   return Consumer<ThemeProvider>(
     builder: (context, themeProvider, child) {
       return Column(
@@ -604,7 +645,7 @@ commonTopProductListView({void Function()? onTap}) {
   );
 }
 
-commonTopOrderListView({void Function()? onTap}) {
+Widget commonTopOrderListView({void Function()? onTap}) {
   return Consumer<ThemeProvider>(
     builder: (context, themeProvider, child) {
       return Column(

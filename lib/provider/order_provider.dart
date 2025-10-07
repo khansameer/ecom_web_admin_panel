@@ -812,17 +812,19 @@ class OrdersProvider with ChangeNotifier {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
+
   bool _isLoading = false;
-  List<Map<String, dynamic>> _allOrderFilterList = [];
-
   bool get isLoading => _isLoading;
-
-  List<Map<String, dynamic>> get allOrderFilterList => _allOrderFilterList;
 
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
   }
+  List<Map<String, dynamic>> _allOrderFilterList = [];
+  List<Map<String, dynamic>> get allOrderFilterList => _allOrderFilterList;
+
+
 
   Future<void> getAllFilterOrderList() async {
     _setLoading(true);

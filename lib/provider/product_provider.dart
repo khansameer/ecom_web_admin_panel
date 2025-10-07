@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/models/product_model.dart' hide Variants, Images;
 
@@ -207,7 +208,9 @@ class ProductProvider with ChangeNotifier {
   List<Products> get products => _products;
   int? _lastId; // last fetched product ID
   int _currentPage = 0;
+
   int get currentPage => _currentPage;
+
   Future<void> getProductListPagination({
     int? limit,
     String? status,
@@ -229,7 +232,8 @@ class ProductProvider with ChangeNotifier {
         _currentPage = 0;
       }
 
-      String url = '${ await ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc&status=$status';
+      String url =
+          '${await ApiConfig.productsUrl}?limit=$effectiveLimit&order=id+asc&status=$status';
       if (status != null && status.isNotEmpty) url += "&status=$status";
       if (_lastId != null) url += '&since_id=$_lastId';
 
@@ -277,7 +281,6 @@ class ProductProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-
 
   Future<void> getProductList({
     int? limit,
@@ -356,7 +359,9 @@ class ProductProvider with ChangeNotifier {
       if (globalStatusCode == 200) {
         final jsonData = json.decode(response);
 
-        _productDetailsModel = ProductDetailsModel.fromJson(jsonData['product']);
+        _productDetailsModel = ProductDetailsModel.fromJson(
+          jsonData['product'],
+        );
       }
     } catch (e) {
       debugPrint("⚠️ Unexpected Error: $e");
@@ -403,30 +408,144 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<String?> addProductInFirebase({
+    required String name,
+    required String image,
+    required bool status,
+    required int productID,
+  }) async {
+    try {
+      // 🔹 2. Add new filter
+      final docRef = await _firestore.collection("product").add({
+        "name": name,
+        "image": image,
+        "product_id": productID,
+        "status": status,
+        "created_date": DateTime.now(),
+      });
+
+      notifyListeners();
+
+      // _setLoading(false);
+      return null; // means success
+    } catch (e) {
+      debugPrint("Error adding new filter: $e");
+      //_setLoading(false);
+      return "Error adding new filter";
+    }
+  }
+
   Future<void> uploadProductImage({
     required String imagePath,
     required int productId,
+    required String productName,
   }) async {
     _isImageUpdating = true;
     notifyListeners();
 
-    final urlString = "${await ApiConfig.baseUrl}/products/$productId/images.json";
+    final urlString =
+        "${await ApiConfig.baseUrl}/products/$productId/images.json";
     final bytes = await File(imagePath).readAsBytes();
 
     final base64Image = base64Encode(bytes);
 
+    String? result = await addProductInFirebase(
+      status: false,
+      name: productName,
+      image: base64Image,
+      productID: productId,
+    );
+
+    _isImageUpdating = false;
+    notifyListeners();
+
+    // Agar result null hai => success
+    if (result == null) {
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(
+          content: Text("Product uploaded successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text(result), backgroundColor: Colors.red),
+      );
+    }
+    /*
+      final response = await callPostMethodWithToken(
+        body: {
+          "image": {"attachment": base64Image},
+        },
+        url: urlString,
+      );*/
+    /*if (globalStatusCode == 200) {
+        final data = json.decode(response);
+        final imageJson = data["image"];
+        if (imageJson != null) {
+          final newImage = Images.fromJson(imageJson);
+          productImages.add(newImage);
+          _isImageUpdating = false;
+          notifyListeners(); // ✅ UI refresh
+        }
+      } else {
+        _isImageUpdating = false;
+        notifyListeners();
+      }*/
+  }
+
+  Future<void> updateProductStatus({
+    required String uid,
+    required String title,
+  }) async {
+    await FirebaseFirestore.instance.collection("product").doc(uid).update({
+      "status": true,
+      //"approved_date": DateTime.now(), // optional
+      title: DateTime.now(), // optional
+    });
+    await getAllPendingRequest();
+  }
+
+  Future<void> uploadProductImageViaAdmin({
+    required String imagePath,
+    required int productId,
+    required String uid,
+  }) async {
+    _isImageUpdating = true;
+    notifyListeners();
+
+    final urlString =
+        "${await ApiConfig.baseUrl}/products/$productId/images.json";
+
     final response = await callPostMethodWithToken(
       body: {
-        "image": {"attachment": base64Image},
+        "image": {"attachment": imagePath},
       },
       url: urlString,
     );
+
     if (globalStatusCode == 200) {
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(
+          content: Text("Product Approved successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      /*  await FirebaseFirestore.instance.collection("product").doc(uid).update({
+        "status": true,
+        "approved_date": DateTime.now(), // optional
+      });*/
+     await updateProductStatus(uid: uid, title: "approved_date");
+
+
       final data = json.decode(response);
       final imageJson = data["image"];
       if (imageJson != null) {
-        final newImage = Images.fromJson(imageJson);
-        productImages.add(newImage);
+        //  final newImage = Images.fromJson(imageJson);
+        // productImages.add(newImage);
         _isImageUpdating = false;
         notifyListeners(); // ✅ UI refresh
       }
@@ -499,5 +618,70 @@ class ProductProvider with ChangeNotifier {
     _startDate = null;
     _endDate = null;
     notifyListeners();
+  }
+
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  List<Map<String, dynamic>> _allPendingRequest = [];
+
+  List<Map<String, dynamic>> get allPendingRequest => _allPendingRequest;
+
+  Future<void> getAllPendingRequest() async {
+    _setLoading(true);
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('product')
+          .where('status', isEqualTo: false) // ← only false status
+          .orderBy('created_date', descending: true)
+          .get();
+
+      _allPendingRequest = snapshot.docs.map((doc) {
+        return {
+          "uid": doc.id, // ← Firestore document ID
+          "name": doc['name'] ?? '',
+          "status": doc['status'] ?? '',
+          "created_date": doc['created_date'] ?? '',
+          "image": doc['image'] ?? '',
+          "product_id": doc['product_id'] ?? '',
+        };
+      }).toList();
+
+      // Initialize counts to 0
+      _setLoading(false);
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      notifyListeners();
+      debugPrint("Error fetching filter list: $e");
+    }
+  }
+
+  int _pendingCount = 0; // Provider me variable define karo
+  int get pendingCount => _pendingCount;
+
+  Future<void> getCountPendingRequest() async {
+    _setLoading(true);
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('product')
+          .where('status', isEqualTo: false) // only false status
+          .orderBy('created_date', descending: true)
+          .get();
+      _pendingCount = snapshot.docs.length;
+
+      _setLoading(false);
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      notifyListeners();
+      debugPrint("Error fetching pending products: $e");
+    }
   }
 }

@@ -54,6 +54,9 @@ class _CommonOrderViewState extends State<CommonOrderView> {
         loadMore: false,
       ),
     );
+    Future.microtask(
+          () => Provider.of<OrdersProvider>(context, listen: false).getAllFilterOrderList(),
+    );
   }
 
   @override

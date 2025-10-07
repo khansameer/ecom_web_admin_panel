@@ -9,6 +9,7 @@ import 'package:neeknots/feature/edit_profile/edit_profile_screen.dart';
 import 'package:neeknots/feature/inactive_account_screen/inactive_account_screen.dart';
 import 'package:neeknots/feature/notification/notification_screen.dart';
 import 'package:neeknots/feature/order_details/order_details_screen.dart';
+import 'package:neeknots/feature/pending_request_screen/pending_request_screen.dart';
 import 'package:neeknots/feature/product_details/add_product_screen.dart';
 import 'package:neeknots/feature/product_details/product_details_screen.dart';
 import 'package:neeknots/feature/sales_details_screen.dart';
@@ -89,6 +90,8 @@ class RouteGenerate {
 
       case RouteName.contactUsScreen:
         return MaterialPageRoute(builder: (_) => const ContactUsScreen());
+      case RouteName.pendingRequestScreen:
+        return MaterialPageRoute(builder: (_) => const PendingRequestScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }
