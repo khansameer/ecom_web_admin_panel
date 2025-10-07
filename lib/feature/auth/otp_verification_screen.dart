@@ -130,7 +130,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         child: Consumer3<ThemeProvider, SignupProvider, LoginProvider>(
           builder: (context, themeProvider, provider, loginProvider, child) {
             return commonPopScope(
-              onBack: (){
+              onBack: () {
                 loginProvider.resetState();
               },
               child: Stack(
@@ -143,7 +143,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          spacing: 20,
+                          spacing: 16,
                           children: [
                             SizedBox(height: 30),
                             Column(
@@ -158,7 +158,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                       : colorLogo,
                                 ),
 
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 16),
                                 commonDescriptionText(
                                   textAlign: TextAlign.center,
                                   text:
@@ -306,7 +306,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                             ),
                             SizedBox(height: 10),
 
-                            commonButton(text: "Verify", onPressed: _validateOtp),
+                            commonButton(
+                              text: "Verify",
+                              onPressed: _validateOtp,
+                            ),
                           ],
                         ),
                       ),

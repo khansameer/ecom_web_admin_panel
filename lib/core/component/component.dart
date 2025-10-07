@@ -231,7 +231,7 @@ Widget commonButton({
         width: width ?? MediaQuery.sizeOf(navigatorKey.currentContext!).width,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color:color??( provider.isDark ? Colors.white : colorLogo),
+            color: color ?? (provider.isDark ? Colors.white : colorLogo),
 
             borderRadius: BorderRadius.circular(radius ?? 15),
           ),
@@ -317,7 +317,7 @@ Widget commonTextField({
         obscureText: obscureText,
         validator: validator,
         initialValue: controller != null ? null : initialValue ?? '',
-         //initialValue: initialValue
+        //initialValue: initialValue
         maxLines: maxLines,
         readOnly: readOnly,
         onTap: onTap,
@@ -583,12 +583,12 @@ Center commonErrorView({String? text}) {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        commonAssetImage(icNoData, width: 100, height: 100),
+        //commonAssetImage(icNoData, width: 100, height: 100),
         commonText(
           textAlign: TextAlign.center,
           text: text ?? errorMsg,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
           color: Colors.black.withValues(alpha: 0.5),
         ),
       ],
@@ -813,7 +813,6 @@ Container commonAppBackground({required Widget child}) {
   );
 }
 
-
 commonHeadingText({
   String? text,
   Color? color,
@@ -844,7 +843,7 @@ commonSubTitleText({String? text}) {
   );
 }
 
-commonDescriptionText({String? text,TextAlign ?textAlign}) {
+commonDescriptionText({String? text, TextAlign? textAlign}) {
   return commonText(
     text: text ?? '',
     textAlign: textAlign,
@@ -1050,10 +1049,10 @@ Widget commonCircleNetworkImage(
   String? imageUrl, {
   double size = 60,
   double borderWidth = 0,
-      String ?errorPath,
-      BoxShape? shape,
+  String? errorPath,
+  BoxShape? shape,
   Color borderColor = Colors.white,
-  Color ?color,
+  Color? color,
   BoxFit fit = BoxFit.cover,
   Widget? placeholder,
   Widget? errorWidget,
@@ -1069,7 +1068,7 @@ Widget commonCircleNetworkImage(
     padding: EdgeInsets.all(borderWidth),
     decoration: BoxDecoration(
       color: color,
-      shape:shape?? BoxShape.circle,
+      shape: shape ?? BoxShape.circle,
       border: Border.all(color: borderColor, width: borderWidth),
     ),
     child: ClipOval(
@@ -1083,11 +1082,11 @@ Widget commonCircleNetworkImage(
                   placeholder ??
                   Center(child: CircularProgressIndicator(strokeWidth: 2)),
               errorWidget: (context, url, error) =>
-                  errorWidget ?? Center(child: commonAssetImage(
-
-                      errorPath??icDummyUser)),
+                  errorWidget ??
+                  Center(child: commonAssetImage(errorPath ?? icDummyUser)),
             )
-          : (errorWidget ?? Center(child: commonAssetImage(errorPath??icDummyUser))),
+          : (errorWidget ??
+                Center(child: commonAssetImage(errorPath ?? icDummyUser))),
     ),
   );
 }
@@ -1098,7 +1097,7 @@ Widget commonNetworkImage(
   double borderWidth = 0,
   Color borderColor = Colors.white,
   BoxFit fit = BoxFit.cover,
-      Decoration? decoration,
+  Decoration? decoration,
   Widget? placeholder,
   Widget? errorWidget,
   String? text,
@@ -1113,13 +1112,15 @@ Widget commonNetworkImage(
     width: size,
     height: size,
     padding: EdgeInsets.all(borderWidth),
-    decoration: decoration??BoxDecoration(
-      shape: shape,
-      border: Border.all(color: borderColor, width: borderWidth),
-      borderRadius: shape == BoxShape.rectangle
-          ? BorderRadius.circular(borderRadius)
-          : null,
-    ),
+    decoration:
+        decoration ??
+        BoxDecoration(
+          shape: shape,
+          border: Border.all(color: borderColor, width: borderWidth),
+          borderRadius: shape == BoxShape.rectangle
+              ? BorderRadius.circular(borderRadius)
+              : null,
+        ),
     child: ClipRRect(
       borderRadius: shape == BoxShape.rectangle
           ? BorderRadius.circular(borderRadius)
@@ -1166,7 +1167,7 @@ commonBoxView({required Widget contentView, required String title}) {
   );
 }
 
-commonErrorBoxView({required String text,Color ? colorText}) {
+commonErrorBoxView({required String text, Color? colorText}) {
   return Container(
     decoration: commonBoxDecoration(
       borderColor: colorBorder,
@@ -1179,7 +1180,7 @@ commonErrorBoxView({required String text,Color ? colorText}) {
         text: text,
         fontWeight: FontWeight.w700,
         fontSize: 14,
-        color: colorText??colorLogo,
+        color: colorText ?? colorLogo,
       ),
     ),
   );
@@ -1254,6 +1255,7 @@ commonRefreshIndicator({
     child: child,
   );
 }
+
 Widget commonTextRich({
   String? text1,
   String? text2,
@@ -1262,8 +1264,9 @@ Widget commonTextRich({
   TextStyle? textStyle2,
   GestureRecognizer? onTap,
 }) {
-
-  final themeProvider = Provider.of<ThemeProvider>(navigatorKey.currentContext!);
+  final themeProvider = Provider.of<ThemeProvider>(
+    navigatorKey.currentContext!,
+  );
   return Text.rich(
     textAlign: textAlign ?? TextAlign.center,
     TextSpan(
@@ -1271,14 +1274,14 @@ Widget commonTextRich({
         TextSpan(
           text: text1 ?? 'Sign in ',
           style:
-          textStyle1 ??
+              textStyle1 ??
               commonTextStyle(fontWeight: FontWeight.w700, fontSize: 36),
         ),
         TextSpan(
           recognizer: onTap,
           text: text2 ?? 'to your\nAccount ',
           style:
-          textStyle2 ??
+              textStyle2 ??
               commonTextStyle(fontWeight: FontWeight.w400, fontSize: 36),
         ),
       ],

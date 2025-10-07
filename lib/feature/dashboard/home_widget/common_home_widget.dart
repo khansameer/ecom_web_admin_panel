@@ -32,7 +32,7 @@ homeTopView({
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 5,),
+          SizedBox(height: 5),
           Row(
             children: [
               Expanded(
@@ -43,12 +43,10 @@ homeTopView({
                   fontWeight: FontWeight.w600,
                 ),
               ),
-
-
-
             ],
           ),
-          SizedBox(height: 5,),
+          SizedBox(height: 5),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -125,6 +123,35 @@ homeTopView({
               ),
             ],
           ),
+          Container(
+            margin: EdgeInsets.all(5),
+            padding: const EdgeInsets.all(16),
+            decoration: commonBoxDecoration(
+              color: Colors.amber.withValues(alpha: 0.05),
+              borderColor: Colors.amber.withValues(alpha: 0.3),
+              borderRadius: 10,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: commonText(
+                    text: "Pending Aproval",
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    textAlign: TextAlign.left,
+                    color: provider.isDark ? Colors.white : colorText,
+                  ),
+                ),
+                commonText(
+                  text: "02",
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  textAlign: TextAlign.left,
+                  color: provider.isDark ? Colors.white : colorText,
+                ),
+              ],
+            ),
+          ),
         ],
       );
     },
@@ -142,7 +169,6 @@ _commonDashboardView({
   String? rightText,
   void Function()? onTap,
 }) {
-
   return commonInkWell(
     onTap: onTap,
     child: Container(
@@ -227,7 +253,6 @@ _commonDashboardView({
 homeGraphView({required bool isSaleDetails}) {
   return Consumer2<ThemeProvider, OrdersProvider>(
     builder: (context, themeProvider, orderProvider, child) {
-
       final data = orderProvider.orderModelByDate?.orders ?? [];
       final chartData = data.map((order) {
         return SalesData(
@@ -351,15 +376,13 @@ homeGraphView({required bool isSaleDetails}) {
             Flexible(
               child: Consumer<ThemeProvider>(
                 builder: (context, themeProvider, child) {
-
                   return orderProvider.isFetching
                       ? SizedBox.shrink()
                       : chartData.isNotEmpty
                       ? SfCartesianChart(
-
                           plotAreaBorderWidth: 0,
                           primaryXAxis: CategoryAxis(
-                           /* axisLabelFormatter: (AxisLabelRenderDetails details) {
+                            /* axisLabelFormatter: (AxisLabelRenderDetails details) {
                               final label = details.text.replaceAll(RegExp(r'[^0-9]'), ''); // remove non-numeric
                               final allowed = ['1', '5', '10', '15', '20', '25', '30'];
                               if (allowed.contains(label)) {
@@ -419,10 +442,11 @@ homeGraphView({required bool isSaleDetails}) {
                           ),
                           series: <CartesianSeries<SalesData, String>>[
                             SplineAreaSeries<SalesData, String>(
-                              animationDuration: 1500, // in milliseconds (1.5 seconds)
-                              animationDelay: 300,     // optional delay before animation starts
-
-                          /*    gradient: LinearGradient(
+                              animationDuration:
+                                  1500, // in milliseconds (1.5 seconds)
+                              animationDelay:
+                                  300, // optional delay before animation starts
+                              /*    gradient: LinearGradient(
                                 colors: [Colors.orange.withValues(alpha: 0.4), Colors.orange],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
@@ -444,7 +468,7 @@ homeGraphView({required bool isSaleDetails}) {
                               ),*/
                               //width: 0.5,
                               // bar thickness (0.5 = 50% of available slot)
-                            //  spacing: 0.2,
+                              //  spacing: 0.2,
                               // gap between bars
                               markerSettings: const MarkerSettings(
                                 isVisible: true,
@@ -473,7 +497,7 @@ homeGraphView({required bool isSaleDetails}) {
                             ),
                           ],
                         )
-                      :commonErrorView(text: errorMsg);
+                      : commonErrorView(text: errorMsg);
                 },
               ),
             ),
