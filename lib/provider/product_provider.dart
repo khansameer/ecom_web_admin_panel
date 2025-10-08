@@ -518,10 +518,6 @@ class ProductProvider with ChangeNotifier {
         ),
       );
 
-      /*  await FirebaseFirestore.instance.collection("product").doc(uid).update({
-        "status": true,
-        "approved_date": DateTime.now(), // optional
-      });*/
       await updateProductStatus(uid: uid, title: "approved_date");
 
       final data = json.decode(response);

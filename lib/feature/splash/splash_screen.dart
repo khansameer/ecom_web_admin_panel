@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (kIsWeb) {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        RouteName.adminDashboardScreen,
+        RouteName.adminLoginPage,
             (Route<dynamic> route) => false,
       );
     }else

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../core/component/component.dart';
 import '../core/firebase/auth_service.dart';
@@ -56,7 +57,9 @@ class AdminDashboardProvider with ChangeNotifier {
   Future<void> fetchUsers() async {
     _setLoading(true);
     try {
-      final querySnapshot = await _firestore.collection("stores").get();
+      final querySnapshot = await _firestore
+          .collection(_authService.storesCollection)
+          .get();
       _allUsers = querySnapshot.docs.map((doc) {
         final data = doc.data();
         data["uid"] = doc.id;
@@ -88,9 +91,10 @@ class AdminDashboardProvider with ChangeNotifier {
   }
 
   Future<void> updateUser({required String docId, String? token}) async {
-    _setUpdating(true);
     try {
-      await FirebaseFirestore.instance.collection('stores').doc(docId).update({
+      _setUpdating(true);
+      notifyListeners();
+      await FirebaseFirestore.instance.collection(_authService.storesCollection).doc(docId).update({
         "name": tetFullName.text.trim(),
         "email": tetEmail.text.trim(),
         "mobile": tetPhone.text.trim(),
@@ -101,7 +105,8 @@ class AdminDashboardProvider with ChangeNotifier {
         "website_url": tetWebsiteUrl.text.trim(),
         "active_status": _status,
       });
-
+      _setUpdating(false);
+      notifyListeners();
       if (token != null && token.isNotEmpty) {
         final payload = buildNotificationPayload(
           token: token,
@@ -114,12 +119,14 @@ class AdminDashboardProvider with ChangeNotifier {
         await sendFCMNotification(bodyMap: payload);
       }
 
-      fetchUsers();
-      notifyListeners();
+
+      //fetchUsers();
       _setUpdating(false);
+      notifyListeners();
     } catch (e) {
       debugPrint("Error updating user: $e");
       _setUpdating(false);
+      notifyListeners();
     }
   }
 
@@ -324,5 +331,173 @@ class AdminDashboardProvider with ChangeNotifier {
     });
 
     notifyListeners();
+  }
+
+  List<Map<String, dynamic>> _storeCounts = [];
+
+  List<Map<String, dynamic>> get storeCounts => _storeCounts;
+
+  Future<void> getStoreUserCounts() async {
+    _setLoading(true);
+    notifyListeners();
+    try {
+      final querySnapshot = await _firestore
+          .collection(_authService.storesCollection)
+          .get();
+
+      // Temporary map to count users per store
+      final Map<String, int> countsMap = {};
+
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+        final storeName = data['store_name'] ?? '';
+        if (countsMap.containsKey(storeName)) {
+          countsMap[storeName] = countsMap[storeName]! + 1;
+        } else {
+          countsMap[storeName] = 1;
+        }
+      }
+
+      // Convert map to list of maps
+      _storeCounts = countsMap.entries.map((e) {
+        return {'store_name': e.key, 'count': e.value};
+      }).toList();
+
+      _setLoading(false);
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to fetch store counts: $e");
+    }
+  }
+
+  Future<void> getUsersByStoreName(String storeName) async {
+    try {
+      _setLoading(true);
+      notifyListeners();
+      final querySnapshot = await _firestore
+          .collection(_authService.storesCollection)
+          .where('store_name', isEqualTo: storeName)
+          .get();
+
+      //if (querySnapshot.docs.isEmpty) return [];
+
+      _allUsers = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id; // optional: add document ID
+        return data;
+      }).toList();
+
+      _setLoading(false);
+      notifyListeners();
+    } catch (e) {
+      throw Exception("Failed to fetch users for $storeName: $e");
+    }
+  }
+
+  List<Map<String, dynamic>> _allPendingRequest = [];
+
+  List<Map<String, dynamic>> get allPendingRequest => _allPendingRequest;
+
+  Future<void> getStoreCollectionData({
+    required String storeName,
+    required String collectionName, // e.g., 'contact_us'
+  }) async {
+    _setLoading(true);
+    notifyListeners();
+    try {
+      final querySnapshot = await _firestore
+          .collection(storeName)
+          .doc(collectionName) // if each store has a doc, adjust if needed
+          .collection(collectionName)
+          .get();
+
+      final dataList = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+
+      print('=====${dataList.length}');
+      if (collectionName == _authService.productCollection) {
+        _allPendingRequest = dataList;
+        notifyListeners();
+      }
+      if (collectionName == _authService.contactUsCollection) {
+        _contacts = dataList;
+        notifyListeners();
+      }
+      if (collectionName == _authService.orderFilterCollection) {
+        _allOrderFilterList = dataList;
+        notifyListeners();
+      }
+
+      _setLoading(false);
+      notifyListeners();
+      /* return dataList;*/
+    } catch (e) {
+      throw Exception("Failed to fetch $collectionName for $storeName: $e");
+    }
+  }
+
+  final List<Color> professionColors = [
+    Colors.red,
+    Colors.blue,
+    Colors.green,
+    Colors.orange,
+    Colors.purple,
+    Colors.teal,
+    Colors.yellow,
+    Colors.pink,
+    Colors.brown,
+    Colors.cyan,
+    Colors.indigo,
+    Colors.lime,
+    Colors.amber,
+    Colors.deepOrange,
+    Colors.lightBlue,
+    Colors.lightGreen,
+    Colors.deepPurple,
+    Colors.grey,
+    Colors.blueGrey,
+    Colors.redAccent,
+    Colors.purpleAccent,
+    Colors.orangeAccent,
+    Colors.greenAccent,
+    Colors.tealAccent,
+    Colors.yellowAccent,
+    Colors.pinkAccent,
+    Colors.cyanAccent,
+    Colors.indigoAccent,
+    Colors.limeAccent,
+    Colors.amberAccent,
+    Colors.deepOrangeAccent,
+    Colors.lightBlueAccent,
+    Colors.lightGreenAccent,
+    Colors.deepPurpleAccent,
+    Colors.grey.shade300,
+    Colors.grey.shade400,
+    Colors.grey.shade500,
+    Colors.blue.shade200,
+    Colors.red.shade200,
+    Colors.green.shade200,
+    Colors.orange.shade200,
+    Colors.purple.shade200,
+    Colors.teal.shade200,
+    Colors.yellow.shade200,
+    Colors.pink.shade200,
+    Colors.cyan.shade200,
+    Colors.indigo.shade200,
+    Colors.lime.shade200,
+    Colors.amber.shade200,
+    Colors.deepOrange.shade200,
+  ];
+  Map<String, Color> professionColorMap = {};
+
+  Color getProfessionColor(String profession, int index) {
+    if (!professionColorMap.containsKey(profession)) {
+      // Assign color based on index (wrap around if > 50)
+      professionColorMap[profession] = professionColors[index % professionColors.length];
+    }
+    return professionColorMap[profession]!;
   }
 }
