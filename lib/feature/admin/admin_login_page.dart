@@ -145,7 +145,7 @@ class AdminLoginPage extends StatelessWidget {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  AdminHomeSameer(),
+                                                  AdminHomePage(),
                                             ),
                                           );
                                         },
