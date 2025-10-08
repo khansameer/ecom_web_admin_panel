@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../core/component/component.dart';
+import '../core/firebase/auth_service.dart';
 import '../core/firebase/send_fcm_notification.dart';
 
 class AdminDashboardProvider with ChangeNotifier {
@@ -125,23 +126,16 @@ class AdminDashboardProvider with ChangeNotifier {
   List<Map<String, dynamic>> _contacts = [];
 
   List<Map<String, dynamic>> get contacts => _contacts;
+  final AuthService _authService = AuthService();
 
   Future<void> getAllContactList() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      final querySnapshot = await _firestore.collection("contact_us").get();
+      final users = await _authService.getAllContactList();
 
-      if (querySnapshot.docs.isEmpty) {
-        _contacts = [];
-      } else {
-        _contacts = querySnapshot.docs.map((doc) {
-          final data = doc.data();
-          data["uid"] = doc.id; // add UID
-          return data;
-        }).toList();
-      }
+      _contacts = users; // Already a List<Map<String, dynamic>>
     } catch (e) {
       debugPrint("❌ Failed to fetch users: $e");
       _contacts = [];
@@ -155,36 +149,13 @@ class AdminDashboardProvider with ChangeNotifier {
 
   int get contactCount => _contactCount;
 
-  /*  Future<void> getContactUsCount() async {
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      final aggregateQuery =
-      await _firestore.collection("contact_us").count().get();
-
-      _contactCount = aggregateQuery.count??0;
-    } catch (e) {
-      debugPrint("❌ Failed to fetch count: $e");
-      _contactCount = 0;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }*/
   Future<void> getUnseenContactCount() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Sirf unseen contacts count karo
-      final aggregateQuery = await _firestore
-          .collection("contact_us")
-          .where("isSeen", isEqualTo: false) // ✅ filter
-          .count()
-          .get();
-
-      _contactCount = aggregateQuery.count ?? 0;
+      var count = await _authService.getUnseenContactCount();
+      _contactCount = count ?? 0;
     } catch (e) {
       debugPrint("❌ Failed to fetch unseen count: $e");
       _contactCount = 0;
@@ -196,21 +167,8 @@ class AdminDashboardProvider with ChangeNotifier {
 
   Future<void> markAllAsSeen() async {
     try {
-      WriteBatch batch = _firestore.batch();
-
-      // Sare contacts lekar unpe batch update lagao
-      final querySnapshot = await _firestore.collection("contact_us").get();
-
-      for (var doc in querySnapshot.docs) {
-        batch.update(doc.reference, {"isSeen": true});
-      }
-
-      await batch.commit();
-
-      // Local list update bhi kar dete hain
-      for (var c in _contacts) {
-        c["isSeen"] = true;
-      }
+      await _authService.markAllAsSeen();
+      getUnseenContactCount();
       notifyListeners();
 
       debugPrint("✅ All contacts marked as seen");
@@ -226,25 +184,29 @@ class AdminDashboardProvider with ChangeNotifier {
   Future<void> getAllFilterOrderList() async {
     _setLoading(true);
     try {
-      final querySnapshot = await _firestore.collection("order_filter").get();
-      _allOrderFilterList = querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        data["uid"] = doc.id;
-        return data;
-      }).toList();
+      final users = await _authService.getAllFilterOrderList();
+
+      _allOrderFilterList = users;
+      notifyListeners();
 
       _setLoading(false);
     } catch (e) {
       debugPrint("Error fetching users: $e");
     }
     _setLoading(false);
+    notifyListeners();
   }
+
   Future<void> updateAllStatusesToFirebase() async {
+    final contactCollection = await _authService.getStoreSubCollection(
+      _authService.orderFilterCollection,
+    );
+
     _setLoading(true);
     try {
       final batch = _firestore.batch();
       for (var item in _allOrderFilterList) {
-        final docRef = _firestore.collection("order_filter").doc(item["uid"]);
+        final docRef = contactCollection.doc(item["uid"]);
         batch.update(docRef, {"status": item["status"]});
       }
       await batch.commit();
@@ -263,13 +225,16 @@ class AdminDashboardProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  /// 🆕 Add new filter
+
   Future<String?> addNewOrderFilter(String name, bool status) async {
     _setLoading(true);
     try {
+      final contactCollection = await _authService.getStoreSubCollection(
+        _authService.orderFilterCollection,
+      );
+
       // 🔹 1. Check if name already exists (case-insensitive)
-      final existing = await _firestore
-          .collection("order_filter")
+      final existing = await contactCollection
           .where("title", isEqualTo: name.trim())
           .get();
 
@@ -279,7 +244,7 @@ class AdminDashboardProvider with ChangeNotifier {
       }
 
       // 🔹 2. Add new filter
-      final docRef = await _firestore.collection("order_filter").add({
+      final docRef = await contactCollection.add({
         "title": name.trim(),
         "status": status,
       });
@@ -304,7 +269,10 @@ class AdminDashboardProvider with ChangeNotifier {
   /// 🗑️ Delete particular filter
   Future<void> deleteOrderFilter(String uid) async {
     try {
-      await _firestore.collection("order_filter").doc(uid).delete();
+      final contactCollection = await _authService.getStoreSubCollection(
+        _authService.orderFilterCollection,
+      );
+      await contactCollection.doc(uid).delete();
 
       // Remove from local list immediately
       _allOrderFilterList.removeWhere((item) => item["uid"] == uid);
@@ -315,7 +283,9 @@ class AdminDashboardProvider with ChangeNotifier {
       debugPrint("❌ Error deleting filter: $e");
     }
   }
+
   List<Map<String, dynamic>> activeFilters = [];
+
   Future<void> addFilter({
     required String title,
     String? status,
@@ -328,10 +298,13 @@ class AdminDashboardProvider with ChangeNotifier {
 
     // Prevent duplicate
     final exists = activeFilters.any(
-            (filter) => filter['title'].toString().toLowerCase() == lowerTitle);
+      (filter) => filter['title'].toString().toLowerCase() == lowerTitle,
+    );
     if (exists) return;
-
-    final docRef = await _firestore.collection('order_filters').add({
+    final contactCollection = await _authService.getStoreSubCollection(
+      _authService.orderFilterCollection,
+    );
+    final docRef = await contactCollection.add({
       "title": title,
       "status": status,
       "financialStatus": financialStatus,
@@ -350,21 +323,6 @@ class AdminDashboardProvider with ChangeNotifier {
       "createdMaxDate": createdMaxDate,
     });
 
-    notifyListeners();
-  }
-
-  Future<void> fetchFilters() async {
-    setStatus(true);
-    notifyListeners();
-
-    final snapshot = await _firestore.collection('order_filters').get();
-    activeFilters = snapshot.docs.map((doc) {
-      final data = doc.data();
-      data['id'] = doc.id;
-      return data;
-    }).toList();
-
-    setStatus(false);
     notifyListeners();
   }
 }

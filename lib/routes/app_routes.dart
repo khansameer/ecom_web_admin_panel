@@ -20,4 +20,5 @@ class RouteName {
   static const String inactiveAccountScreen = "/InactiveAccountScreen";
   static const String contactUsScreen = "/ContactUsScreen";
   static const String pendingRequestScreen = "/PendingRequestScreen";
+  static const String adminDashboardScreen = "/AdminDashboardScreen";
 }

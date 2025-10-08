@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/models/product_model.dart' hide Variants, Images;
 
 import '../core/component/component.dart';
+import '../core/firebase/auth_service.dart';
 import '../main.dart';
 import '../models/product_details_model.dart';
 import '../service/api_config.dart';
@@ -408,7 +408,7 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AuthService _authService = AuthService();
 
   Future<String?> addProductInFirebase({
     required String name,
@@ -417,8 +417,11 @@ class ProductProvider with ChangeNotifier {
     required int productID,
   }) async {
     try {
+      final productCollection = await _authService.getStoreSubCollection(
+        _authService.productCollection,
+      );
       // 🔹 2. Add new filter
-      final docRef = await _firestore.collection("product").add({
+      final docRef = await productCollection.add({
         "name": name,
         "image": image,
         "product_id": productID,
@@ -445,8 +448,6 @@ class ProductProvider with ChangeNotifier {
     _isImageUpdating = true;
     notifyListeners();
 
-    final urlString =
-        "${await ApiConfig.baseUrl}/products/$productId/images.json";
     final bytes = await File(imagePath).readAsBytes();
 
     final base64Image = base64Encode(bytes);
@@ -474,33 +475,16 @@ class ProductProvider with ChangeNotifier {
         SnackBar(content: Text(result), backgroundColor: Colors.red),
       );
     }
-    /*
-      final response = await callPostMethodWithToken(
-        body: {
-          "image": {"attachment": base64Image},
-        },
-        url: urlString,
-      );*/
-    /*if (globalStatusCode == 200) {
-        final data = json.decode(response);
-        final imageJson = data["image"];
-        if (imageJson != null) {
-          final newImage = Images.fromJson(imageJson);
-          productImages.add(newImage);
-          _isImageUpdating = false;
-          notifyListeners(); // ✅ UI refresh
-        }
-      } else {
-        _isImageUpdating = false;
-        notifyListeners();
-      }*/
   }
 
   Future<void> updateProductStatus({
     required String uid,
     required String title,
   }) async {
-    await FirebaseFirestore.instance.collection("product").doc(uid).update({
+    final productCollection = await _authService.getStoreSubCollection(
+      _authService.productCollection,
+    );
+    await productCollection.doc(uid).update({
       "status": true,
       //"approved_date": DateTime.now(), // optional
       title: DateTime.now(), // optional
@@ -538,8 +522,7 @@ class ProductProvider with ChangeNotifier {
         "status": true,
         "approved_date": DateTime.now(), // optional
       });*/
-     await updateProductStatus(uid: uid, title: "approved_date");
-
+      await updateProductStatus(uid: uid, title: "approved_date");
 
       final data = json.decode(response);
       final imageJson = data["image"];
@@ -636,8 +619,10 @@ class ProductProvider with ChangeNotifier {
   Future<void> getAllPendingRequest() async {
     _setLoading(true);
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('product')
+      final productCollection = await _authService.getStoreSubCollection(
+        _authService.productCollection,
+      );
+      final snapshot = await productCollection
           .where('status', isEqualTo: false) // ← only false status
           .orderBy('created_date', descending: true)
           .get();
@@ -669,8 +654,10 @@ class ProductProvider with ChangeNotifier {
   Future<void> getCountPendingRequest() async {
     _setLoading(true);
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('product')
+      final productCollection = await _authService.getStoreSubCollection(
+        _authService.productCollection,
+      );
+      final snapshot = await productCollection
           .where('status', isEqualTo: false) // only false status
           .orderBy('created_date', descending: true)
           .get();

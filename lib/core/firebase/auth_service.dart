@@ -14,7 +14,34 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  final contactUsCollection="contact_us";
+  final orderFilterCollection="order_filter";
+  final productCollection="product";
+  final storesCollection="stores";
+  late final String storeName; // 🔹 dynamic storeName accessible in all methods
 
+  //--------------------------------------------------------------------------------------------common Collection Store Wise ------------------------------------------------------------
+  Future<CollectionReference<Map<String, dynamic>>> getStoreSubCollection(
+    String subCollection,
+  ) async {
+    final config = await AppConfigCache.loadConfig();
+    final storeName = config['storeName'] ?? '';
+
+    if (storeName.isEmpty) {
+      throw Exception("Store name not found in config");
+    }
+
+    final collectionRef = _firestore
+        .collection(storeName) // e.g. "merlettenyc-demo"
+        .doc(
+          subCollection,
+        ) // optional — can also use a fixed document name like "root"
+        .collection(subCollection); // e.g. "contact_us", "stores", "orders"
+
+    return collectionRef;
+  }
+
+  //---------------------------------------------------------------------------------------------For store ------------------------------------------------------------
   Future<Map<String, dynamic>> signupUser({
     required String email,
     required String storeName,
@@ -22,24 +49,21 @@ class AuthService {
     required String mobile,
     required String logoUrl,
     required String name,
-     String? countryCode,
+    String? countryCode,
     File? photo,
   }) async {
     try {
-      // Check if email or mobile already exists
       final existing = await _firestore
-          .collection("stores")
+          .collection(storesCollection)
           .where("email", isEqualTo: email)
           .get();
       if (existing.docs.isNotEmpty) {
         throw "Email already exists";
       }
 
-      // Auto-generate document ID
-      final docRef = _firestore.collection("stores").doc();
+      final docRef = _firestore.collection(storesCollection).doc();
       String uid = docRef.id;
 
-      // Upload photo if exists
       String photoUrl = "";
       if (photo != null) {
         final ref = _storage.ref().child("store_photos").child("$uid.jpg");
@@ -61,7 +85,7 @@ class AuthService {
         "version_code": '',
         "logo_url": '',
         "photo": '',
-        "country_code": countryCode??"+1",
+        "country_code": countryCode ?? "+1",
         "fcm_token": fcmToken ?? "",
         "active_status": false,
         "created_at": FieldValue.serverTimestamp(),
@@ -84,7 +108,7 @@ class AuthService {
     try {
       // Check Firestore for a document matching BOTH email and mobile
       final query = await _firestore
-          .collection("stores")
+          .collection(storesCollection)
           .where("email", isEqualTo: email)
           .where("mobile", isEqualTo: mobile)
           .where("country_code", isEqualTo: countryCode)
@@ -117,7 +141,7 @@ class AuthService {
     try {
       // 1️⃣ Check by email
       final query = await _firestore
-          .collection("stores")
+          .collection(storesCollection)
           .where("email", isEqualTo: emailOrMobile)
           .get();
 
@@ -126,7 +150,7 @@ class AuthService {
       // 2️⃣ If email not found, check by mobile
       if (docs.isEmpty) {
         final mobileQuery = await _firestore
-            .collection("stores")
+            .collection(storesCollection)
             .where("mobile", isEqualTo: emailOrMobile)
             .get();
 
@@ -157,7 +181,7 @@ class AuthService {
   /// Delete user from Firestore (and optionally Firebase Auth)
   Future<void> deleteUser({required String uid}) async {
     try {
-      await _firestore.collection("stores").doc(uid).delete();
+      await _firestore.collection(storesCollection).doc(uid).delete();
       print("User deleted successfully ✅");
     } catch (e) {
       print("Error deleting user: $e");
@@ -209,7 +233,7 @@ class AuthService {
   }) async {
     try {
       // 1️⃣ Get the user document from Firestore
-      final docRef = _firestore.collection("stores").doc(userID);
+      final docRef = _firestore.collection(storesCollection).doc(userID);
       final docSnapshot = await docRef.get();
 
       if (!docSnapshot.exists) {
@@ -254,32 +278,30 @@ class AuthService {
       throw Exception("OTP verification failed: $e");
     }
   }
+
   Future<void> updateFcm({
     required String userID,
     required String fcmToken,
   }) async {
     try {
       // 1️⃣ Get the user document from Firestore
-      final docRef = _firestore.collection("stores").doc(userID);
+      final docRef = _firestore.collection(storesCollection).doc(userID);
       final docSnapshot = await docRef.get();
 
       if (!docSnapshot.exists) {
         throw "User not found";
       }
 
-      await docRef.update({
-        "fcm_token": fcmToken,
-
-      });
-
+      await docRef.update({"fcm_token": fcmToken});
     } catch (e) {
       throw Exception("OTP verification failed: $e");
     }
   }
+
   /// 🔹 Get all users from Firestore
   Future<List<Map<String, dynamic>>> getAllUsers() async {
     try {
-      final querySnapshot = await _firestore.collection("stores").get();
+      final querySnapshot = await _firestore.collection(storesCollection).get();
 
       if (querySnapshot.docs.isEmpty) {
         return []; // No users found
@@ -298,41 +320,115 @@ class AuthService {
     }
   }
 
-
   Future<void> insetContactUSForm({
     required String email,
 
     required String message,
     required String mobile,
     required String name,
-
   }) async {
     try {
+      final contactCollection = await getStoreSubCollection(contactUsCollection);
 
-      final docRef = _firestore.collection("contact_us").doc();
-      String uid = docRef.id;
-
-
-      // Get FCM token
-      String? fcmToken = await FirebaseMessaging.instance.getToken();
-
-      // Save user data
+      final docRef = contactCollection.doc();
+      final uid = docRef.id;
+      final fcmToken = await FirebaseMessaging.instance.getToken();
       Map<String, dynamic> userData = {
-
         "uid": uid,
         "email": email,
         "mobile": mobile,
         "name": name,
         "message": message,
-        "isSeen": false  , // 👈 ye flag add karna hoga
+        "isSeen": false, // 👈 ye flag add karna hoga
         "fcm_token": fcmToken ?? "",
         "created_at": FieldValue.serverTimestamp(),
       };
+
       await docRef.set(userData);
-    /*  userData["uid"] = uid; // return uid
-      return userData;*/
+      print("✅ Contact form saved successfully!");
     } catch (e) {
       throw Exception("Signup failed: $e");
+    }
+  }
+
+  //============================================contactUs==============================================================//
+  Future<List<Map<String, dynamic>>> getAllContactList() async {
+    try {
+      final contactCollection = await getStoreSubCollection(contactUsCollection);
+
+      final storeSnapshot = await contactCollection.get();
+
+      final allContacts = storeSnapshot.docs.map((doc) {
+        final data = doc.data();
+        data["uid"] = doc.id; // add document ID
+        return data;
+      }).toList();
+
+      print('Fetched ${allContacts.length} contact(s) from all stores');
+      return allContacts; // ✅ return the list
+    } catch (e) {
+      throw Exception("Failed to fetch contacts: $e");
+    }
+  }
+
+  Future<int?> getUnseenContactCount() async {
+    final contactCollection = await getStoreSubCollection(contactUsCollection);
+
+    try {
+      // 🔹 Create aggregate query
+      final aggregateQuery = contactCollection
+          .where("isSeen", isEqualTo: false)
+          .count();
+
+      // 🔹 Await the result
+      final snapshot = await aggregateQuery.get();
+
+      final count = snapshot.count; // ✅ now it's defined
+      print('Unseen contacts: $count');
+      return count;
+    } catch (e) {
+      debugPrint("❌ Failed to fetch unseen count: $e");
+      //_contactCount = 0;
+    }
+    return null;
+  }
+
+  Future<void> markAllAsSeen() async {
+    try {
+      WriteBatch batch = _firestore.batch();
+      final contactCollection = await getStoreSubCollection(contactUsCollection);
+      final querySnapshot = await contactCollection.get();
+      for (var doc in querySnapshot.docs) {
+        batch.update(doc.reference, {"isSeen": true});
+      }
+
+      await batch.commit();
+      debugPrint("✅ All contacts marked as seen");
+    } catch (e) {
+      debugPrint("❌ Failed to mark all as seen: $e");
+    }
+  }
+
+  //============================================End==============================================================//
+
+  //============================================Order Filter==============================================================//
+
+  Future<List<Map<String, dynamic>>> getAllFilterOrderList() async {
+    try {
+      final contactCollection = await getStoreSubCollection(orderFilterCollection);
+
+      final storeSnapshot = await contactCollection.get();
+
+      final allContacts = storeSnapshot.docs.map((doc) {
+        final data = doc.data();
+        data["uid"] = doc.id; // add document ID
+        return data;
+      }).toList();
+
+      print('Fetched ${allContacts.length} contact(s) from all stores');
+      return allContacts; // ✅ return the list
+    } catch (e) {
+      throw Exception("Failed to fetch contacts: $e");
     }
   }
 

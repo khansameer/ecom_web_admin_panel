@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/admin/admin_dashboad.dart';
 import 'package:neeknots/contact_us/contact_us_screen.dart';
 import 'package:neeknots/feature/auth/otp_verification_screen.dart';
 import 'package:neeknots/feature/auth/signup/signup_screen.dart';
@@ -92,6 +93,8 @@ class RouteGenerate {
         return MaterialPageRoute(builder: (_) => const ContactUsScreen());
       case RouteName.pendingRequestScreen:
         return MaterialPageRoute(builder: (_) => const PendingRequestScreen());
+      case RouteName.adminDashboardScreen:
+        return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
       default:
         return MaterialPageRoute(builder: (_) => const SplashScreen());
     }

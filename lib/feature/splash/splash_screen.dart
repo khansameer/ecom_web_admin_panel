@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
@@ -32,12 +34,20 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> init() async {
     String? storedEmailOrMobile = await AppConfigCache.getStoredEmailOrMobile();
 
+    if (kIsWeb) {
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        RouteName.adminDashboardScreen,
+            (Route<dynamic> route) => false,
+      );
+    }else
+      {
+        if (storedEmailOrMobile?.isNotEmpty == true) {
+          checkStatus();
+        } else {
+          redirectToIntro();
+        }
+      }
 
-    if (storedEmailOrMobile?.isNotEmpty == true) {
-      checkStatus();
-    } else {
-      redirectToIntro();
-    }
 
 
   }
