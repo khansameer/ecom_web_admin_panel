@@ -48,91 +48,100 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
       body: commonAppBackground(
         child: Consumer<ProductProvider>(
           builder: (context, provider, child) {
-
-            if(provider.isLoading){
+            if (provider.isLoading) {
               return SizedBox.shrink();
             }
 
             return Stack(
               children: [
-                provider.allPendingRequest.isNotEmpty? ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: provider.allPendingRequest.length,
-                  itemBuilder: (context, index) {
-                    var data = provider.allPendingRequest[index];
-                    Uint8List? imageBytes;
-                    if (data['image'] != null && data['image'].isNotEmpty) {
-                      imageBytes = base64Decode(data['image']);
-                    }
-                    return Container(
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      decoration: commonBoxDecoration(borderColor: colorBorder),
-                      padding: const EdgeInsets.all(0.0),
-                      margin: const EdgeInsets.all(8.0),
-                      child: Column(
-                        spacing: 5,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          imageBytes != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadiusGeometry.only(
-                                    topLeft: Radius.circular(8),
-                                    topRight: Radius.circular(8),
-                                  ),
-                                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                                  child: Image.memory(
-                                    imageBytes,
-                                    width: size.width,
-                                    height: 200,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              : SizedBox.shrink(),
-
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 8.0,
-                              right: 8,
-                              top: 5,
-                              bottom: 10,
+                provider.allPendingRequest.isNotEmpty
+                    ? ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: provider.allPendingRequest.length,
+                        itemBuilder: (context, index) {
+                          var data = provider.allPendingRequest[index];
+                          Uint8List? imageBytes;
+                          if (data['image'] != null &&
+                              data['image'].isNotEmpty) {
+                            imageBytes = base64Decode(data['image']);
+                          }
+                          return Container(
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            decoration: commonBoxDecoration(
+                              borderColor: colorBorder,
                             ),
+                            padding: const EdgeInsets.all(0.0),
+                            margin: const EdgeInsets.all(8.0),
                             child: Column(
+                              spacing: 5,
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                commonText(
-                                  text: data['name'],
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                imageBytes != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadiusGeometry.only(
+                                          topLeft: Radius.circular(8),
+                                          topRight: Radius.circular(8),
+                                        ),
+                                        clipBehavior:
+                                            Clip.antiAliasWithSaveLayer,
+                                        child: Image.memory(
+                                          imageBytes,
+                                          width: size.width,
+                                          height: 200,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : SizedBox.shrink(),
 
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                                  children: [
-                                    Expanded(
-                                      child: commonText(
-                                        text: formatTimestamp(data['created_date']),
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: 12,
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                    left: 8.0,
+                                    right: 8,
+                                    top: 5,
+                                    bottom: 10,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    spacing: 8,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      commonText(
+                                        text: data['name'],
+                                        fontWeight: FontWeight.w500,
                                       ),
-                                    ),
-                                    Expanded(
-                                      child: Row(
-                                        spacing: 10,
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
 
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Expanded(
+                                            child: commonText(
+                                              text: formatTimestamp(
+                                                data['created_date'],
+                                              ),
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12,
+                                            ),
+                                          ),
                                           _commonButton(
                                             color: Colors.green,
                                             onTap: () {
                                               showCommonDialog(
                                                 confirmText: "Upload",
-                                                title: "Approved",
-                                                onPressed: (){
+                                                title: "Approve",
+                                                onPressed: () {
                                                   Navigator.pop(context);
 
-                                                  provider.uploadProductImageViaAdmin(imagePath: data['image'], productId: data['product_id'],uid:  data['uid']);
+                                                  provider
+                                                      .uploadProductImageViaAdmin(
+                                                        imagePath:
+                                                            data['image'],
+                                                        productId:
+                                                            data['product_id'],
+                                                        uid: data['uid'],
+                                                      );
                                                 },
                                                 context: context,
                                                 content:
@@ -140,46 +149,50 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                                               );
                                             },
                                           ),
+                                          SizedBox(width: 8),
                                           _commonButton(
                                             color: Colors.red,
-                                            onTap: (){
+                                            onTap: () {
                                               showCommonDialog(
                                                 confirmText: "Yes",
-                                                title: "Disapprove",
-                                                onPressed: (){
+                                                title: "Decline",
+                                                onPressed: () {
                                                   Navigator.pop(context);
-                                                  provider.updateProductStatus(uid:  data['uid'], title: "disapproved_date");
+                                                  provider.updateProductStatus(
+                                                    uid: data['uid'],
+                                                    title: "disapproved_date",
+                                                  );
                                                   //provider.uploadProductImageViaAdmin(imagePath: data['image'], productId: data['product_id'],uid:  data['uid']);
                                                 },
                                                 context: context,
                                                 content:
-                                                "Are you sure you want to disapprove this image?",
+                                                    "Are you sure you want to disapprove this image?",
                                               );
                                             },
                                             text: "Disapprove",
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
 
-                          /* Row(
+                                /* Row(
                             children: [
                               Expanded(child: commonText(text: "Product Name")),
                               commonText(text: "Product Name"),
                             ],
                           ),*/
-                        ],
-                      ),
-                    );
-                  },
-                ):commonErrorView(),
+                              ],
+                            ),
+                          );
+                        },
+                      )
+                    : commonErrorView(),
 
-                provider.isLoading || provider.isImageUpdating ?showLoaderList():SizedBox.shrink()
+                provider.isLoading || provider.isImageUpdating
+                    ? showLoaderList()
+                    : SizedBox.shrink(),
               ],
             );
           },
@@ -199,9 +212,10 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
         decoration: commonBoxDecoration(
           borderColor: color,
           color: color.withValues(alpha: 0.05),
+          borderRadius: 4,
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
           child: Center(
             child: commonText(
               color: color,

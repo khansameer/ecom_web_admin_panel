@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:neeknots/admin/admin_dashboad.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/feature/admin/admin_login_page.dart';
 import 'package:neeknots/main.dart';
 import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
@@ -72,9 +74,9 @@ class _SplashScreenState extends State<SplashScreen> {
         _logoUrl = userData['logo_url'];
       });
 
-      if (userData.isNotEmpty == true && userData['active_status']==true) {
+      if (userData.isNotEmpty == true && userData['active_status'] == true) {
         await AppConfigCache.saveUser(
-          uid:userData['uid'],
+          uid: userData['uid'],
           name: userData['name'] ?? '',
           email: userData['email'] ?? '',
           photo: userData['logo_url'] ?? '',
@@ -89,17 +91,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
         navigatorKey.currentState?.pushNamedAndRemoveUntil(
           RouteName.dashboardScreen,
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
-      }else
-        {
-          Timer(const Duration(seconds: 3), () {
-            navigatorKey.currentState?.pushNamedAndRemoveUntil(
-              RouteName.inactiveAccountScreen,
-                  (Route<dynamic> route) => false,
-            );
-          });
-        }
+      } else {
+        Timer(const Duration(seconds: 3), () {
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            RouteName.inactiveAccountScreen,
+            (Route<dynamic> route) => false,
+          );
+        });
+      }
 
 
     /*  Timer(const Duration(seconds: 3), () {
@@ -109,24 +110,19 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       });*/
     } catch (e) {
-
-      String errorMessage = e
-          .toString()
-          .split(": ")
-          .last;
+      String errorMessage = e.toString().split(": ").last;
       if (e.toString() == "User not found") {
         navigatorKey.currentState?.pushNamedAndRemoveUntil(
           RouteName.inactiveAccountScreen,
           (Route<dynamic> route) => false,
         );
       }
-       if(errorMessage=="Account inactive"){
+      if (errorMessage == "Account inactive") {
         navigatorKey.currentState?.pushNamedAndRemoveUntil(
           RouteName.inactiveAccountScreen,
-              (Route<dynamic> route) => false,
+          (Route<dynamic> route) => false,
         );
-      }
-      else {
+      } else {
         navigatorKey.currentState?.pushNamedAndRemoveUntil(
           RouteName.loginScreen,
           (Route<dynamic> route) => false,
@@ -156,7 +152,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 decoration: BoxDecoration(),
                 errorWidget: Center(
                   child: commonAssetImage(
-
                     icAppLogo,
                     width: size.width * 0.7,
 
