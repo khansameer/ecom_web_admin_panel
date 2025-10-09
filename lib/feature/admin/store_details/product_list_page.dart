@@ -109,7 +109,7 @@ class _ProductListPageState extends State<ProductListPage> {
                                 children: [
                                   commonText(
                                     text: data['name'],
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w600,
                                   ),
 
                                   Row(

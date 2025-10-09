@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:neeknots/main.dart';
 
 import '../core/component/component.dart';
 import '../core/firebase/auth_service.dart';
 import '../core/firebase/send_fcm_notification.dart';
+import '../feature/admin/admin_home_page.dart';
 
 class AdminDashboardProvider with ChangeNotifier {
   final tetFullName = TextEditingController();
@@ -94,17 +95,20 @@ class AdminDashboardProvider with ChangeNotifier {
     try {
       _setUpdating(true);
       notifyListeners();
-      await FirebaseFirestore.instance.collection(_authService.storesCollection).doc(docId).update({
-        "name": tetFullName.text.trim(),
-        "email": tetEmail.text.trim(),
-        "mobile": tetPhone.text.trim(),
-        "store_name": tetStoreName.text.trim(),
-        "accessToken": tetAccessToken.text.trim(),
-        "version_code": tetVersionCode.text.trim(),
-        "logo_url": tetAppLogo.text.trim(),
-        "website_url": tetWebsiteUrl.text.trim(),
-        "active_status": _status,
-      });
+      await FirebaseFirestore.instance
+          .collection(_authService.storesCollection)
+          .doc(docId)
+          .update({
+            "name": tetFullName.text.trim(),
+            "email": tetEmail.text.trim(),
+            "mobile": tetPhone.text.trim(),
+            "store_name": tetStoreName.text.trim(),
+            "accessToken": tetAccessToken.text.trim(),
+            "version_code": tetVersionCode.text.trim(),
+            "logo_url": tetAppLogo.text.trim(),
+            "website_url": tetWebsiteUrl.text.trim(),
+            "active_status": _status,
+          });
       _setUpdating(false);
       notifyListeners();
       if (token != null && token.isNotEmpty) {
@@ -118,7 +122,6 @@ class AdminDashboardProvider with ChangeNotifier {
         );
         await sendFCMNotification(bodyMap: payload);
       }
-
 
       //fetchUsers();
       _setUpdating(false);
@@ -204,16 +207,20 @@ class AdminDashboardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateAllStatusesToFirebase() async {
-    final contactCollection = await _authService.getStoreSubCollection(
+  Future<void> updateAllStatusesToFirebase({required String storeName}) async {
+    /* final contactCollection = await _authService.getStoreSubCollection(
       _authService.orderFilterCollection,
-    );
+    );*/
 
+    final contactCollection = _firestore
+        .collection(storeName)
+        .doc(_authService.orderFilterCollection)
+        .collection(_authService.orderFilterCollection);
     _setLoading(true);
     try {
       final batch = _firestore.batch();
       for (var item in _allOrderFilterList) {
-        final docRef = contactCollection.doc(item["uid"]);
+        final docRef = contactCollection.doc(item["id"]);
         batch.update(docRef, {"status": item["status"]});
       }
       await batch.commit();
@@ -225,6 +232,7 @@ class AdminDashboardProvider with ChangeNotifier {
   }
 
   /// 🟩 Update local checkbox state only (not Firebase yet)
+  /*
   void toggleStatus(String uid, bool value) {
     final index = _allOrderFilterList.indexWhere((item) => item["uid"] == uid);
     if (index != -1) {
@@ -232,13 +240,33 @@ class AdminDashboardProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+*/
 
-  Future<String?> addNewOrderFilter(String name, bool status) async {
+  void toggleStatus(String uid, bool value) {
+    final index = _allOrderFilterList.indexWhere((item) => item["id"] == uid);
+    if (index != -1) {
+      // Create a new map instead of mutating the old one
+      final updatedItem = {..._allOrderFilterList[index], "status": value};
+      _allOrderFilterList[index] = updatedItem;
+      notifyListeners();
+    }
+  }
+
+  Future<String?> addNewOrderFilter({
+    required String name,
+    required bool status,
+    required String storeName,
+  }) async {
     _setLoading(true);
     try {
-      final contactCollection = await _authService.getStoreSubCollection(
+      /*final contactCollection = await _authService.getStoreSubCollection(
         _authService.orderFilterCollection,
       );
+*/
+      final contactCollection = _firestore
+          .collection(storeName)
+          .doc(_authService.orderFilterCollection)
+          .collection(_authService.orderFilterCollection);
 
       // 🔹 1. Check if name already exists (case-insensitive)
       final existing = await contactCollection
@@ -273,21 +301,43 @@ class AdminDashboardProvider with ChangeNotifier {
     }
   }
 
-  /// 🗑️ Delete particular filter
-  Future<void> deleteOrderFilter(String uid) async {
+  Future<void> deleteOrderFilter({
+    required String storeName,
+    required String uid,
+  }) async {
     try {
-      final contactCollection = await _authService.getStoreSubCollection(
-        _authService.orderFilterCollection,
-      );
-      await contactCollection.doc(uid).delete();
+      // Get the collection reference
+      final collectionRef = _firestore
+          .collection(storeName)
+          .doc(_authService.orderFilterCollection)
+          .collection(_authService.orderFilterCollection);
+
+      // Check if the document exists
+      final docSnapshot = await collectionRef.doc(uid).get();
+      if (!docSnapshot.exists) {
+        debugPrint('❌ Document with uid $uid does not exist!');
+        ScaffoldMessenger.of(
+          navigatorKey.currentContext!,
+        ).showSnackBar(SnackBar(content: Text('Document does not exist!')));
+        return;
+      }
+
+      // Delete from Firestore
+      await collectionRef.doc(uid).delete();
 
       // Remove from local list immediately
-      _allOrderFilterList.removeWhere((item) => item["uid"] == uid);
+      _allOrderFilterList.removeWhere((item) => item["id"] == uid);
       notifyListeners();
 
       debugPrint("✅ Filter deleted: $uid");
+      ScaffoldMessenger.of(
+        navigatorKey.currentContext!,
+      ).showSnackBar(SnackBar(content: Text('Deleted successfully')));
     } catch (e) {
       debugPrint("❌ Error deleting filter: $e");
+      ScaffoldMessenger.of(
+        navigatorKey.currentContext!,
+      ).showSnackBar(SnackBar(content: Text('Error deleting: $e')));
     }
   }
 
@@ -496,8 +546,134 @@ class AdminDashboardProvider with ChangeNotifier {
   Color getProfessionColor(String profession, int index) {
     if (!professionColorMap.containsKey(profession)) {
       // Assign color based on index (wrap around if > 50)
-      professionColorMap[profession] = professionColors[index % professionColors.length];
+      professionColorMap[profession] =
+          professionColors[index % professionColors.length];
     }
     return professionColorMap[profession]!;
+  }
+
+  int _selectedIndex = 0;
+  String? _selectedSection;
+  List<AdminUserModel> _users = [
+    AdminUserModel(
+      name: "Girish Chauhan",
+      email: "girish@redefinesolution.com",
+      phone: "9558697986",
+      isActive: true,
+    ),
+    AdminUserModel(
+      name: "Sameer Khan",
+      email: "sammerkhan@example.com",
+      phone: "9558697987",
+      isActive: false,
+    ),
+    AdminUserModel(
+      name: "Jane Smith",
+      email: "jane@example.com",
+      phone: "9558697988",
+      isActive: true,
+    ),
+  ];
+  final List<Map<String, dynamic>> dashboardItems = [
+    {"title": "Users", "icon": Icons.people},
+    {"title": "Orders", "icon": Icons.shopping_cart},
+    {"title": "Products", "icon": Icons.inventory},
+    {"title": "Contacts", "icon": Icons.contact_mail},
+    {"title": "Filter", "icon": Icons.filter_alt},
+  ];
+
+  // Getters
+  int get selectedIndex => _selectedIndex;
+
+  String? get selectedSection => _selectedSection;
+
+  List<AdminUserModel> get users => _users;
+
+  // Methods
+  void setSelectedStore(int index) {
+    _selectedIndex = index;
+    _selectedSection = null;
+    notifyListeners();
+  }
+
+  void setSelectedSection(String? section) {
+    _selectedSection = section;
+    notifyListeners();
+  }
+
+  void toggleUserStatus(int index, bool value) {
+    _users[index].isActive = value;
+    notifyListeners();
+  }
+
+  int usersCount = 0;
+  int ordersCount = 0;
+  int productsCount = 0;
+  int contactsCount = 0;
+
+  Future<void> fetchStoreCounts({required String storeName}) async {
+    _setLoading(true);
+    notifyListeners();
+
+    try {
+      // Product count
+
+      final productSnapshot = await _firestore
+          .collection(storeName)
+          .doc(
+            _authService.productCollection,
+          ) // if each store has a doc, adjust if needed
+          .collection(_authService.productCollection)
+          .get();
+      productsCount = productSnapshot.docs.length;
+
+      final contactSnapshot = await _firestore
+          .collection(storeName)
+          .doc(_authService.contactUsCollection) // a document
+          .collection(_authService.contactUsCollection)
+          .get();
+
+      // Contact Us count
+      contactsCount = contactSnapshot.docs.length;
+
+      final orderSnapshot = await _firestore
+          .collection(storeName)
+          .doc(_authService.orderFilterCollection) // a document
+          .collection(_authService.orderFilterCollection)
+          .get();
+      ordersCount = orderSnapshot.docs.length;
+
+      final usersSnapshot = await _firestore
+          .collection(_authService.storesCollection)
+          .where('store_name', isEqualTo: storeName)
+          .get();
+      usersCount = usersSnapshot.docs.length;
+      _setLoading(false);
+      notifyListeners();
+    } catch (e) {
+    /*  showCommonDialog(
+        title: "title$contactsCount ${e}",
+        context: navigatorKey.currentContext!,
+      );*/
+      _setLoading(false);
+      notifyListeners();
+      throw Exception("Failed to fetch counts for $storeName: $e");
+    }
+  }
+
+  // Helper to get count by title
+  int getCountForTitle(String title) {
+    switch (title) {
+      case "Users":
+        return usersCount;
+      case "Orders":
+        return ordersCount;
+      case "Products":
+        return productsCount;
+      case "Contacts":
+        return contactsCount;
+      default:
+        return 0;
+    }
   }
 }

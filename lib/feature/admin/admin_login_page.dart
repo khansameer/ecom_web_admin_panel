@@ -140,6 +140,7 @@ class AdminLoginPage extends StatelessWidget {
                                       const SizedBox(height: 24),
                                       commonButton(
                                         text: "Continue",
+                                        width: size.width,
                                         onPressed: () {
                                           Navigator.push(
                                             context,

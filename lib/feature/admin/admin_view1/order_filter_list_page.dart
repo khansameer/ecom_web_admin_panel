@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/core/component/context_extension.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/color/color_utils.dart';
+import '../../../core/component/CommonSwitch.dart';
 import '../../../core/component/component.dart';
 import '../../../provider/admin_dashboard_provider.dart';
 
@@ -48,7 +50,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
     showCommonDialog(
       title: "Add New Filter",
       context: context,
-      confirmText: "Save",
+      confirmText: "Add",
       onPressed: () async {
         final name = nameController.text.trim();
         if (name.isEmpty) {
@@ -59,7 +61,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
         }
 
         final provider = context.read<AdminDashboardProvider>();
-        final message = await provider.addNewOrderFilter(name, status);
+        final message = await provider.addNewOrderFilter(name: name,status: status,storeName: widget.storeName);
 
         if (message != null) {
           ScaffoldMessenger.of(
@@ -89,7 +91,11 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     commonText(text: "Status:"),
-                    Checkbox(
+                    CommonSwitch(
+                      activeThumbColor: Colors.green,      // when ON
+                      inactiveThumbColor: Colors.grey, // thumb when OFF
+                      inactiveTrackColor: Colors.grey.withValues(alpha: 0.4), // track when OFF
+
                       value: status,
                       onChanged: (value) {
                         setState(() => status = value ?? false);
@@ -124,6 +130,28 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                 children: [
 
                   SizedBox(height: 10),
+
+                  Row(
+
+
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+
+                      commonButton(
+                        height: 45,
+                        colorBorder: colorBorder,
+                        color: Colors.white,
+                        textColor: colorLogo,
+                        padding: EdgeInsets.symmetric(horizontal: 30),
+                        fontSize: 12,
+
+                          text: "Add New Order Filter", onPressed: (){
+                        _showAddFilterDialog(context);
+                      }),
+                    ],
+                  ),
+                  SizedBox(height: 10),
                   Expanded(
                     child: commonListViewBuilder(
                       shrinkWrap: true,
@@ -137,67 +165,61 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                           ),
                           margin: EdgeInsets.all(5),
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 0.0),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical:15),
                             child: commonListTile(
+
                               contentPadding: EdgeInsetsGeometry.zero,
-                              title: item["title"] ?? "No Name",
-                              trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  showCommonDialog(
-                                    confirmText: "Yes",
-                                    cancelText: "No",
-                                    title: "Delete",
-                                    onPressed: () async {
-                                      Navigator.pop(context);
-                                      await context.read<AdminDashboardProvider>().deleteOrderFilter(item["uid"]);
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text("Deleted \"${item["title"]}\"")),
+                              title: item["title"].toString().toCapitalize(),
+                              trailing: Row(
+
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  CommonSwitch(
+                                    value: item["status"] ?? false,
+                                    activeThumbColor: Colors.green,
+                                    inactiveThumbColor: Colors.grey,
+                                    inactiveTrackColor: Colors.grey.withOpacity(0.4),
+                                    onChanged: (value) {
+                                      provider.toggleStatus(
+                                        item["id"],
+                                        value,
                                       );
                                     },
-                                    context: context,
-                                    content:
-                                    "Are you sure you want to delete ${item["title"]}",
-                                  );
-                                  /*   _confirmDelete(
-                                          context, item["uid"], item["name"] ?? "Unknown")*/
-                                },
-                              ),
-                              leadingIcon: Checkbox(
-                                value: item["status"] ?? false,
-                                onChanged: (value) {
-                                  provider.toggleStatus(
-                                    item["uid"],
-                                    value ?? false,
-                                  );
-                                },
-                              ),
-                              /*  activeColor: colorLogo,
-
-
-                                  checkColor: Colors.white,
-                                  contentPadding: EdgeInsetsGeometry.zero,
-                                  title: commonText(
-                                    text: item["title"] ?? "No Name",
                                   ),
-                                  value: item["status"] ?? false,
-                                  onChanged: (bool? newValue) {
-                                    if (newValue != null) {
-                                      */
-                              /*  provider.updateOrderFilterStatus(
-                                        item["uid"],
-                                        newValue,
-                                      );*/
-                              /*
-                                      provider.toggleStatus(
-                                        item["uid"],
-                                        newValue ?? false,
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      size: 30,
+                                      color: Colors.grey,
+                                    ),
+                                    onPressed: () {
+                                      showCommonDialog(
+                                        confirmText: "Yes",
+                                        cancelText: "No",
+                                        title: "Delete",
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          await context.read<AdminDashboardProvider>().deleteOrderFilter(uid: item["id"],storeName: widget.storeName);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text("Deleted \"${item["title"]}\"")),
+                                          );
+                                        },
+                                        context: context,
+                                        content:
+                                        "Are you sure you want to delete ${item["title"]}",
                                       );
-                                    }
-                                  },*/
+
+                                    },
+                                  ),
+                                ],
+                              ),
+
+
+
                             ),
                           ),
                         );
@@ -205,15 +227,18 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                     ),
                   ),
                   Padding(
+
                     padding: const EdgeInsets.only(
                       bottom: 30.0,
+                      top: 30.0,
                       left: 16,
                       right: 16,
                     ),
                     child: commonButton(
+                      width: MediaQuery.sizeOf(context).width*0.2,
                       text: "Update",
                       onPressed: () async {
-                        await provider.updateAllStatusesToFirebase();
+                        await provider.updateAllStatusesToFirebase(storeName: widget.storeName);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: commonText(

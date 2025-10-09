@@ -9,7 +9,7 @@ import '../../../core/color/color_utils.dart';
 import '../../../core/component/CustomTabBar.dart';
 import '../../../provider/AdminMenuProvider.dart';
 import 'contact_list_page.dart';
-import 'order_filter_list_page.dart';
+import '../admin_view1/order_filter_list_page.dart';
 
 class StoreDetailsScreen extends StatefulWidget {
   const StoreDetailsScreen({super.key, required this.storeName});

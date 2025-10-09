@@ -50,128 +50,135 @@ class _StoreCollectionTabState extends State<ContactListPage> {
   Widget build(BuildContext context) {
     return Consumer2<AdminDashboardProvider, ThemeProvider>(
       builder: (context, provider, themeProvider, child) {
-        return commonAppBackground(
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: commonListViewBuilder(
-                  items: provider.contacts,
-                  physics: BouncingScrollPhysics(),
-                  padding: EdgeInsets.all(0),
-                  itemBuilder: (context, index, data) {
-                    var data = provider.contacts[index];
-                    return Container(
-                      decoration: commonBoxDecoration(borderColor: colorBorder),
-                      margin: EdgeInsets.all(8),
-                      padding: EdgeInsets.all(12),
-                      child: Column(
-                        spacing: 4,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            spacing: 10,
-                            children: [
-                              commonText(
-                                text: 'Name:',
-                                fontWeight: FontWeight.w600,
-                              ),
-                              commonText(
-                                text: data['name'],
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            spacing: 10,
-                            children: [
-                              commonText(
-                                text: 'Mobile:',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                              ),
-                              commonText(
-                                text: data['mobile'],
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                              ),
-                            ],
-                          ),
-                          Row(
-                            spacing: 10,
-                            children: [
-                              commonText(
-                                text: 'Date:',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                              ),
-                              commonText(
-                                text: formatTimestamp(data['created_at']),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12,
-                              ),
-                            ],
-                          ),
-
-                          commonText(
-                            text: data['message'],
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            fontSize: 12,
-                            color: colorTextDesc1,
-                          ),
-
-                          Divider(thickness: 0.5),
-
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                              vertical: 0,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-
-                              spacing: 10,
-                              children: [
-                                _commonView(color: colorSale, title: "Call",onTap: (){
-                                  UrlLauncherService.launchPhoneCall( data['mobile']);
-                                }),
-                                _commonView(
-                                    color: colorUser,
-                                    icon: Icons.email_outlined,
-                                    title: "Email",
-                                    onTap: (){
-                                      UrlLauncherService.launchEmail(  data['email'], body: "Test",subject: "Test");
-                                    }
-                                ),
-                                _commonView(
-                                  color: colorProduct,
-                                  icon: Icons.info_outline,
-                                  title: "Info",
-                                  onTap: () {
-                                    showCommonDialog(
-                                      title: "Info",
-                                      showCancel: false,
-                                      confirmText: "Close",
-                                      context: context,
-                                      content: data['message'],
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+        return Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 2.3, // adjust roughly for initial layout
                 ),
+                itemCount: provider.contacts.length,
+                physics: BouncingScrollPhysics(),
+
+
+                itemBuilder: (context, index,) {
+                  var data = provider.contacts[index];
+                  return Container(
+                    decoration: commonBoxDecoration(borderColor: colorBorder),
+                    margin: EdgeInsets.all(8),
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      spacing: 4,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+
+                      children: [
+                        Row(
+                          spacing: 10,
+                          children: [
+                            commonText(
+                              text: 'Name:',
+                              fontWeight: FontWeight.w600,
+                            ),
+                            commonText(
+                              text: data['name'].toString().toCapitalize(),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 10,
+                          children: [
+                            commonText(
+                              text: 'Mobile:',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                            commonText(
+                              text: data['mobile'],
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 10,
+                          children: [
+                            commonText(
+                              text: 'Date:',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                            commonText(
+                              text: formatTimestamp(data['created_at']),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                            ),
+                          ],
+                        ),
+
+                        commonText(
+                          text: data['message'],
+                          maxLines: 5,
+                          overflow: TextOverflow.ellipsis,
+                          fontSize: 12,
+                          color: colorTextDesc1,
+                        ),
+
+                        Divider(thickness: 0.5),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+
+                            spacing: 10,
+                            children: [
+                              _commonView(color: colorSale, title: "Call",onTap: (){
+                                UrlLauncherService.launchPhoneCall( data['mobile']);
+                              }),
+                              _commonView(
+                                  color: colorUser,
+                                  icon: Icons.email_outlined,
+                                  title: "Email",
+                                  onTap: (){
+                                    UrlLauncherService.launchEmail(  data['email'], body: "Test",subject: "Test");
+                                  }
+                              ),
+                              _commonView(
+                                color: colorProduct,
+                                icon: Icons.info_outline,
+                                title: "Info",
+                                onTap: () {
+                                  showCommonDialog(
+                                    title: "Info",
+                                    showCancel: false,
+                                    confirmText: "Close",
+                                    context: context,
+                                    content: data['message'],
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
-              provider.isLoading?showLoaderList():SizedBox.shrink()
-            ],
-          ),
+            ),
+            provider.isLoading?showLoaderList():SizedBox.shrink()
+          ],
         );
       },
     );
