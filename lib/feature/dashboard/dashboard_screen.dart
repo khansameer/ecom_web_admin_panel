@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
@@ -59,15 +61,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       String? storedEmailOrMobile = await AppConfigCache.getName();
       String? id = await AppConfigCache.getID();
-
-      String? fcmToken = await FirebaseMessaging.instance.getToken();
       final provider = Provider.of<DashboardProvider>(
         navigatorKey.currentContext!,
         listen: false,
       );
       provider.setName(storedEmailOrMobile);
-      final authService = AuthService();
-      await authService.updateFcm(userID: id ?? '', fcmToken: fcmToken ?? '');
+
+      //09-Oct-2025 Girish Chauhan
+      //Step 1 request notification permission first
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        print('User granted permission');
+        // 🔹 Step 2: For iOS, wait for APNs token before calling getToken()
+        String? apnsToken;
+        if (Platform.isIOS) {
+          apnsToken = await messaging.getAPNSToken();
+          int retries = 0;
+          while (apnsToken == null && retries < 5) {
+            await Future.delayed(const Duration(seconds: 2));
+            apnsToken = await messaging.getAPNSToken();
+            retries++;
+          }
+          debugPrint('📱 APNs Token: $apnsToken');
+        }
+        // 🔹 Step 3: Now safely get FCM token
+        String? fcmToken = await messaging.getToken();
+
+        debugPrint('🔥 FCM Token: $fcmToken');
+        // 🔹 Step 4: Save token to backend
+        final authService = AuthService();
+        await authService.updateFcm(userID: id ?? '', fcmToken: fcmToken ?? '');
+      } else {
+        debugPrint('❌ Notification permission denied');
+      }
     });
   }
 
@@ -113,16 +144,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   SizedBox(width: 10),
                   notificationWidget(
-                    onTap: (){
+                    onTap: () {
                       navigatorKey.currentState?.pushNamed(
                         RouteName.otpVerificationScreen,
-                        arguments: {
-                          'uid':"sa"
-
-                        },
+                        arguments: {'uid': "sa"},
                       );
-                    }
-                  ), SizedBox(width: 16)
+                    },
+                  ),
+                  SizedBox(width: 16),
                 ],
                 title: provider.appbarTitle ?? "Home",
                 context: context,

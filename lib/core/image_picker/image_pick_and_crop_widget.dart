@@ -49,7 +49,7 @@ class CommonImagePicker {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(Icons.camera),
+                Icon(Icons.camera_alt_outlined),
                 commonText(fontWeight: FontWeight.w600, text: 'Camera'),
               ],
             ),
@@ -61,7 +61,7 @@ class CommonImagePicker {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(Icons.photo_library),
+                Icon(Icons.photo_library_outlined),
                 commonText(fontWeight: FontWeight.w600, text: 'Gallery'),
               ],
             ),

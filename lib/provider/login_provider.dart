@@ -131,6 +131,10 @@ class LoginProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     try {
+      print("email:$email");
+      print("mobile:$mobile");
+      print("code:$countryCode");
+
       _userData = await _authService.loginUser(
         email: email,
         mobile: mobile,
@@ -150,8 +154,6 @@ class LoginProvider with ChangeNotifier {
         });
 
         //String otp = generateOtp();
-
-
       }
 
       return _userData ?? {}; // 🔹 return the user data
@@ -254,31 +256,34 @@ class LoginProvider with ChangeNotifier {
         name: name,
       );
 
+      showCommonDialog(
+        title: "Success",
+        context: navigatorKey.currentContext!,
+        content: "Your message has been sent successfully.",
 
-      showCommonDialog(title: "Success", context: navigatorKey.currentContext!,content: "Your message has been sent successfully.",
-
-      showCancel: false,
-        onPressed: (){
+        showCancel: false,
+        onPressed: () {
           resetAll();
           navigatorKey.currentState?.pop(); // ✅ Close dialog
-          navigatorKey.currentState?.pop(); // ✅ Navigate back to previous screen
+          navigatorKey.currentState
+              ?.pop(); // ✅ Navigate back to previous screen
         },
-        confirmText: "Close"
+        confirmText: "Close",
       );
 
       notifyListeners();
 
-
-
       _setLoading(false);
     } catch (e) {
-      showCommonDialog(title: "Error", context: navigatorKey.currentContext!,content: "Failed to send message.",
+      showCommonDialog(
+        title: "Error",
+        context: navigatorKey.currentContext!,
+        content: "Failed to send message.",
 
-          showCancel: false,
+        showCancel: false,
 
-          confirmText: "Close"
+        confirmText: "Close",
       );
-
     } finally {
       _setLoading(false);
     }
@@ -329,17 +334,22 @@ class LoginProvider with ChangeNotifier {
     }
   }
 
-  Future<void> resendOtp({required String userId, required String email}) async {
+  Future<void> resendOtp({
+    required String userId,
+    required String email,
+  }) async {
     if (!_canResend) return;
     _setLoading(true);
     notifyListeners();
 
     try {
       // 🔹 Your actual resend API call here
-      await Future.delayed(const Duration(seconds: 2)); // simulate network delay
+      await Future.delayed(
+        const Duration(seconds: 2),
+      ); // simulate network delay
       if (_userData?.isNotEmpty == true) {
         String otp = generateOtp();
-         await sendOtpEmail(email: email, userID: userId, otp: otp);
+        await sendOtpEmail(email: email, userID: userId, otp: otp);
         final FirebaseFirestore _firestore = FirebaseFirestore.instance;
         print('OTP sent successfully!');
         await _firestore.collection("stores").doc(userId).update({
@@ -347,9 +357,6 @@ class LoginProvider with ChangeNotifier {
           "otp_created_at": FieldValue.serverTimestamp(),
           "active_status": false, // Ensure user is inactive until OTP verified
         });
-
-
-
       }
       _startNewCycle();
     } catch (e) {
@@ -359,8 +366,8 @@ class LoginProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
   void _startNewCycle() {
     startResendTimer();
   }
-
 }

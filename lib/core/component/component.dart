@@ -322,7 +322,7 @@ Widget commonTextField({
         maxLines: maxLines,
         readOnly: readOnly,
         onTap: onTap,
-
+        autocorrect: false,
         onChanged: onChanged,
         inputFormatters: inputFormatters,
         style:
@@ -333,7 +333,6 @@ Widget commonTextField({
             ),
         decoration: InputDecoration(
           hintText: hintText,
-
           hintStyle:
               hintStyle ??
               commonTextStyle(

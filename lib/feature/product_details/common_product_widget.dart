@@ -27,7 +27,7 @@ commonBannerView({
   return images.isNotEmpty
       ? Column(
           children: [
-            SizedBox(height: 8,),
+            SizedBox(height: 8),
             CarouselSlider(
               options: CarouselOptions(
                 height: 360.0,
@@ -35,12 +35,15 @@ commonBannerView({
                 autoPlay: false,
                 aspectRatio: 16 / 9,
                 autoPlayCurve: Curves.fastOutSlowIn,
-                viewportFraction: images.length == 1 ? 1.0 : 0.7, // ek image ho to full width
+                viewportFraction: images.length == 1
+                    ? 1.0
+                    : 0.7, // ek image ho to full width
                 //enableInfiniteScroll: true,
-                enableInfiniteScroll: images.length > 1, // ek hi image ho to scroll band
+                enableInfiniteScroll:
+                    images.length > 1, // ek hi image ho to scroll band
                 autoPlayAnimationDuration: const Duration(milliseconds: 800),
-               // viewportFraction: 0.7,
-               // viewportFraction: 0.7,
+                // viewportFraction: 0.7,
+                // viewportFraction: 0.7,
                 onPageChanged: (index, reason) {
                   provider.setCurrentIndex(index); // update providercdvs
                 },
@@ -134,6 +137,7 @@ commonBannerView({
                 );
               }).toList(),
             ),
+            SizedBox(height: 16),
             _addImageButton(themeProvider: themeProvider, onTap: onTap),
           ],
         )
@@ -143,7 +147,7 @@ commonBannerView({
             SizedBox(
               width: double.infinity,
               height: 360,
-              child: commonAssetImage(icErrorImage,fit: BoxFit.cover),
+              child: commonAssetImage(icErrorImage, fit: BoxFit.cover),
             ),
             SizedBox(height: 16),
             _addImageButton(themeProvider: themeProvider, onTap: onTap),
@@ -194,7 +198,7 @@ commonFormView({required ProductProvider provider}) {
       commonTextField(
         controller: provider.tetName,
         enabled: true,
-        hintText: "Alligator Soft Toy",
+        hintText: "Product name",
       ),
       SizedBox(height: 15),
       _commonHeading(text: "Product Description"),
