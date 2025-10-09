@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:neeknots/core/component/component.dart';
 
 class PhoneNumberField extends StatelessWidget {
@@ -21,7 +22,7 @@ class PhoneNumberField extends StatelessWidget {
     this.hintText = "Mobile No",
     this.validator,
     this.fillColor,
-    this.filled=false,
+    this.filled = false,
     this.prefixIcon,
     this.isCountryCodeEditable = false,
     this.isPhoneEditable = false,
@@ -29,19 +30,20 @@ class PhoneNumberField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Row(
       children: [
         SizedBox(
           width: 70,
           child: commonTextField(
             fillColor: fillColor,
-            filled:filled??false ,
+            filled: filled ?? false,
 
             controller: countryCodeController,
             keyboardType: TextInputType.phone,
-            enabled: isCountryCodeEditable, hintText: '',
-
+            maxLines: 1,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            enabled: isCountryCodeEditable,
+            hintText: '',
           ),
         ),
         const SizedBox(width: 8),
@@ -51,12 +53,12 @@ class PhoneNumberField extends StatelessWidget {
             maxLines: 1,
             fillColor: fillColor,
             enabled: isCountryCodeEditable,
-            filled:filled??false ,
+            filled: filled ?? false,
             keyboardType: TextInputType.phone,
             validator: validator,
             hintText: hintText,
             prefixIcon: prefixIcon,
-
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           ),
         ),
       ],

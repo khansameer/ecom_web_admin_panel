@@ -42,7 +42,7 @@ class _SettingPageState extends State<SettingPage> {
 
     /*print(
       '==userData===${profile.userData.toString()}',
-    ); */// Now it will have value
+    ); */ // Now it will have value
   }
 
   @override
@@ -164,44 +164,7 @@ class _SettingPageState extends State<SettingPage> {
                   provider: themeProvider,
                   text: "Delete Account",
                 ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      commonInkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  AdminDashboardScreen(),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          alignment: Alignment.topRight,
-                          padding: EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 20,
-                          ),
 
-                          decoration: commonBoxDecoration(
-                            borderColor: colorLogo,
-                            color: colorLogo.withValues(
-                              alpha: 0.1,
-                            ),
-                          ),
-                          child: commonText(
-                            text: "Admin View",
-                            color: colorLogo,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

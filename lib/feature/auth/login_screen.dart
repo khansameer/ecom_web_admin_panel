@@ -46,13 +46,12 @@ class LoginScreen extends StatelessWidget {
                                   alignment: AlignmentGeometry.center,
                                   child: commonAssetImage(
                                     icAppLogo,
-
                                     height: 72,
 
                                     width: size.width * 0.7,
                                   ),
                                 ),
-                                SizedBox(height: size.height * 0.08),
+                                SizedBox(height: size.height * 0.07),
                                 commonHeadingText(
                                   text: "Welcome back 👋 ",
                                   fontSize: 22,
@@ -65,7 +64,6 @@ class LoginScreen extends StatelessWidget {
                                 commonDescriptionText(
                                   text: "Please auth to continue  ",
                                 ),
-
                                 const SizedBox(height: 20),
                                 commonLoginView(
                                   provider: provider,
@@ -82,12 +80,14 @@ class LoginScreen extends StatelessWidget {
 
                                   onPressed: () async {
                                     hideKeyboard(context);
-                                    /* String fullNumber =
-                                        provider.tetCountryCodeController.text +
-                                        provider.tetPhone.text;
-*/
+
                                     if (formLoginKey.currentState?.validate() ==
                                         true) {
+                                      if (provider.tetPhone.text
+                                          .trim()
+                                          .isEmpty) {
+                                        return;
+                                      }
                                       try {
                                         final userData = await provider.login(
                                           countryCode: provider
@@ -103,13 +103,12 @@ class LoginScreen extends StatelessWidget {
                                         );
                                       } catch (e) {
                                         print('======Z$e');
-                                        // 🔹 Extract readable error
+
                                         String errorMessage = e
                                             .toString()
                                             .split(": ")
                                             .last;
 
-                                        // 🔹 Show popup
                                         showCommonDialog(
                                           title: "Error",
                                           context: context,
@@ -120,46 +119,6 @@ class LoginScreen extends StatelessWidget {
                                       }
                                     }
                                   },
-                                ),
-
-                                SizedBox(height: 50),
-                                Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      commonInkWell(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  AdminDashboardScreen(),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          alignment: Alignment.topRight,
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 8,
-                                            horizontal: 20,
-                                          ),
-
-                                          decoration: commonBoxDecoration(
-                                            borderColor: colorLogo,
-                                            color: colorLogo.withValues(
-                                              alpha: 0.1,
-                                            ),
-                                          ),
-                                          child: commonText(
-                                            text: "Admin View",
-                                            color: colorLogo,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
                               ],
                             ),

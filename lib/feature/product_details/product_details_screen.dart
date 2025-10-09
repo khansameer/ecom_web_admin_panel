@@ -40,7 +40,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             .getProductById(productId: widget.productId)
             .then((value) {
               if (globalStatusCode == 200) {
-                //print("data = ${provider.product?.title ?? ''}");
                 provider.productImages =
                     provider.productDetailsModel?.images ?? [];
                 provider.fetchImagesForProduct(
@@ -52,11 +51,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 provider.tetDesc.text = removeHtmlTags(
                   provider.productDetailsModel?.bodyHtml ?? '',
                 );
-
                 final stockInfo = _stockCalculation(provider);
-
                 provider.tetQty.text = stockInfo["inventory"] ?? '';
-
                 provider.tetPrice.text =
                     provider.productDetailsModel?.variants?.first.price ?? "0";
 
@@ -113,8 +109,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         if (path != null) {
                           provider.uploadProductImage(
                             imagePath: path,
-                            productName: provider.productDetailsModel?.title ??
-                                '',
+                            productName:
+                                provider.productDetailsModel?.title ?? '',
                             productId: int.parse(widget.productId),
                           );
                         }

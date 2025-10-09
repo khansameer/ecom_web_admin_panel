@@ -72,6 +72,14 @@ class _AdminHomePageState extends State<AdminHomePage> {
     ),
   ];
 
+  // 🧩 Helper: responsive columns
+  int _getCrossAxisCount(double width) {
+    if (width >= 1400) return 4; // Desktop / large MacBook
+    if (width >= 1000) return 3; // Small desktop / large tablet
+    if (width >= 600) return 2; // Tablet / iPad
+    return 1; // Mobile
+  }
+
   // 🔹 Detail page for selected section (e.g., Orders, Products)
   Widget _buildSectionContent(String section) {
     switch (section) {
@@ -219,96 +227,110 @@ class _AdminHomePageState extends State<AdminHomePage> {
   }
 
   Widget _buildProductListPage() {
-    return GridView.builder(
-      itemCount: 8,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemBuilder: (context, index) => Container(
-        margin: const EdgeInsets.all(8),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // 🧠 Determine grid columns dynamically
+        int crossAxisCount = _getCrossAxisCount(constraints.maxWidth);
+        return GridView.builder(
+          itemCount: 8,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+          ),
+          itemBuilder: (context, index) => Container(
+            margin: const EdgeInsets.all(8),
 
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 4,
-              offset: Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 🖼 Product Image
-            Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
                 ),
-                child: commonNetworkImage(
-                  "https://picsum.photos/400",
-                  fit: BoxFit.cover,
-                ),
-              ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Product ${(index + 1)} Name",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // 🖼 Product Image
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(12),
+                    ),
+                    child: commonNetworkImage(
+                      "https://picsum.photos/400",
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Requested: ${_formatDate(DateTime.now().subtract(Duration(days: index * 2)))}",
-                    style: const TextStyle(fontSize: 12, color: Colors.black54),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    spacing: 16,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: commonButton(
-                          radius: 8,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 4,
-                            horizontal: 6,
-                          ),
-                          color: Colors.white.withValues(alpha: 0.3),
-                          colorBorder: Colors.green.withValues(alpha: 0.7),
-                          textColor: Colors.green,
-                          text: "Approve",
-                          onPressed: () {},
+                      Text(
+                        "Product ${(index + 1)} Name",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
                         ),
                       ),
-                      Expanded(
-                        child: commonButton(
-                          radius: 8,
-                          color: Colors.white.withValues(alpha: 0.3),
-                          colorBorder: Colors.red.withValues(alpha: 0.7),
-                          text: "DisApprove",
-                          textColor: Colors.red,
-                          onPressed: () {},
+                      const SizedBox(height: 4),
+                      Text(
+                        "Requested: ${_formatDate(DateTime.now().subtract(Duration(days: index * 2)))}",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
                         ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        spacing: 16,
+                        children: [
+                          Expanded(
+                            child: commonButton(
+                              height: 44,
+                              radius: 8,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 4,
+                                horizontal: 6,
+                              ),
+                              color: Colors.white.withValues(alpha: 0.3),
+                              colorBorder: Colors.green.withValues(alpha: 0.7),
+                              textColor: Colors.green,
+                              text: "Approve",
+
+                              fontSize: 12,
+                              onPressed: () {},
+                            ),
+                          ),
+                          Expanded(
+                            child: commonButton(
+                              height: 44,
+                              radius: 8,
+                              color: Colors.white.withValues(alpha: 0.3),
+                              colorBorder: Colors.red.withValues(alpha: 0.7),
+                              text: "DisApprove",
+                              fontSize: 12,
+                              textColor: Colors.red,
+                              onPressed: () {},
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
