@@ -47,151 +47,164 @@ class _State extends State<CommonAdminWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        commonTextField(
-          keyboardType: TextInputType.name,
-          prefixIcon: commonPrefixIcon(image: icUser),
-          controller: widget.provider.tetFullName,
-          hintText: "Full Name",
-        ),
-        const SizedBox(height: 20),
-
-        commonTextField(
-          keyboardType: TextInputType.emailAddress,
-          validator: validateEmail,
-          readOnly: true,
-          fillColor: Colors.grey.withValues(alpha: 0.1),
-          filled: true,
-
-          prefixIcon: commonPrefixIcon(image: icEmail),
-          controller: widget.provider.tetEmail,
-          hintText: "Email Address",
-        ),
-
-        const SizedBox(height: 20),
-        PhoneNumberField(
-          fillColor: Colors.grey.withValues(alpha: 0.1),
-          filled: true,
-          phoneController:  widget.provider.tetPhone,
-          countryCodeController: widget.provider.tetCountryCodeController,
-          prefixIcon: commonPrefixIcon(image: icPhone),
-          validator: (value) {
-            if (value == null || value.length != 10) {
-              return "Enter 10 digit phone number";
-            }
-            return null;
-          },
-          isCountryCodeEditable: false, // fixed +1
-          isPhoneEditable: false, // fixed +1
-        ),
-        /*commonTextField(
-          hintText: "Phone No",
-          controller: widget.provider.tetPhone,
-          readOnly: true,
-          maxLines: 1,
-          fillColor: Colors.grey.withValues(alpha: 0.1),
-          filled: true,
-
-          keyboardType: TextInputType.phone,
-          validator: validateTenDigitPhone,
-          prefixIcon: commonPrefixIcon(image: icPhone),
-        ),*/
-        const SizedBox(height: 20),
-        commonTextField(
-          hintText: "Store Name",
-          controller: widget.provider.tetStoreName,
-
-          maxLines: 1,
-
-          keyboardType: TextInputType.text,
-
-          prefixIcon: commonPrefixIcon(image: icStore),
-        ),
-        const SizedBox(height: 20),
-        commonTextField(
-          hintText: "Access Token",
-          controller: widget.provider.tetAccessToken,
-
-          maxLines: 1,
-
-          keyboardType: TextInputType.text,
-
-          prefixIcon: commonPrefixIcon(image: icAccessToken),
-        ),
-
-        const SizedBox(height: 20),
-        commonTextField(
-          hintText: "App Version Code",
-          controller: widget.provider.tetVersionCode,
-
-          maxLines: 1,
-
-          keyboardType: TextInputType.text,
-
-          prefixIcon: commonPrefixIcon(image: icVersionCode),
-        ),
-        const SizedBox(height: 20),
-        commonTextField(
-          hintText: "App Logo Url",
-          controller: widget.provider.tetAppLogo,
-
-          maxLines: 1,
-
-          keyboardType: TextInputType.text,
-
-          prefixIcon: commonPrefixIcon(image: icAppLogoImage),
-        ),
-        const SizedBox(height: 20),
-        commonTextField(
-          hintText: "Website Url",
-          controller: widget.provider.tetWebsiteUrl,
-
-          maxLines: 1,
-
-          keyboardType: TextInputType.url,
-
-          prefixIcon: commonPrefixIcon(image: icNetwork),
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Consumer<AdminDashboardProvider>(
+      builder: (context,provider,child) {
+        return Stack(
           children: [
-            commonText(text: "Account Status:"),
-            Consumer<AdminDashboardProvider>(
-              builder: (context, provider, child) {
-                return Switch(
-                  inactiveThumbColor: colorLogo,
-                  activeTrackColor: colorLogo,
-                  value: provider.status,
-                  onChanged: (val) {
-                    provider.setStatus(val);
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                commonTextField(
+                  keyboardType: TextInputType.name,
+                  prefixIcon: commonPrefixIcon(image: icUser),
+                  controller: widget.provider.tetFullName,
+                  hintText: "Full Name",
+                ),
+                const SizedBox(height: 20),
+
+                commonTextField(
+                  keyboardType: TextInputType.emailAddress,
+                  validator: validateEmail,
+                  readOnly: true,
+                  fillColor: Colors.grey.withValues(alpha: 0.1),
+                  filled: true,
+
+                  prefixIcon: commonPrefixIcon(image: icEmail),
+                  controller: widget.provider.tetEmail,
+                  hintText: "Email Address",
+                ),
+
+                const SizedBox(height: 20),
+                PhoneNumberField(
+                  fillColor: Colors.grey.withValues(alpha: 0.1),
+                  filled: true,
+                  phoneController:  widget.provider.tetPhone,
+                  countryCodeController: widget.provider.tetCountryCodeController,
+                  prefixIcon: commonPrefixIcon(image: icPhone),
+                  validator: (value) {
+                    if (value == null || value.length != 10) {
+                      return "Enter 10 digit phone number";
+                    }
+                    return null;
                   },
-                );
-              },
+                  isCountryCodeEditable: false, // fixed +1
+                  isPhoneEditable: false, // fixed +1
+                ),
+                /*commonTextField(
+                  hintText: "Phone No",
+                  controller: widget.provider.tetPhone,
+                  readOnly: true,
+                  maxLines: 1,
+                  fillColor: Colors.grey.withValues(alpha: 0.1),
+                  filled: true,
+
+                  keyboardType: TextInputType.phone,
+                  validator: validateTenDigitPhone,
+                  prefixIcon: commonPrefixIcon(image: icPhone),
+                ),*/
+                const SizedBox(height: 20),
+                commonTextField(
+                  hintText: "Store Name",
+                  controller: widget.provider.tetStoreName,
+
+                  maxLines: 1,
+
+                  keyboardType: TextInputType.text,
+
+                  prefixIcon: commonPrefixIcon(image: icStore),
+                ),
+                const SizedBox(height: 20),
+                commonTextField(
+                  hintText: "Access Token",
+                  controller: widget.provider.tetAccessToken,
+
+                  maxLines: 1,
+
+                  keyboardType: TextInputType.text,
+
+                  prefixIcon: commonPrefixIcon(image: icAccessToken),
+                ),
+
+                const SizedBox(height: 20),
+                commonTextField(
+                  hintText: "App Version Code",
+                  controller: widget.provider.tetVersionCode,
+
+                  maxLines: 1,
+
+                  keyboardType: TextInputType.text,
+
+                  prefixIcon: commonPrefixIcon(image: icVersionCode),
+                ),
+                const SizedBox(height: 20),
+                commonTextField(
+                  hintText: "App Logo Url",
+                  controller: widget.provider.tetAppLogo,
+
+                  maxLines: 1,
+
+                  keyboardType: TextInputType.text,
+
+                  prefixIcon: commonPrefixIcon(image: icAppLogoImage),
+                ),
+                const SizedBox(height: 20),
+                commonTextField(
+                  hintText: "Website Url",
+                  controller: widget.provider.tetWebsiteUrl,
+
+                  maxLines: 1,
+
+                  keyboardType: TextInputType.url,
+
+                  prefixIcon: commonPrefixIcon(image: icNetwork),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    commonText(text: "Account Status:"),
+                    Consumer<AdminDashboardProvider>(
+                      builder: (context, provider, child) {
+                        return Switch(
+                          inactiveThumbColor: colorLogo,
+                          activeTrackColor: colorLogo,
+                          value: provider.status,
+                          onChanged: (val) {
+                            provider.setStatus(val);
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+                commonButton(
+                  text: "Update",
+                  onPressed: () async {
+
+
+                    Navigator.pop(context);
+
+
+                    await widget.provider.updateUser(
+                      docId: widget.data["id"],
+                      token: widget.data['fcm_token'],
+                    );
+
+
+
+                    //widget.provider.updateUser( widget.data["uid"]);
+                  },
+                ),
+
+                const SizedBox(height: 20),
+              ],
             ),
+            provider.isUpdated?showLoaderList():SizedBox.shrink()
           ],
-        ),
-
-        const SizedBox(height: 20),
-        commonButton(
-          text: "Update",
-          onPressed: () async {
-            print('======${widget.data["uid"]}');
-            print('======${widget.data["fcm_token"]}');
-            await widget.provider.updateUser(
-              docId: widget.data["uid"],
-              token: widget.data['fcm_token'],
-            );
-
-            Navigator.pop(context);
-            //widget.provider.updateUser( widget.data["uid"]);
-          },
-        ),
-
-        const SizedBox(height: 20),
-      ],
+        );
+      }
     );
   }
 }

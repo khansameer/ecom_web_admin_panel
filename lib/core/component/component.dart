@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -228,7 +229,7 @@ Widget commonButton({
     builder: (context, provider, child) {
       return SizedBox(
         height: height ?? 56,
-        width: width ?? MediaQuery.sizeOf(navigatorKey.currentContext!).width,
+        width: kIsWeb?width:MediaQuery.sizeOf(navigatorKey.currentContext!).width,
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: color ?? (provider.isDark ? Colors.white : colorLogo),

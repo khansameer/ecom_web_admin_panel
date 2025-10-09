@@ -49,7 +49,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
         }
 
         final provider = context.read<AdminDashboardProvider>();
-        final message = await provider.addNewOrderFilter(name, status);
+        final message = await provider.addNewOrderFilter(name: name,status: status,storeName: '');
 
         if (message != null) {
           ScaffoldMessenger.of(
@@ -102,11 +102,13 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
       appBar: commonAppBar(
         title: "Filter Order",
         actions: [
-
-          IconButton(onPressed: (){
-            _showAddFilterDialog(context);
-          }, icon: Icon(Icons.add,color: Colors.white,)),
-          SizedBox(width: 8,)
+          IconButton(
+            onPressed: () {
+              _showAddFilterDialog(context);
+            },
+            icon: Icon(Icons.add, color: Colors.white),
+          ),
+          SizedBox(width: 8),
         ],
         context: context,
         centerTitle: true,
@@ -124,10 +126,12 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
             return Stack(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical: 8,
+                  ),
                   child: Column(
                     children: [
-
                       SizedBox(height: 10),
                       Expanded(
                         child: commonListViewBuilder(
@@ -158,17 +162,26 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                                         title: "Delete",
                                         onPressed: () async {
                                           Navigator.pop(context);
-                                          await context.read<AdminDashboardProvider>().deleteOrderFilter(item["uid"]);
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(content: Text("Deleted \"${item["title"]}\"")),
+                                          await context
+                                              .read<AdminDashboardProvider>()
+                                              .deleteOrderFilter(
+                                                uid: item["uid"],
+                                                storeName: '',
+                                              );
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                "Deleted \"${item["title"]}\"",
+                                              ),
+                                            ),
                                           );
                                         },
                                         context: context,
                                         content:
                                             "Are you sure you want to delete ${item["title"]}",
                                       );
-                                      /*   _confirmDelete(
-                                          context, item["uid"], item["name"] ?? "Unknown")*/
                                     },
                                   ),
                                   leadingIcon: Checkbox(
@@ -180,29 +193,6 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                                       );
                                     },
                                   ),
-                                  /*  activeColor: colorLogo,
-
-
-                                  checkColor: Colors.white,
-                                  contentPadding: EdgeInsetsGeometry.zero,
-                                  title: commonText(
-                                    text: item["title"] ?? "No Name",
-                                  ),
-                                  value: item["status"] ?? false,
-                                  onChanged: (bool? newValue) {
-                                    if (newValue != null) {
-                                      */
-                                  /*  provider.updateOrderFilterStatus(
-                                        item["uid"],
-                                        newValue,
-                                      );*/
-                                  /*
-                                      provider.toggleStatus(
-                                        item["uid"],
-                                        newValue ?? false,
-                                      );
-                                    }
-                                  },*/
                                 ),
                               ),
                             );
@@ -218,7 +208,7 @@ class _OrderFilterScreenState extends State<OrderFilterScreen> {
                         child: commonButton(
                           text: "Update",
                           onPressed: () async {
-                            await provider.updateAllStatusesToFirebase();
+                            await provider.updateAllStatusesToFirebase(storeName: '');
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: commonText(

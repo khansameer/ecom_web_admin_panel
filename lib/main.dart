@@ -4,8 +4,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:neeknots/provider/AdminMenuProvider.dart';
 import 'package:neeknots/provider/InternetProvider.dart';
 import 'package:neeknots/provider/admin_dashboard_provider.dart';
+import 'package:neeknots/provider/admin_home_provider.dart';
 import 'package:neeknots/provider/customer_provider.dart';
 import 'package:neeknots/provider/image_picker_provider.dart';
 import 'package:neeknots/provider/login_provider.dart';
@@ -56,9 +58,9 @@ List<SingleChildWidget> providers = [
   ),
 
   ChangeNotifierProvider<InternetProvider>(create: (_) => InternetProvider()),
-  ChangeNotifierProvider<AdminDashboardProvider>(
-    create: (_) => AdminDashboardProvider(),
-  ),
+  ChangeNotifierProvider<AdminDashboardProvider>(create: (_) => AdminDashboardProvider(),),
+  ChangeNotifierProvider<AdminMenuProvider>(create: (_) => AdminMenuProvider(),),
+  ChangeNotifierProvider<AdminHomeProvider>(create: (_) => AdminHomeProvider(),),
 ];
 
 Future<void> main() async {

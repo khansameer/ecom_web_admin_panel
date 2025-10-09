@@ -13,6 +13,7 @@ import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../auth/login_widget.dart';
+import 'admin_home_sameer.dart';
 
 class AdminLoginPage extends StatelessWidget {
   const AdminLoginPage({super.key});
@@ -22,9 +23,11 @@ class AdminLoginPage extends StatelessWidget {
     var size = MediaQuery.sizeOf(context);
     final formLoginKey = GlobalKey<FormState>();
     return commonScaffold(
+
       body: Consumer2<ThemeProvider, LoginProvider>(
         builder: (context, themeProvider, provider, child) {
           return commonAppBackground(
+
             child: Stack(
               children: [
                 Center(
@@ -137,6 +140,7 @@ class AdminLoginPage extends StatelessWidget {
                                       const SizedBox(height: 24),
                                       commonButton(
                                         text: "Continue",
+                                        width: size.width,
                                         onPressed: () {
                                           Navigator.push(
                                             context,

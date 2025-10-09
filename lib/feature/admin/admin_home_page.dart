@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/image/image_utils.dart';
+import 'package:neeknots/feature/admin/admin_view1/admin_order_list_view.dart';
+import 'package:neeknots/feature/admin/store_details/contact_list_page.dart';
+import 'package:neeknots/feature/admin/admin_view1/order_filter_list_page.dart';
+import 'package:provider/provider.dart';
+
+import '../../core/firebase/auth_service.dart';
+import '../../provider/admin_dashboard_provider.dart';
+import 'admin_view1/admin_all_userlist.dart';
+
+import 'admin_view1/admin_product_list.dart';
+import 'admin_view1/common_admin_list_view.dart';
 
 class AdminUserModel {
   final String name;
@@ -25,52 +37,23 @@ class AdminHomePage extends StatefulWidget {
 }
 
 class _AdminHomePageState extends State<AdminHomePage> {
-  // 🏪 Dummy store list
-  final List<String> stores = [
-    "Neeknots",
-    "FashionFiesta",
-    "MegaMart",
-    "ShopEase",
-    "UrbanCart",
-    "StyleHub",
-    "QuickBuy",
-    "Trendify",
-  ];
+  @override
+  void initState() {
+    super.initState();
 
-  // 🟣 Selected store index
-  int selectedIndex = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      init();
+    });
+  }
 
-  String? selectedSection; // null = dashboard grid view
+  void init() {
+    final customerProvider = Provider.of<AdminDashboardProvider>(
+      context,
+      listen: false,
+    );
 
-  // 🔹 Dashboard items
-  final List<Map<String, dynamic>> dashboardItems = [
-    {"title": "Users", "icon": Icons.people},
-    {"title": "Orders", "icon": Icons.shopping_cart},
-    {"title": "Products", "icon": Icons.inventory},
-    {"title": "Contacts", "icon": Icons.contact_mail},
-    {"title": "Filter", "icon": Icons.filter_alt},
-  ];
-
-  List<AdminUserModel> users = [
-    AdminUserModel(
-      name: "Girish Chauhan",
-      email: "girish@redefinesolution.com",
-      phone: "9558697986",
-      isActive: true,
-    ),
-    AdminUserModel(
-      name: "Sameer Khan",
-      email: "sammerkhan@example.com",
-      phone: "9558697987",
-      isActive: false,
-    ),
-    AdminUserModel(
-      name: "Jane Smith",
-      email: "jane@example.com",
-      phone: "9558697988",
-      isActive: true,
-    ),
-  ];
+    customerProvider.getStoreUserCounts();
+  }
 
   // 🧩 Helper: responsive columns
   int _getCrossAxisCount(double width) {
@@ -81,18 +64,36 @@ class _AdminHomePageState extends State<AdminHomePage> {
   }
 
   // 🔹 Detail page for selected section (e.g., Orders, Products)
-  Widget _buildSectionContent(String section) {
+  Widget _buildSectionContent({
+    required BuildContext context,
+    required String section,
+    required AdminDashboardProvider provider,
+  }) {
+    final AuthService _authService = AuthService();
     switch (section) {
       case "Orders":
-        return _buildOrderListPage();
+        return OrderFilterListPage(
+          storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
+          collectionName: _authService.orderFilterCollection,
+        );
       case "Products":
-        return _buildProductListPage();
+        return AdminProductList(
+          storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
+          collectionName: _authService.productCollection,
+        );
       case "Users":
-        return _buildUserListPage();
+        return AdminAllUserlist(
+          storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
+        );
       case "Contacts":
-        return _buildContactListPage();
+        return ContactListPage(
+          storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
+          collectionName: _authService.contactUsCollection,
+        );
       default:
-        return const SizedBox();
+        return AdminAllUserlist(
+          storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
+        );
     }
   }
 
@@ -425,168 +426,192 @@ class _AdminHomePageState extends State<AdminHomePage> {
   Widget build(BuildContext context) {
     return commonScaffold(
       body: commonAppBackground(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            double screenHeight = constraints.maxHeight;
-            // 🧩 Dynamic sidebar width
-            double screenWidth = constraints.maxWidth;
-            double sidebarWidth = screenWidth >= 1200
-                ? screenWidth * 0.20
-                : screenWidth >= 800
-                ? screenWidth * 0.25
-                : screenWidth * 0.30;
+        child: Consumer<AdminDashboardProvider>(
+          builder: (context, provider, child) {
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                double screenHeight = constraints.maxHeight;
 
-            return Row(
-              children: [
-                // 🟪 LEFT PANEL (Sidebar)
-                Container(
-                  width: sidebarWidth,
-                  height: screenHeight,
-                  decoration: commonBoxDecoration(
-                    borderRadius: 0,
-                    borderColor: colorBorder,
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 24,
-                      horizontal: 16,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 🔹 Store Name / Logo
-                        Align(
-                          alignment:
-                              Alignment.centerLeft, // or Alignment.center
-                          child: commonAssetImage(icAppLogo, height: 54),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          "My Stores",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
+                double screenWidth = constraints.maxWidth;
+                double sidebarWidth = screenWidth >= 1200
+                    ? screenWidth * 0.20
+                    : screenWidth >= 800
+                    ? screenWidth * 0.25
+                    : screenWidth * 0.30;
+
+                return Row(
+                  children: [
+                    // 🟪 LEFT PANEL (Sidebar)
+                    Container(
+                      width: sidebarWidth,
+                      height: screenHeight,
+                      decoration: commonBoxDecoration(
+                        borderRadius: 0,
+                        borderColor: colorBorder,
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
                           ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 16,
                         ),
-                        const SizedBox(height: 24),
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: stores.length,
-                            itemBuilder: (context, index) {
-                              bool isSelected = selectedIndex == index;
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedIndex = index;
-                                    selectedSection = null; // reset menu
-                                  });
-                                  // reset menu
-                                },
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
-                                    horizontal: 16,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? Colors.black
-                                        // ✅ subtle selection
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                      color: isSelected
-                                          ? Colors.black
-                                          : Colors.grey.shade300,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.store,
-                                        color: isSelected
-                                            ? Colors.white
-                                            : Colors.grey.shade600,
-                                        size: 20,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 🔹 Store Name / Logo
+                            Align(
+                              alignment:
+                                  Alignment.center, // or Alignment.center
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                  left: 18.0,
+                                  right: 18,
+                                ),
+                                child: commonAssetImage(icAppLogo, height: 100),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            commonText(
+                              text: "My Stores",
+                              color: Colors.black,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            const SizedBox(height: 24),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: provider.storeCounts.length,
+                                itemBuilder: (context, index) {
+                                  final store = provider.storeCounts[index];
+                                  bool isSelected =
+                                      provider.selectedIndex == index;
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      provider.setSelectedStore(index);
+                                      provider.setSelectedSection(null);
+                                      await provider.fetchStoreCounts(
+                                        storeName: provider
+                                            .storeCounts[index]['store_name'],
+                                      );
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                        horizontal: 16,
                                       ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Text(
-                                          stores[index],
-                                          style: TextStyle(
-                                            color: isSelected
-                                                ? Colors.white
-                                                : Colors.black87,
-                                            fontSize: 16,
-                                            fontWeight: isSelected
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                          ),
-                                          //overflow: TextOverflow.ellipsis,
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? Colors.black
+                                            // ✅ subtle selection
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? Colors.black
+                                              : Colors.grey.shade300,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // 🟩 RIGHT PANEL (Main content)
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 🔹 Header with store name
-                        // 🏷 Top header with back arrow
-                        Row(
-                          children: [
-                            if (selectedSection != null)
-                              IconButton(
-                                icon: const Icon(Icons.arrow_back),
-                                onPressed: () {
-                                  setState(() => selectedSection = null);
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.store,
+                                            color: isSelected
+                                                ? Colors.white
+                                                : Colors.grey.shade600,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: commonText(
+                                              text: store['store_name']
+                                                  .toString()
+                                                  .toCapitalize(),
+                                              color: isSelected
+                                                  ? Colors.white
+                                                  : Colors.black87,
+                                              fontSize: 16,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.w600
+                                                  : FontWeight.normal,
+                                              //overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
                                 },
-                              ),
-                            Text(
-                              selectedSection == null
-                                  ? stores[selectedIndex] // Store name only
-                                  : "${stores[selectedIndex]} / ${selectedSection!}", // Store + Section
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 24),
-                        // 🧩 Main content (grid or detail)
-                        Expanded(
-                          child: selectedSection == null
-                              ? _buildDashboardGrid()
-                              : _buildSectionContent(selectedSection!),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              ],
+
+                    // 🟩 RIGHT PANEL (Main content)
+                    Expanded(
+                      child: Container(
+                        color: colorBg,
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 🔹 Header with store name
+                            // 🏷 Top header with back arrow
+                            Row(
+                              children: [
+                                if (provider.selectedSection != null)
+                                  IconButton(
+                                    icon: const Icon(Icons.arrow_back),
+                                    onPressed: () {
+                                      // provider.setSelectedStore(index);
+                                      provider.setSelectedSection(null);
+                                      // setState(() => selectedSection = null);
+                                    },
+                                  ),
+                                commonText(
+                                  text: provider.selectedSection == null
+                                      ? provider
+                                            .storeCounts[provider
+                                                .selectedIndex]['store_name']
+                                            .toString()
+                                            .toUpperCase() // optional
+                                      : "${provider.storeCounts[provider.selectedIndex]['store_name'].toString().toCapitalize()} / ${provider.selectedSection!}",
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            // 🧩 Main content (grid or detail)
+                            Expanded(
+                              child: provider.selectedSection == null
+                                  ? CommonAdminListView(
+                                      storeName:
+                                          provider.storeCounts[provider
+                                              .selectedIndex]['store_name'],
+                                    )
+                                  : _buildSectionContent(
+                                      context: context,
+                                      provider: provider,
+                                      section: provider.selectedSection ?? '',
+                                    ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             );
           },
         ),

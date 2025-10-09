@@ -94,7 +94,11 @@ class AppConfigCache {
       'logoUrl': box.get(_logoUrlKey, defaultValue: ""),
     };
   }
-
+  static Future<String> getStoreName() async {
+    final box = await Hive.openBox(_boxName);
+    String storeName = box.get(_storeNameKey, defaultValue: "");
+    return storeName.isNotEmpty ? storeName : "";
+  }
   /// Clear config
   static Future<void> clearConfig() async {
     final box = await Hive.openBox(_boxName);

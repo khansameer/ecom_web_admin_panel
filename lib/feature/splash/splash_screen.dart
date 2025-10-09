@@ -33,35 +33,25 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  // Future<void> init() async {
-  //   String? storedEmailOrMobile = await AppConfigCache.getStoredEmailOrMobile();
-
-  //   if (storedEmailOrMobile?.isNotEmpty == true) {
-  //     checkStatus();
-  //   } else {
-  //     redirectToIntro();
-  //   }
-
-  // }
   Future<void> init() async {
     String? storedEmailOrMobile = await AppConfigCache.getStoredEmailOrMobile();
 
     if (kIsWeb) {
-      // navigatorKey.currentState?.pushNamedAndRemoveUntil(
-      //   RouteName.adminDashbordScreen,
-      //       (Route<dynamic> route) => false,
-      // );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => AdminLoginPage()),
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        RouteName.adminLoginPage,
+            (Route<dynamic> route) => false,
       );
-    } else {
-      if (storedEmailOrMobile?.isNotEmpty == true) {
-        checkStatus();
-      } else {
-        redirectToIntro();
+    }else
+      {
+        if (storedEmailOrMobile?.isNotEmpty == true) {
+          checkStatus();
+        } else {
+          redirectToIntro();
+        }
       }
-    }
+
+
+
   }
 
   void checkStatus() async {
@@ -112,7 +102,8 @@ class _SplashScreenState extends State<SplashScreen> {
         });
       }
 
-      /*  Timer(const Duration(seconds: 3), () {
+
+    /*  Timer(const Duration(seconds: 3), () {
         navigatorKey.currentState?.pushNamedAndRemoveUntil(
           RouteName.dashboardScreen,
           (Route<dynamic> route) => false,

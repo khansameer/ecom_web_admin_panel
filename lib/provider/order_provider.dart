@@ -9,6 +9,7 @@ import 'package:neeknots/models/order_model.dart';
 import 'package:neeknots/service/gloable_status_code.dart';
 import 'package:neeknots/service/network_repository.dart';
 
+import '../core/firebase/auth_service.dart';
 import '../models/order_details_model.dart'
     as orderDetails
     show OrderDetailsModel;
@@ -825,11 +826,15 @@ class OrdersProvider with ChangeNotifier {
   List<Map<String, dynamic>> get allOrderFilterList => _allOrderFilterList;
 
 
-
+  final AuthService _authService = AuthService();
   Future<void> getAllFilterOrderList() async {
     _setLoading(true);
     try {
-      final querySnapshot = await _firestore.collection("order_filter").get();
+      final contactCollection = await _authService.getStoreSubCollection(
+        _authService.orderFilterCollection,
+      );
+
+      final querySnapshot = await contactCollection.get();
       _allOrderFilterList = querySnapshot.docs.map((doc) {
         final data = doc.data();
         data["uid"] = doc.id;
@@ -844,8 +849,11 @@ class OrdersProvider with ChangeNotifier {
   Future<void> getAllFilterOrderList1() async {
     _setLoading(true);
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('order_filter')
+      final contactCollection = await _authService.getStoreSubCollection(
+        _authService.orderFilterCollection,
+      );
+
+      final snapshot = await contactCollection
           .where('status', isEqualTo: true) // ✅ fetch only active ones
           .get();
 
