@@ -21,3 +21,4 @@ const Color colorTextDesc = Color.fromRGBO(0, 0, 0, 0.3);
 const Color colorTextDesc1 = Color.fromRGBO(0, 0, 0, 0.7);
 const Color colorBorder = Color.fromRGBO(158, 158, 158, 0.3);
 const Color colorBg = Color.fromRGBO(242, 242, 242, 1);
+const Color colorMenu = Color.fromRGBO(253, 0, 116, 1);

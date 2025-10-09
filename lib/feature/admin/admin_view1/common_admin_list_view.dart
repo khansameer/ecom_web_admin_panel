@@ -5,6 +5,7 @@ import 'package:neeknots/provider/admin_dashboard_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/component/animated_counter.dart';
+import '../../../core/component/responsive.dart';
 import '../../../provider/admin_home_provider.dart';
 
 class CommonAdminListView extends StatefulWidget {
@@ -33,7 +34,7 @@ class _CommonAdminListViewState extends State<CommonAdminListView> {
   @override
   Widget build(BuildContext context) {
     final homeProvider = context.watch<AdminDashboardProvider>();
-
+    var isMobile = Responsive.isMobile(context);
     return    Consumer<AdminDashboardProvider>(
       builder: (context,provider,child) {
         return Stack(
@@ -57,11 +58,11 @@ class _CommonAdminListViewState extends State<CommonAdminListView> {
                     crossAxisCount: crossAxisCount,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
-                    childAspectRatio: 1.1,
+                    childAspectRatio: isMobile?0.9:1.1,
                   ),
                   itemBuilder: (context, index) {
                     final item = dashboardItems[index];
-                    final isSelected = homeProvider.selectedSection == item["title"];
+
                     final count = homeProvider.getCountForTitle(item["title"]);
                     final storeColor = provider.getProfessionColor(
                       item["title"],
@@ -99,7 +100,7 @@ class _CommonAdminListViewState extends State<CommonAdminListView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
 
-                            commonAssetImage(item["icon"],width: 64,height: 64,color: storeColor),
+                            commonAssetImage(item["icon"],width:  isMobile?55:64,height: isMobile?55:64,color: storeColor),
                           /*  Icon(
                               item["icon"] as IconData,
                               size: 40,
@@ -108,7 +109,7 @@ class _CommonAdminListViewState extends State<CommonAdminListView> {
                             const SizedBox(height: 10),
                             commonText(
                               text: item["title"].toString(),
-                              fontSize: 16,
+                              fontSize:  isMobile?14:16,
                               fontWeight: FontWeight.w600,
                               color: storeColor,
                             ),

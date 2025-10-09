@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../core/color/color_utils.dart';
 import '../../../core/component/CommonSwitch.dart';
 import '../../../core/component/component.dart';
+import '../../../core/component/responsive.dart';
 import '../../../provider/admin_dashboard_provider.dart';
 
 class OrderFilterListPage extends StatefulWidget {
@@ -113,6 +114,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
 
   @override
   Widget build(BuildContext context) {
+    var isMobile = Responsive.isMobile(context);
     return Consumer<AdminDashboardProvider>(
       builder: (context, provider, _) {
         if (provider.isLoading) {
@@ -161,6 +163,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                         final item = provider.allOrderFilterList[index];
                         return Container(
                           decoration: commonBoxDecoration(
+                            color: Colors.white,
                             borderColor: colorBorder,
                           ),
                           margin: EdgeInsets.all(5),
@@ -169,6 +172,8 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                                 horizontal: 10,
                                 vertical:15),
                             child: commonListTile(
+
+                              titleFontSize: isMobile?14:16,
 
                               contentPadding: EdgeInsetsGeometry.zero,
                               title: item["title"].toString().toCapitalize(),
@@ -182,13 +187,14 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                                     value: item["status"] ?? false,
                                     activeThumbColor: Colors.green,
                                     inactiveThumbColor: Colors.grey,
-                                    inactiveTrackColor: Colors.grey.withOpacity(0.4),
+                                    inactiveTrackColor: Colors.grey.withValues(alpha: 0.4),
                                     onChanged: (value) {
                                       provider.toggleStatus(
                                         item["id"],
                                         value,
                                       );
                                     },
+
                                   ),
                                   IconButton(
                                     icon: const Icon(
@@ -235,7 +241,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                       right: 16,
                     ),
                     child: commonButton(
-                      width: MediaQuery.sizeOf(context).width*0.2,
+                      width: isMobile?MediaQuery.sizeOf(context).width:null,
                       text: "Update",
                       onPressed: () async {
                         await provider.updateAllStatusesToFirebase(storeName: widget.storeName);

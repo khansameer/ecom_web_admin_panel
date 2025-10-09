@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/color/color_utils.dart';
+import 'package:neeknots/core/component/CommonSwitch.dart';
 import 'package:neeknots/provider/admin_dashboard_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../core/component/phone_number_field.dart';
 import '../core/component/component.dart';
+import '../core/component/responsive.dart';
 import '../core/image/image_utils.dart';
 import '../core/validation/validation.dart';
 import '../main.dart';
@@ -47,6 +49,7 @@ class _State extends State<CommonAdminWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var isMobile = Responsive.isMobile(context);
     return Consumer<AdminDashboardProvider>(
       builder: (context,provider,child) {
         return Stack(
@@ -55,6 +58,7 @@ class _State extends State<CommonAdminWidget> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 commonTextField(
+
                   keyboardType: TextInputType.name,
                   prefixIcon: commonPrefixIcon(image: icUser),
                   controller: widget.provider.tetFullName,
@@ -165,9 +169,8 @@ class _State extends State<CommonAdminWidget> {
                     commonText(text: "Account Status:"),
                     Consumer<AdminDashboardProvider>(
                       builder: (context, provider, child) {
-                        return Switch(
-                          inactiveThumbColor: colorLogo,
-                          activeTrackColor: colorLogo,
+                        return CommonSwitch(
+
                           value: provider.status,
                           onChanged: (val) {
                             provider.setStatus(val);
@@ -181,6 +184,7 @@ class _State extends State<CommonAdminWidget> {
                 const SizedBox(height: 20),
                 commonButton(
                   text: "Update",
+                  width: MediaQuery.sizeOf(context).width,
                   onPressed: () async {
 
 

@@ -3,15 +3,15 @@ import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/image/image_utils.dart';
-import 'package:neeknots/feature/admin/admin_view1/admin_order_list_view.dart';
-import 'package:neeknots/feature/admin/store_details/contact_list_page.dart';
+import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/feature/admin/admin_view1/order_filter_list_page.dart';
+import 'package:neeknots/feature/admin/store_details/contact_list_page.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/component/responsive.dart';
 import '../../core/firebase/auth_service.dart';
 import '../../provider/admin_dashboard_provider.dart';
 import 'admin_view1/admin_all_userlist.dart';
-
 import 'admin_view1/admin_product_list.dart';
 import 'admin_view1/common_admin_list_view.dart';
 
@@ -61,18 +61,27 @@ class _AdminHomePageState extends State<AdminHomePage> {
     required String section,
     required AdminDashboardProvider provider,
   }) {
-    final AuthService _authService = AuthService();
+    final AuthService authService = AuthService();
     switch (section) {
       case "Orders":
-        return OrderFilterListPage(storeName: provider.storeCounts[provider.selectedIndex]['store_name'],collectionName:_authService.orderFilterCollection ,);
+        return OrderFilterListPage(
+          storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
+          collectionName: authService.orderFilterCollection,
+        );
       case "Products":
-        return AdminProductList(storeName: provider.storeCounts[provider.selectedIndex]['store_name'],collectionName:_authService.productCollection ,);
+        return AdminProductList(
+          storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
+          collectionName: authService.productCollection,
+        );
       case "Users":
         return AdminAllUserlist(
           storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
         );
       case "Contacts":
-        return ContactListPage(storeName:provider.storeCounts[provider.selectedIndex]['store_name'] ,collectionName:_authService.contactUsCollection);
+        return ContactListPage(
+          storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
+          collectionName: authService.contactUsCollection,
+        );
       default:
         return AdminAllUserlist(
           storeName: provider.storeCounts[provider.selectedIndex]['store_name'],
@@ -82,7 +91,33 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var isMobile = Responsive.isMobile(context);
     return commonScaffold(
+      backgroundColor: colorBg,
+      drawer: isMobile
+          ? Drawer(
+              backgroundColor: Colors.white,
+              child: Consumer<AdminDashboardProvider>(
+                builder: (context, provider, child) {
+                  return _commonLiftView(provider: provider);
+                },
+              ),
+            )
+          : SizedBox.shrink(),
+      appBar: isMobile
+          ? AppBar(
+              centerTitle: true,
+              title: commonText(
+                text: appName,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+              backgroundColor: colorBg,
+            )
+          : const PreferredSize(
+              preferredSize: Size.zero,
+              child: SizedBox.shrink(),
+            ),
       body: commonAppBackground(
         child: Consumer<AdminDashboardProvider>(
           builder: (context, provider, child) {
@@ -100,22 +135,24 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 return Row(
                   children: [
                     // 🟪 LEFT PANEL (Sidebar)
-                    Container(
-                      width: sidebarWidth,
-                      height: screenHeight,
-                      decoration: commonBoxDecoration(
-                        borderRadius: 0,
-                        borderColor: colorBorder,
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 8,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Padding(
+                    isMobile
+                        ? SizedBox.shrink()
+                        : Container(
+                            width: sidebarWidth,
+                            height: screenHeight,
+                            decoration: commonBoxDecoration(
+                              borderRadius: 0,
+                              borderColor: colorBorder,
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 8,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: /*Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: 24,
                           horizontal: 16,
@@ -123,21 +160,29 @@ class _AdminHomePageState extends State<AdminHomePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // 🔹 Store Name / Logo
-                            Align(
+                            const SizedBox(height: 0),
+                            */ /*Align(
                               alignment:
                                   Alignment.center, // or Alignment.center
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 18.0,right: 18),
-                                child: commonAssetImage(icAppLogo, height: 100),
+                                padding: const EdgeInsets.only(left: 30.0,right: 30),
+                                child: commonAssetImage(icAppLogo, height: 80,fit: BoxFit.scaleDown),
                               ),
-                            ),
-                            const SizedBox(height: 16),
+                            ),*/ /*
+                            Container(
+                                height: 150,
+                                color: Colors.white,
+                                child: Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  margin: const EdgeInsets.all(16.0),
+                                  child: commonAssetImage(icAppLogo),
+                                )),
+                            const SizedBox(height: 56),
                             commonText(
                               text: "My Stores",
                               color: Colors.black,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
                             ),
                             const SizedBox(height: 24),
                             Expanded(
@@ -193,7 +238,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                                   : Colors.black87,
                                               fontSize: 16,
                                               fontWeight: isSelected
-                                                  ? FontWeight.w600
+                                                  ? FontWeight.w500
                                                   : FontWeight.normal,
                                               //overflow: TextOverflow.ellipsis,
                                             ),
@@ -207,14 +252,44 @@ class _AdminHomePageState extends State<AdminHomePage> {
                             ),
                           ],
                         ),
-                      ),
-                    ),
-
+                      )*/ _commonLiftView(
+                              provider: provider,
+                            ),
+                          ),
+                    isMobile
+                        ? SizedBox.shrink()
+                        : Container(
+                            width: 2, // slightly thicker for 3D effect
+                            margin: const EdgeInsets.symmetric(vertical: 0),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.grey.shade300, // light top edge
+                                  Colors.grey.shade400, // middle
+                                  Colors.grey.shade500, // bottom shadow
+                                ],
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.shade600.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  blurRadius: 3,
+                                  offset: const Offset(
+                                    2,
+                                    0,
+                                  ), // shadow to the right
+                                ),
+                              ],
+                            ),
+                          ),
                     // 🟩 RIGHT PANEL (Main content)
                     Expanded(
                       child: Container(
                         color: colorBg,
-                        padding: const EdgeInsets.all(24),
+                        padding: EdgeInsets.all(isMobile ? 16 : 24),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -239,20 +314,26 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                             .toString()
                                             .toUpperCase() // optional
                                       : "${provider.storeCounts[provider.selectedIndex]['store_name'].toString().toCapitalize()} / ${provider.selectedSection!}",
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: isMobile ? 16 : 20,
+                                  fontWeight: isMobile
+                                      ? FontWeight.w500
+                                      : FontWeight.bold,
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 24),
+                            SizedBox(height: isMobile ? 10 : 24),
                             // 🧩 Main content (grid or detail)
                             Expanded(
                               child: provider.selectedSection == null
-                                  ? CommonAdminListView(storeName: provider.storeCounts[provider.selectedIndex]['store_name'],)
+                                  ? CommonAdminListView(
+                                      storeName:
+                                          provider.storeCounts[provider
+                                              .selectedIndex]['store_name'],
+                                    )
                                   : _buildSectionContent(
                                       context: context,
                                       provider: provider,
-                                      section: provider.selectedSection??'',
+                                      section: provider.selectedSection ?? '',
                                     ),
                             ),
                           ],
@@ -265,6 +346,105 @@ class _AdminHomePageState extends State<AdminHomePage> {
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _commonLiftView({required AdminDashboardProvider provider}) {
+    var isMobile = Responsive.isMobile(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 0),
+          /*Align(
+                              alignment:
+                                  Alignment.center, // or Alignment.center
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 30.0,right: 30),
+                                child: commonAssetImage(icAppLogo, height: 80,fit: BoxFit.scaleDown),
+                              ),
+                            ),*/
+          Container(
+            height: 150,
+            color: Colors.white,
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              margin: const EdgeInsets.all(16.0),
+              child: commonAssetImage(icAppLogo,fit: BoxFit.scaleDown),
+            ),
+          ),
+          SizedBox(height: isMobile ? 0 : 56),
+          commonText(
+            text: "My Stores",
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+          SizedBox(height: isMobile ? 10 : 24),
+          Expanded(
+            child: ListView.builder(
+              itemCount: provider.storeCounts.length,
+              itemBuilder: (context, index) {
+                final store = provider.storeCounts[index];
+                bool isSelected = provider.selectedIndex == index;
+                return GestureDetector(
+                  onTap: () async {
+                    if (isMobile) {
+                      Navigator.pop(context); // closes the drawer
+                    }
+                    provider.setSelectedStore(index);
+                    provider.setSelectedSection(null);
+                    await provider.fetchStoreCounts(
+                      storeName: provider.storeCounts[index]['store_name'],
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? Colors.black
+                          // ✅ subtle selection
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: isSelected ? Colors.black : Colors.grey.shade300,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.store,
+                          color: isSelected
+                              ? Colors.white
+                              : Colors.grey.shade600,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: commonText(
+                            text: store['store_name'].toString().toCapitalize(),
+                            color: isSelected ? Colors.white : Colors.black87,
+                            fontSize: 16,
+                            fontWeight: isSelected
+                                ? FontWeight.w500
+                                : FontWeight.normal,
+                            //overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

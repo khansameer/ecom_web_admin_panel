@@ -133,6 +133,41 @@ class AdminDashboardProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateUserStatus({required String docId, String? token,required bool status}) async {
+    try {
+      _setUpdating(true);
+      notifyListeners();
+      await FirebaseFirestore.instance
+          .collection(_authService.storesCollection)
+          .doc(docId)
+          .update({
+
+        "active_status": status,
+      });
+      _setUpdating(false);
+      notifyListeners();
+      if (token != null && token.isNotEmpty) {
+        final payload = buildNotificationPayload(
+          token: token,
+          title: tetFullName.text.trim(),
+          body: status
+              ? "Your account is activated, open the app"
+              : "Your account has been deactivated, please contact support",
+          data: {"category": "chat"},
+        );
+        await sendFCMNotification(bodyMap: payload);
+      }
+
+      //fetchUsers();
+      _setUpdating(false);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Error updating user: $e");
+      _setUpdating(false);
+      notifyListeners();
+    }
+  }
+
   List<Map<String, dynamic>> _contacts = [];
 
   List<Map<String, dynamic>> get contacts => _contacts;

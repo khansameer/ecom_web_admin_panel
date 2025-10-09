@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../core/color/color_utils.dart';
 import '../../../core/component/component.dart';
 import '../../../core/component/date_utils.dart';
+import '../../../core/component/responsive.dart';
 import '../../../core/component/url_launcher_service.dart';
 import '../../../provider/admin_dashboard_provider.dart';
 import '../../../provider/theme_provider.dart';
@@ -48,18 +49,19 @@ class _StoreCollectionTabState extends State<ContactListPage> {
 
   @override
   Widget build(BuildContext context) {
+    var isMobile = Responsive.isMobile(context);
     return Consumer2<AdminDashboardProvider, ThemeProvider>(
       builder: (context, provider, themeProvider, child) {
         return Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(8.0),
               child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
+                gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: isMobile?1:3,
                   crossAxisSpacing: 5,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 2.3, // adjust roughly for initial layout
+                  childAspectRatio: isMobile?1.3:2.3, // adjust roughly for initial layout
                 ),
                 itemCount: provider.contacts.length,
                 physics: BouncingScrollPhysics(),
@@ -122,12 +124,14 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                           ],
                         ),
 
-                        commonText(
-                          text: data['message'],
-                          maxLines: 5,
-                          overflow: TextOverflow.ellipsis,
-                          fontSize: 12,
-                          color: colorTextDesc1,
+                        Flexible(
+                          child: commonText(
+                            text: data['message'],
+                            maxLines: 5,
+                            overflow: TextOverflow.ellipsis,
+                            fontSize: 12,
+                            color: colorTextDesc1,
+                          ),
                         ),
 
                         Divider(thickness: 0.5),

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../admin/common_admin_widget.dart';
 import '../../../core/component/CommonSwitch.dart';
+import '../../../core/component/responsive.dart';
 import '../../../core/image/image_utils.dart';
 import '../../../provider/admin_dashboard_provider.dart';
 
@@ -40,7 +41,9 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
   }
   @override
   Widget build(BuildContext context) {
+    var isMobile = Responsive.isMobile(context);
    return Consumer<AdminDashboardProvider>(
+
       builder: (context,provider,child) {
         return Stack(
           children: [
@@ -56,7 +59,7 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
 
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding:  EdgeInsets.all(isMobile?10:16.0),
                     child: Row(
 
 
@@ -70,14 +73,14 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
                                 clipBehavior: Clip.antiAliasWithSaveLayer,
                                 borderRadius: BorderRadius.circular(10),
                                 child: CachedNetworkImage(
-                                  height: 100,
-                                  width: 80,
+                                  height: isMobile?60:100,
+                                  width:isMobile?60: 80,
                                   fit: BoxFit.cover,
                                   imageUrl: user["logo_url"],
                                   placeholder: (context, url) => Center(
                                     child: SizedBox(
-                                      width: 20, // 👈 yahan size set kijiye
-                                      height: 20, // 👈 yahan size set kijiye
+                                      width: 20,
+                                      height: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                       ),
@@ -91,30 +94,34 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
                                   ),
                                 ),
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  commonText(
-                                    text: user['name'],
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black87,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  commonText(
-                                    text: user['email'],
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black45,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  commonText(
-                                    text:  "${user["country_code"] ?? "N/A"}${user["mobile"] ?? "N/A"}",
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black45,
-                                  ),
-                                ],
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    commonText(
+                                      text: user['name'],
+                                      fontSize:isMobile?14: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.black87,
+                                    ),
+                                    const SizedBox(height: 3),
+                                    commonText(
+                                      overflow: TextOverflow.ellipsis,
+                                      text: user['email'],
+
+                                      fontSize:isMobile?12: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black45,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    commonText(
+                                      text:  "${user["country_code"] ?? "N/A"}${user["mobile"] ?? "N/A"}",
+                                      fontSize: isMobile?12: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black45,
+                                    ),
+                                  ],
+                                ),
                               ),
                               // 🟢 Switch (on/off)
                             ],
@@ -128,16 +135,19 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
                             Row(
                               children: [
                                 commonText(
-                                  fontSize: 12,
+                                  fontSize: isMobile?10:12,
                                   text: user['active_status'] ? "Active" : "Inactive",
                                   color: user['active_status'] ? Colors.green : Colors.red,
                                   fontWeight: FontWeight.w400,
                                 ),
                                 const SizedBox(width: 8),
                                 CommonSwitch(
+                                  scale: isMobile?0.6:0.8,
                                   value: user['active_status'],
                                   onChanged: (value) {
                                     setState(() => user['active_status'] = value);
+
+                                    provider.updateUserStatus(docId: user['id'],status: value);
                                   },
                                   activeThumbColor: Colors.green,
                                   inactiveThumbColor: Colors.red,
@@ -205,8 +215,8 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
                               },
                               child: Container(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: 30,
-                                  vertical: 10,
+                                  horizontal:isMobile?20: 30,
+                                  vertical: isMobile?6:10,
                                 ),
                                 decoration: commonBoxDecoration(
                                   borderColor: colorBorder,
@@ -214,10 +224,10 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
                                 ),
                                 child: Center(
                                   child: commonText(
-                                    fontSize: 11,
+                                    fontSize: isMobile?9:11,
                                     color: colorTextDesc1,
 
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w600,
                                     text: "Edit Info"
                                         .toUpperCase(),
                                   ),
