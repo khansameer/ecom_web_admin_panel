@@ -27,9 +27,10 @@ class _CommonAdminListViewState extends State<CommonAdminListView> {
   @override
   void initState() {
     super.initState();
-    // Fetch counts when widget is initialized
-    final provider = context.read<AdminDashboardProvider>();
-    provider.fetchStoreCounts(storeName: widget.storeName);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<AdminDashboardProvider>();
+      provider.fetchStoreCounts(storeName: widget.storeName);
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -131,7 +132,7 @@ class _CommonAdminListViewState extends State<CommonAdminListView> {
                                   leftText: '',
                                   rightText: '',
                                   endValue: count,
-                                  duration: Duration(seconds: 2),
+                                  duration: Duration(milliseconds: 200),
                                   style: commonTextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,

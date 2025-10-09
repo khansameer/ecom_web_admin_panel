@@ -61,7 +61,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                   crossAxisCount: isMobile?1:3,
                   crossAxisSpacing: 5,
                   mainAxisSpacing: 12,
-                  childAspectRatio: isMobile?1.3:2.3, // adjust roughly for initial layout
+                  childAspectRatio: isMobile?1.3:2.1, // adjust roughly for initial layout
                 ),
                 itemCount: provider.contacts.length,
                 physics: BouncingScrollPhysics(),
@@ -70,7 +70,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                 itemBuilder: (context, index,) {
                   var data = provider.contacts[index];
                   return Container(
-                    decoration: commonBoxDecoration(borderColor: colorBorder),
+                    decoration: commonBoxDecoration(borderColor: colorBorder,color: Colors.white),
                     margin: EdgeInsets.all(8),
                     padding: EdgeInsets.all(12),
                     child: Column(

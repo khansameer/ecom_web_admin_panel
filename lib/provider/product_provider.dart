@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/models/product_model.dart' hide Variants, Images;
 
@@ -481,15 +482,58 @@ class ProductProvider with ChangeNotifier {
     required String uid,
     required String title,
   }) async {
-    final productCollection = await _authService.getStoreSubCollection(
-      _authService.productCollection,
-    );
-    await productCollection.doc(uid).update({
-      "status": true,
-      //"approved_date": DateTime.now(), // optional
-      title: DateTime.now(), // optional
-    });
-    await getAllPendingRequest();
+
+    try{
+      final productCollection = await _authService.getStoreSubCollection(
+        _authService.productCollection,
+      );
+      await productCollection.doc(uid).update({
+        "status": true,
+        //"approved_date": DateTime.now(), // optional
+        title: DateTime.now(), // optional
+      });
+   //   await getAllPendingRequest();
+
+    }
+
+    catch(e){
+      print("e$e");
+    }
+
+  }
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Future<void> updateProductStatusWeb({
+    required String uid,
+    required String storeName, // you must pass the store name or store docId
+    required String title,
+  }) async {
+    print('--uid----${uid}');
+    try{
+
+      /*final productCollection = await _authService.getStoreSubCollection(
+        _authService.productCollection,
+      );*/
+      final productCollection = _firestore
+          .collection(storeName)
+          .doc(_authService.productCollection)
+          .collection(_authService.productCollection)
+          .doc(uid); // actual product document ID
+
+
+      await productCollection.update({
+        "status": true,
+        title: DateTime.now(),
+      });
+      print("✅ Product $uid approved successfully");
+      //   await getAllPendingRequest();
+
+    }
+
+    catch(e){
+      print("e$e");
+    }
+
   }
 
   Future<void> uploadProductImageViaAdmin({
@@ -522,6 +566,7 @@ class ProductProvider with ChangeNotifier {
 
       final data = json.decode(response);
       final imageJson = data["image"];
+
       if (imageJson != null) {
         //  final newImage = Images.fromJson(imageJson);
         // productImages.add(newImage);
@@ -533,7 +578,49 @@ class ProductProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+  Future<void> uploadProductImageViaAdminWeb({
+    required String imagePath,
+    required int productId,
+    required String storeRoom,
+    required String uid,
+  }) async {
+    _isImageUpdating = true;
+    notifyListeners();
 
+    final urlString =
+        "${await ApiConfig.baseUrl}/products/$productId/images.json";
+
+    final response = await callPostMethodWithToken(
+      body: {
+        "image": {"attachment": imagePath},
+      },
+      url: urlString,
+    );
+
+    if (globalStatusCode == 200) {
+      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+        SnackBar(
+          content: Text("Product Approved successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      await updateProductStatusWeb(uid: uid, title: "approved_date",storeName: storeRoom);
+
+      final data = json.decode(response);
+      final imageJson = data["image"];
+
+      if (imageJson != null) {
+        //  final newImage = Images.fromJson(imageJson);
+        // productImages.add(newImage);
+        _isImageUpdating = false;
+        notifyListeners(); // ✅ UI refresh
+      }
+    } else {
+      _isImageUpdating = false;
+      notifyListeners();
+    }
+  }
   Future<void> deleteProductImage({
     required int imageId,
     required int productId,
@@ -625,7 +712,7 @@ class ProductProvider with ChangeNotifier {
 
       _allPendingRequest = snapshot.docs.map((doc) {
         return {
-          "uid": doc.id, // ← Firestore document ID
+          "id": doc.id, // ← Firestore document ID
           "name": doc['name'] ?? '',
           "status": doc['status'] ?? '',
           "created_date": doc['created_date'] ?? '',

@@ -492,8 +492,11 @@ class AdminDashboardProvider with ChangeNotifier {
     try {
       final querySnapshot = await _firestore
           .collection(storeName)
+
           .doc(collectionName) // if each store has a doc, adjust if needed
           .collection(collectionName)
+       //   .where('status', isEqualTo: false) // ← only false status
+         // .orderBy('created_date', descending: true)
           .get();
 
       final dataList = querySnapshot.docs.map((doc) {
@@ -652,13 +655,20 @@ class AdminDashboardProvider with ChangeNotifier {
 
     try {
       // Product count
-
+      // ✅ Clear previous counts before fetching new data
+      productsCount = 0;
+      contactsCount = 0;
+      ordersCount = 0;
+      usersCount = 0;
+      notifyListeners(); // optional — updates UI immediately if shown
       final productSnapshot = await _firestore
           .collection(storeName)
           .doc(
             _authService.productCollection,
           ) // if each store has a doc, adjust if needed
           .collection(_authService.productCollection)
+          .where('status', isEqualTo: false) // ← only false status
+          .orderBy('created_date', descending: true)
           .get();
       productsCount = productSnapshot.docs.length;
 

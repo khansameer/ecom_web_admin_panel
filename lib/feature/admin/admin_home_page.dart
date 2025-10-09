@@ -121,6 +121,27 @@ class _AdminHomePageState extends State<AdminHomePage> {
       body: commonAppBackground(
         child: Consumer<AdminDashboardProvider>(
           builder: (context, provider, child) {
+
+            // 🟡 STEP 1: Handle loading / empty state
+
+            if (provider.storeCounts.isEmpty) {
+
+              return const Center(
+
+                child: CircularProgressIndicator(),
+
+              );
+
+            }
+
+            // 🟢 STEP 2: Make sure selectedIndex is valid
+
+            if (provider.selectedIndex >= provider.storeCounts.length) {
+
+              provider.setSelectedStore(0);
+
+            }
+
             return LayoutBuilder(
               builder: (context, constraints) {
                 double screenHeight = constraints.maxHeight;
