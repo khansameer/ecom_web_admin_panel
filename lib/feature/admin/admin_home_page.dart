@@ -121,6 +121,15 @@ class _AdminHomePageState extends State<AdminHomePage> {
       body: commonAppBackground(
         child: Consumer<AdminDashboardProvider>(
           builder: (context, provider, child) {
+            // 🟡 STEP 1: Handle loading / empty state
+            if (provider.storeCounts.isEmpty) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            // 🟢 STEP 2: Make sure selectedIndex is valid
+            if (provider.selectedIndex >= provider.storeCounts.length) {
+              provider.setSelectedStore(0);
+            }
             return LayoutBuilder(
               builder: (context, constraints) {
                 double screenHeight = constraints.maxHeight;
@@ -152,109 +161,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                 ),
                               ],
                             ),
-                            child: /*Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 24,
-                          horizontal: 16,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 0),
-                            */ /*Align(
-                              alignment:
-                                  Alignment.center, // or Alignment.center
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 30.0,right: 30),
-                                child: commonAssetImage(icAppLogo, height: 80,fit: BoxFit.scaleDown),
-                              ),
-                            ),*/ /*
-                            Container(
-                                height: 150,
-                                color: Colors.white,
-                                child: Container(
-                                  padding: const EdgeInsets.all(16.0),
-                                  margin: const EdgeInsets.all(16.0),
-                                  child: commonAssetImage(icAppLogo),
-                                )),
-                            const SizedBox(height: 56),
-                            commonText(
-                              text: "My Stores",
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            const SizedBox(height: 24),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: provider.storeCounts.length,
-                                itemBuilder: (context, index) {
-                                  final store = provider.storeCounts[index];
-                                  bool isSelected =
-                                      provider.selectedIndex == index;
-                                  return GestureDetector(
-                                    onTap: () async {
-                                      provider.setSelectedStore(index);
-                                      provider.setSelectedSection(null);
-                                      await provider.fetchStoreCounts(
-                                        storeName: provider.storeCounts[index]['store_name'],
-                                      );
-                                    },
-                                    child: Container(
-                                      margin: const EdgeInsets.only(bottom: 12),
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 14,
-                                        horizontal: 16,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? Colors.black
-                                            // ✅ subtle selection
-                                            : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                          color: isSelected
-                                              ? Colors.black
-                                              : Colors.grey.shade300,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.store,
-                                            color: isSelected
-                                                ? Colors.white
-                                                : Colors.grey.shade600,
-                                            size: 20,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: commonText(
-                                              text: store['store_name']
-                                                  .toString()
-                                                  .toCapitalize(),
-                                              color: isSelected
-                                                  ? Colors.white
-                                                  : Colors.black87,
-                                              fontSize: 16,
-                                              fontWeight: isSelected
-                                                  ? FontWeight.w500
-                                                  : FontWeight.normal,
-                                              //overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      )*/ _commonLiftView(
-                              provider: provider,
-                            ),
+                            child: _commonLiftView(provider: provider),
                           ),
                     isMobile
                         ? SizedBox.shrink()
@@ -372,7 +279,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
             child: Container(
               padding: const EdgeInsets.all(16.0),
               margin: const EdgeInsets.all(16.0),
-              child: commonAssetImage(icAppLogo,fit: BoxFit.scaleDown),
+              child: commonAssetImage(icAppLogo, fit: BoxFit.scaleDown),
             ),
           ),
           SizedBox(height: isMobile ? 0 : 56),
@@ -449,3 +356,106 @@ class _AdminHomePageState extends State<AdminHomePage> {
     );
   }
 }
+
+//OLD
+/*Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24,
+                          horizontal: 16,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 0),
+                            */ /*Align(
+                              alignment:
+                                  Alignment.center, // or Alignment.center
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 30.0,right: 30),
+                                child: commonAssetImage(icAppLogo, height: 80,fit: BoxFit.scaleDown),
+                              ),
+                            ),*/ /*
+                            Container(
+                                height: 150,
+                                color: Colors.white,
+                                child: Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  margin: const EdgeInsets.all(16.0),
+                                  child: commonAssetImage(icAppLogo),
+                                )),
+                            const SizedBox(height: 56),
+                            commonText(
+                              text: "My Stores",
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            const SizedBox(height: 24),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: provider.storeCounts.length,
+                                itemBuilder: (context, index) {
+                                  final store = provider.storeCounts[index];
+                                  bool isSelected =
+                                      provider.selectedIndex == index;
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      provider.setSelectedStore(index);
+                                      provider.setSelectedSection(null);
+                                      await provider.fetchStoreCounts(
+                                        storeName: provider.storeCounts[index]['store_name'],
+                                      );
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 14,
+                                        horizontal: 16,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? Colors.black
+                                            // ✅ subtle selection
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? Colors.black
+                                              : Colors.grey.shade300,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.store,
+                                            color: isSelected
+                                                ? Colors.white
+                                                : Colors.grey.shade600,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: commonText(
+                                              text: store['store_name']
+                                                  .toString()
+                                                  .toCapitalize(),
+                                              color: isSelected
+                                                  ? Colors.white
+                                                  : Colors.black87,
+                                              fontSize: 16,
+                                              fontWeight: isSelected
+                                                  ? FontWeight.w500
+                                                  : FontWeight.normal,
+                                              //overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      )*/

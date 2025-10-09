@@ -25,7 +25,6 @@ class ContactListPage extends StatefulWidget {
 }
 
 class _StoreCollectionTabState extends State<ContactListPage> {
-
   @override
   void initState() {
     super.initState();
@@ -57,17 +56,18 @@ class _StoreCollectionTabState extends State<ContactListPage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: GridView.builder(
-                gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: isMobile?1:3,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: isMobile ? 1 : 3,
                   crossAxisSpacing: 5,
                   mainAxisSpacing: 12,
-                  childAspectRatio: isMobile?1.3:2.3, // adjust roughly for initial layout
+                  childAspectRatio: isMobile
+                      ? 1.3
+                      : 1.8, // adjust roughly for initial layout
                 ),
                 itemCount: provider.contacts.length,
                 physics: BouncingScrollPhysics(),
 
-
-                itemBuilder: (context, index,) {
+                itemBuilder: (context, index) {
                   var data = provider.contacts[index];
                   return Container(
                     decoration: commonBoxDecoration(borderColor: colorBorder),
@@ -147,16 +147,26 @@ class _StoreCollectionTabState extends State<ContactListPage> {
 
                             spacing: 10,
                             children: [
-                              _commonView(color: colorSale, title: "Call",onTap: (){
-                                UrlLauncherService.launchPhoneCall( data['mobile']);
-                              }),
                               _commonView(
-                                  color: colorUser,
-                                  icon: Icons.email_outlined,
-                                  title: "Email",
-                                  onTap: (){
-                                    UrlLauncherService.launchEmail(  data['email'], body: "Test",subject: "Test");
-                                  }
+                                color: colorSale,
+                                title: "Call",
+                                onTap: () {
+                                  UrlLauncherService.launchPhoneCall(
+                                    data['mobile'],
+                                  );
+                                },
+                              ),
+                              _commonView(
+                                color: colorUser,
+                                icon: Icons.email_outlined,
+                                title: "Email",
+                                onTap: () {
+                                  UrlLauncherService.launchEmail(
+                                    data['email'],
+                                    body: "Test",
+                                    subject: "Test",
+                                  );
+                                },
                               ),
                               _commonView(
                                 color: colorProduct,
@@ -181,12 +191,13 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                 },
               ),
             ),
-            provider.isLoading?showLoaderList():SizedBox.shrink()
+            provider.isLoading ? showLoaderList() : SizedBox.shrink(),
           ],
         );
       },
     );
   }
+
   _commonView({
     Color? color,
     IconData? icon,
