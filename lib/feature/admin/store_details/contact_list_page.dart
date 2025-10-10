@@ -62,14 +62,17 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                   mainAxisSpacing: 12,
                   childAspectRatio: isMobile
                       ? 1.3
-                      : 1.8, // adjust roughly for initial layout
+                      : 2.1, // adjust roughly for initial layout
                 ),
                 itemCount: provider.contacts.length,
                 physics: BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
                   var data = provider.contacts[index];
                   return Container(
-                    decoration: commonBoxDecoration(borderColor: colorBorder),
+                    decoration: commonBoxDecoration(
+                      borderColor: colorBorder,
+                      color: Colors.white,
+                    ),
                     margin: EdgeInsets.all(8),
                     padding: EdgeInsets.all(12),
                     child: Column(

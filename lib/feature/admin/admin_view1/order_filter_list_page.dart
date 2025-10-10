@@ -241,8 +241,9 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                       right: 16,
                     ),
                     child: commonButton(
-                      width: isMobile?MediaQuery.sizeOf(context).width:null,
+                      width: isMobile?MediaQuery.sizeOf(context).width:MediaQuery.sizeOf(context).width*0.3,
                       text: "Update",
+
                       onPressed: () async {
                         await provider.updateAllStatusesToFirebase(storeName: widget.storeName);
                         ScaffoldMessenger.of(context).showSnackBar(

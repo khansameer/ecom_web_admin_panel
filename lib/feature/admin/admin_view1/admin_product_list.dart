@@ -60,12 +60,11 @@ class _AdminProductListState extends State<AdminProductList> {
             provider.allPendingRequest.isNotEmpty
                 ? GridView.builder(
                     itemCount: provider.allPendingRequest.length,
-                    gridDelegate:
-                         SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: isMobile?1:3,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                        ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: isMobile ? 1 : 3,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                    ),
                     itemBuilder: (context, index) {
                       var data = provider.allPendingRequest[index];
                       Uint8List? imageBytes;
@@ -125,8 +124,8 @@ class _AdminProductListState extends State<AdminProductList> {
                                     children: [
                                       Expanded(
                                         child: commonButton(
-                                          fontSize:  isMobile?12:14,
-                                          height: isMobile?45:null,
+                                          fontSize: isMobile ? 12 : 14,
+                                          height: isMobile ? 45 : null,
                                           radius: 8,
                                           padding: const EdgeInsets.symmetric(
                                             vertical: 4,
@@ -148,12 +147,23 @@ class _AdminProductListState extends State<AdminProductList> {
                                                 Navigator.pop(context);
 
                                                 productProvider
-                                                    .uploadProductImageViaAdmin(
+                                                    .uploadProductImageViaAdminWeb(
                                                       imagePath: data['image'],
+                                                      storeRoom: widget.storeName,
                                                       productId:
                                                           data['product_id'],
-                                                      uid: data['uid'],
-                                                    );
+                                                      uid: data['id'],
+                                                    )
+                                                    .then((_) async {
+
+                                                      await provider
+                                                          .getStoreCollectionData(
+                                                            storeName: widget
+                                                                .storeName,
+                                                            collectionName: widget
+                                                                .collectionName,
+                                                          ); // ya koi refresh method
+                                                    });
                                               },
                                               context: context,
                                               content:
@@ -165,8 +175,8 @@ class _AdminProductListState extends State<AdminProductList> {
                                       Expanded(
                                         child: commonButton(
                                           radius: 8,
-                                          fontSize:  isMobile?12:14,
-                                          height: isMobile?45:null,
+                                          fontSize: isMobile ? 12 : 14,
+                                          height: isMobile ? 45 : null,
                                           color: Colors.white.withValues(
                                             alpha: 0.3,
                                           ),
@@ -180,12 +190,23 @@ class _AdminProductListState extends State<AdminProductList> {
                                               confirmText: "Yes",
                                               title: "Decline",
                                               onPressed: () {
-                                                Navigator.pop(context);
+                                                 Navigator.pop(context);
                                                 productProvider
-                                                    .updateProductStatus(
-                                                      uid: data['uid'],
+                                                    .updateProductStatusWeb(
+                                                  storeName:    widget.storeName,
+                                                      uid: data['id'],
+
                                                       title: "disapproved_date",
-                                                    );
+                                                    )
+                                                    .then((_) async {
+                                                      await provider
+                                                          .getStoreCollectionData(
+                                                            storeName: widget
+                                                                .storeName,
+                                                            collectionName: widget
+                                                                .collectionName,
+                                                          ); // ya koi refresh method
+                                                    });
                                                 //provider.uploadProductImageViaAdmin(imagePath: data['image'], productId: data['product_id'],uid:  data['uid']);
                                               },
                                               context: context,
