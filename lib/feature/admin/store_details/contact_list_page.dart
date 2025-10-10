@@ -66,7 +66,6 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                 ),
                 itemCount: provider.contacts.length,
                 physics: BouncingScrollPhysics(),
-
                 itemBuilder: (context, index) {
                   var data = provider.contacts[index];
                   return Container(
