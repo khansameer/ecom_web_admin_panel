@@ -60,47 +60,6 @@ class _CustomerOrderPageState extends State<CustomerOrderPage> {
                           height: 16,
                         ),
 
-                        /*  suffixIcon: IconButton(
-                              icon: commonPrefixIcon(
-                                image: icProductFilter,
-                                width: 20,
-                                height: 20,
-                              ),
-                              onPressed: () {
-                                final filters = [
-                                  FilterItem(
-                                    label: "Status",
-                                    options: [
-                                      "All",
-                                      "Authorized",
-                                      "Paid",
-                                      "Partially Paid",
-                                      "Refunded",
-                                      "Voided",
-                                    ],
-                                    selectedValue: provider.selectedStatus
-                                        .toString()
-                                        .toCapitalize(), // 👈 provider से लो
-                                  ),
-                                ];
-
-                                showCommonFilterDialog(
-                                  context: context,
-                                  title: "Filter Orders",
-                                  filters: filters,
-                                  onReset: () {
-                                    provider.getOrderList(financialStatus: null);
-                                    // provider.filterByStatus("All"); // reset
-                                  },
-                                  onApply: () {
-                                    final selectedStatus = filters.first.selectedValue
-                                        .toLowerCase();
-
-                                    provider.filterByStatus(selectedStatus);
-                                  },
-                                );
-                              },
-                            ),*/
                         onChanged: (value) => provider.setSearchQuery(value),
                       ),
                     ),
@@ -128,7 +87,7 @@ class _CustomerOrderPageState extends State<CustomerOrderPage> {
                                     onTap: () {
                                       navigatorKey.currentState?.pushNamed(
                                         RouteName.orderDetailsScreen,
-                                        arguments: data,
+                                        arguments: data.id ?? '',
                                       );
                                     },
                                     colorTextStatus: provider

@@ -22,4 +22,5 @@ class RouteName {
   static const String pendingRequestScreen = "/PendingRequestScreen";
   static const String adminDashboardScreen = "/AdminDashboardScreen";
   static const String adminLoginPage = "/AdminLoginPage";
+  static const String adminHomePage = "/AdminHomePage";
 }

@@ -25,10 +25,9 @@ class AdminLoginPage extends StatelessWidget {
     var isMobile = Responsive.isMobile(context);
     final formLoginKey = GlobalKey<FormState>();
     return commonScaffold(
-
-      backgroundColor: colorBg,
-      body: Consumer2<ThemeProvider, LoginProvider>(
-        builder: (context, themeProvider, provider, child) {
+      backgroundColor: Colors.white,
+      body: Consumer<LoginProvider>(
+        builder: (context, provider, child) {
           return Stack(
             children: [
               Center(
@@ -64,12 +63,8 @@ class AdminLoginPage extends StatelessWidget {
                             width: containerWidth,
                             decoration: commonBoxDecoration(
                               borderRadius: 12,
-                              borderColor: themeProvider.isDark
-                                  ? Colors.white54
-                                  : colorBorder,
-                              color: themeProvider.isDark
-                                  ? colorBorder
-                                  : Colors.white,
+                              borderColor: colorBorder,
+                              color: Colors.white,
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black12,
@@ -79,8 +74,7 @@ class AdminLoginPage extends StatelessWidget {
                               ],
                             ),
                             child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 SizedBox(height: 20),
@@ -88,7 +82,7 @@ class AdminLoginPage extends StatelessWidget {
                                   alignment: AlignmentGeometry.center,
                                   child: commonAssetImage(
                                     icAppLogo,
-                                    height: isMobile?62:72,
+                                    height: isMobile ? 62 : 72,
                                     width: size.width * 0.7,
                                   ),
                                 ),
@@ -97,9 +91,7 @@ class AdminLoginPage extends StatelessWidget {
                                   text: "Welcome back 👋 ",
                                   fontSize: 22,
                                   fontWeight: FontWeight.w700,
-                                  color: themeProvider.isDark
-                                      ? Colors.white
-                                      : colorLogo,
+                                  color: colorLogo,
                                 ),
                                 const SizedBox(height: 2),
                                 commonDescriptionText(
@@ -110,9 +102,7 @@ class AdminLoginPage extends StatelessWidget {
                                   hintText: "Email",
                                   controller: provider.tetEmail,
                                   validator: validateEmail,
-                                  prefixIcon: commonPrefixIcon(
-                                    image: icEmail,
-                                  ),
+                                  prefixIcon: commonPrefixIcon(image: icEmail),
                                 ),
                                 const SizedBox(height: 24),
                                 commonTextField(
@@ -126,9 +116,8 @@ class AdminLoginPage extends StatelessWidget {
                                   ),
                                   suffixIcon: GestureDetector(
                                     onTap: () {
-
-
-                                      provider.toggleCurrentPassword();
+                                      print("Toggle");
+                                      provider.togglePassword();
                                     },
                                     child: Icon(
                                       provider.obscurePassword
@@ -143,19 +132,14 @@ class AdminLoginPage extends StatelessWidget {
                                   text: "Login",
                                   width: size.width,
                                   onPressed: () {
-
-
-                                    if(formLoginKey.currentState?.validate()==true){
-                                      Navigator.push(
+                                    if (formLoginKey.currentState?.validate() ==
+                                        true) {
+                                      Navigator.pushNamedAndRemoveUntil(
                                         context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              AdminHomePage(),
-                                        ),
+                                        RouteName.adminHomePage,
+                                        (Route<dynamic> route) => false,
                                       );
                                     }
-
-
                                   },
                                 ),
                               ],
