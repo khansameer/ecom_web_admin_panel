@@ -31,7 +31,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       listen: false,
     );
 
-    productProvider.getAllContactList();
+    //productProvider.getAllContactList();
     productProvider.markAllAsSeen();
   }
 
@@ -49,11 +49,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: commonListViewBuilder(
-                items: provider.contacts,
+                items: provider.adminContactModel?.contacts??[],
                 physics: BouncingScrollPhysics(),
                 padding: EdgeInsets.all(0),
                 itemBuilder: (context, index, data) {
-                  var data = provider.contacts[index];
+                  var data = provider.adminContactModel?.contacts?[index];
                   return Container(
                     decoration: commonBoxDecoration(borderColor: colorBorder),
                     margin: EdgeInsets.all(8),
@@ -71,7 +71,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               fontWeight: FontWeight.w600,
                             ),
                             commonText(
-                              text: data['name'],
+                              text: data?.name??'',
                               fontWeight: FontWeight.w600,
                             ),
                           ],
@@ -85,7 +85,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               fontSize: 12,
                             ),
                             commonText(
-                              text: data['mobile'],
+                              text:data?.mobile??'',
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
                             ),
@@ -99,16 +99,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
                             ),
-                            commonText(
+                            /*commonText(
                               text: formatTimestamp(data['created_at']),
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
-                            ),
+                            ),*/
                           ],
                         ),
 
                         commonText(
-                          text: data['message'],
+                          text:data?.message??'',
                           maxLines: 5,
                           overflow: TextOverflow.ellipsis,
                           fontSize: 12,
@@ -129,14 +129,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             spacing: 10,
                             children: [
                               _commonView(color: colorSale, title: "Call",onTap: (){
-                                UrlLauncherService.launchPhoneCall( data['mobile']);
+                                UrlLauncherService.launchPhoneCall(data?.mobile??'');
                               }),
                               _commonView(
                                 color: colorUser,
                                 icon: Icons.email_outlined,
                                 title: "Email",
                                 onTap: (){
-                                  UrlLauncherService.launchEmail(  data['email'], body: "Test",subject: "Test");
+                                  UrlLauncherService.launchEmail( data?.email??'', body: "Test",subject: "Test");
                                 }
                               ),
                               _commonView(
@@ -149,7 +149,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                     showCancel: false,
                                     confirmText: "Close",
                                     context: context,
-                                    content: data['message'],
+                                    content: data?.message??'',
                                   );
                                 },
                               ),

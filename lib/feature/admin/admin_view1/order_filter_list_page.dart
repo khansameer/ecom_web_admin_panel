@@ -38,10 +38,10 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
       listen: false,
     );
 
-    customerProvider.getStoreCollectionData(
+    /*customerProvider.getStoreCollectionData(
       storeName: widget.storeName,
       collectionName: widget.collectionName,
-    );
+    );*/
   }
 
   void _showAddFilterDialog(BuildContext context) {

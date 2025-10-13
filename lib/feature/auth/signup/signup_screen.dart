@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -62,7 +63,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               },
                               child: Form(
                                 key: formSignupKey,
-        
+
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -70,9 +71,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                     SizedBox(height: size.height * 0.08),
                                     Align(
                                       alignment: AlignmentGeometry.center,
-                                      child: commonAssetImage(    icAppLogo,
-        
-        
+                                      child: commonAssetImage(
+                                        icAppLogo,
+
                                         width: size.width * 0.6,
                                       ),
                                     ),
@@ -92,7 +93,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                           const SizedBox(height: 6),
                                           commonDescriptionText(
                                             textAlign: TextAlign.center,
-        
+
                                             text:
                                                 "Fill in the details below to register your store and start using the app.",
                                           ),
@@ -100,77 +101,57 @@ class _SignupScreenState extends State<SignupScreen> {
                                         ],
                                       ),
                                     ),
-        
+
                                     const SizedBox(height: 5),
-        
-                                    SizedBox(height: 20,),
+
+                                    SizedBox(height: 20),
                                     commonSignUpView(
                                       provider: provider,
                                       onPressSignUp: TapGestureRecognizer()
                                         ..onTap = () {
                                           hideKeyboard(context);
-                                          context.read<LoginProvider>().resetState();
+                                          context
+                                              .read<LoginProvider>()
+                                              .resetState();
                                           navigatorKey.currentState?.pushNamed(
                                             RouteName.loginScreen,
                                           );
                                         },
-        
+
                                       onPressed: () async {
                                         hideKeyboard(context);
-                                        String fullNumber =
-                                            provider
-                                                .tetCountryCodeController
-                                                .text +
-                                            provider.tetPhone.text;
-        
+                                        String fullNumber = getFullPhoneNumber(
+                                          phoneController: provider.tetPhone,
+                                          countryCodeController:
+                                              provider.tetCountryCodeController,
+                                        );
+
                                         print('==========${fullNumber}');
                                         if (formSignupKey.currentState
                                                 ?.validate() ==
                                             true) {
                                           try {
-                                            await signUpProvider.signup(
-                                              logoUrl:  provider
-                                                  .tetLogoUrl
-                                                  .text,
-                                              countryCode:   provider
-                                                  .tetCountryCodeController
-                                                  .text,
-                                              email: provider.tetEmail.text
-                                                  .trim(),
-        
-                                              storeName: provider
+                                            String? fcmToken =
+                                                await FirebaseMessaging.instance
+                                                    .getToken();
+                                            Map<String, dynamic> body = {
+                                              "store_name": provider
                                                   .tetStoreName
                                                   .text
                                                   .trim(),
-                                              websiteUrl: provider
-                                                  .tetWebsiteUrl
-                                                  .text
+                                              "email": provider.tetEmail.text
                                                   .trim(),
-                                              mobile: provider.tetPhone.text,
-                                              name: provider.tetFullName.text.trim(),
-                                              photo: _pickedImage,
-                                            );
-        
-                                            showCommonDialog(
-                                              title: "Success",
-                                              onPressed: () {
-                                                Timer(
-                                                  const Duration(milliseconds: 500),
-                                                      () async {
-                                                    navigatorKey.currentState
-                                                        ?.pushNamedAndRemoveUntil(
-                                                      RouteName.loginScreen,
-                                                          (Route<dynamic> route) => false,
-                                                    );
-        
-        
-                                                    context.read<LoginProvider>().resetState();
-                                                  },
-                                                );
-                                              },
-                                              context: context,
-                                              content:
-                                                  "Your account is successfully created. You can access it after 24 hours.",
+                                              "mobile": fullNumber,
+                                              "name": provider.tetFullName.text
+                                                  .trim(),
+                                              "accessToken": '',
+                                              "version_code": '',
+                                              "fcm_token": fcmToken,
+                                              "active_status": false,
+                                              //  "fcm_token": "Hello, I need help with my order."
+                                            };
+                                            await signUpProvider.signup(
+                                              params: body,
                                             );
                                           } catch (e) {
                                             print('====$e');
@@ -178,7 +159,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                                 .toString()
                                                 .split(": ")
                                                 .last;
-        
+
                                             showCommonDialog(
                                               title: "Error",
                                               context: context,
@@ -199,7 +180,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                   ),
-                  signUpProvider.isLoading ? showLoaderList() : SizedBox.shrink(),
+                  signUpProvider.isLoading
+                      ? showLoaderList()
+                      : SizedBox.shrink(),
                 ],
               ),
             );

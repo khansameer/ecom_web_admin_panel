@@ -1288,3 +1288,9 @@ Widget commonTextRich({
     ),
   );
 }
+String getFullPhoneNumber({required TextEditingController phoneController, required TextEditingController countryCodeController}) {
+  final phone = phoneController.text.trim(); // e.g., 5551234567
+  final countryCode = countryCodeController.text.trim(); // e.g., +1
+  if (phone.isEmpty || countryCode.isEmpty) return '';
+  return '$countryCode$phone'; // +15551234567
+}

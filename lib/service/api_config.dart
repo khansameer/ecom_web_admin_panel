@@ -1,11 +1,31 @@
+import 'package:neeknots/models/user_model.dart';
+
 import '../core/hive/app_config_cache.dart';
 
 class ApiConfig {
 
 
+
+
+ static String apiBASEURL="http://10.0.10.152:3000";
+
+ //=======================user and Login Api
+ static String authAPi="$apiBASEURL/user";
+ static String loginAPi="$apiBASEURL/login";
+ static String generateOtpAPI="$apiBASEURL/generate-otp";
+ static String verifyOtpAPI="$apiBASEURL/verify-otp";
+ //=======================contact Us
+
+ static String contactUs="$apiBASEURL/contact-us";
+ //=======================Product
+ static String product="$apiBASEURL/product";
+
+
+  //==========================================================Shopify API=================================================================================================================
   static Future<String> get accessToken async {
-    final config = await AppConfigCache.loadConfig();
-    return config['accessToken'] ?? '';
+    UserModel? user = await AppConfigCache.getUserModel(); // await the future
+   // final config = await AppConfigCache.loadConfig();
+    return user?.accessToken ?? '';
   }
 
  static Future<Map<String, String>> getCommonHeaders() async {
@@ -20,9 +40,12 @@ class ApiConfig {
   static const String storeName = "merlettenyc-demo";
   static const String versionCode = "2025-07";*/
   static Future<String> get baseUrl async {
-    final config = await AppConfigCache.loadConfig();
-    final storeName = config['storeName'] ?? '';
-    final versionCode = config['versionCode'] ?? '';
+    UserModel? user = await AppConfigCache.getUserModel(); // await the future
+    //final config = await AppConfigCache.loadConfig();
+    //final storeName = config['storeName'] ?? '';
+    final storeName = user?.storeName?? '';
+    //final versionCode = config['versionCode'] ?? '';
+    final versionCode =user?.versionCode ?? '';
     return "https://$storeName.myshopify.com/admin/api/$versionCode";
   }
 

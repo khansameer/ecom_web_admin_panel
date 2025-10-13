@@ -8,7 +8,7 @@ import 'package:neeknots/service/api_config.dart';
 
 import 'gloable_status_code.dart';
 
-Future callPostMethod(String url, Map<String, dynamic> params) async {
+Future callPostMethod({required String url, required Map<String, dynamic> params,Map<String, String>? headers}) async {
   debugPrint('==Post Method==$url');
   return await http
       .post(

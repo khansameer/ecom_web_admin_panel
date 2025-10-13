@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/core/component/CommonPhoneField.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/provider/login_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../core/component/phone_number_field.dart';
+import '../core/hive/app_config_cache.dart';
 import '../core/image/image_utils.dart';
 import '../core/validation/validation.dart';
+import '../models/user_model.dart';
 
 class ContactUsScreen extends StatelessWidget {
   const ContactUsScreen({super.key});
@@ -46,8 +48,10 @@ class ContactUsScreen extends StatelessWidget {
                         _commonView(
                           title: "Name",
                           controller: provider.tetFullName,
-                          validator: (value) =>
-                              emptyError(value, errorMessage: "Name is required"),
+                          validator: (value) => emptyError(
+                            value,
+                            errorMessage: "Name is required",
+                          ),
                         ),
                         _commonView(
                           title: "Email",
@@ -70,9 +74,14 @@ class ContactUsScreen extends StatelessWidget {
                           },
                         ),*/
                         Align(
-                            alignment: Alignment.topLeft,
-                            child: commonText(text: "Phone Number", fontWeight: FontWeight.w400,textAlign: TextAlign.left)),
-                        PhoneNumberField(
+                          alignment: Alignment.topLeft,
+                          child: commonText(
+                            text: "Phone Number",
+                            fontWeight: FontWeight.w400,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                        /*PhoneNumberField(
                           phoneController: provider.tetPhone,
                           countryCodeController: provider.tetCountryCodeController,
                           prefixIcon: commonPrefixIcon(image: icPhone),
@@ -83,6 +92,13 @@ class ContactUsScreen extends StatelessWidget {
                             return null;
                           },
                           isCountryCodeEditable: true, // fixed +1
+                        ),*/
+                        CommonPhoneField(
+                          phoneController: provider.tetPhone,
+                          countryCodeController:
+                              provider.tetCountryCodeController,
+
+                          hintText: "Enter your phone",
                         ),
                         _commonView(
                           controller: provider.tetMessage,
@@ -105,24 +121,32 @@ class ContactUsScreen extends StatelessWidget {
                     SizedBox(height: 40),
                     commonButton(
                       text: "Submit",
-                      onPressed: () {
+                      onPressed: () async {
+
+
                         if (formContactUS.currentState?.validate() == true) {
-                          String fullNumber =
-                              provider.tetCountryCodeController.text +
-                                  provider.tetPhone.text;
-                          provider.addContactUsData(
-                            email: provider.tetEmail.text,
-                            mobile: fullNumber,
-                            message: provider.tetMessage.text,
-                            name: provider.tetFullName.text,
-                          );
+
+                          String fullNumber = getFullPhoneNumber(phoneController:   provider.tetPhone, countryCodeController: provider.tetCountryCodeController);
+                          UserModel? user = await AppConfigCache.getUserModel(); // await the future
+                          Map<String, dynamic> body = {
+                            "id": user?.id??0, //userID
+                            "name": provider.tetFullName.text,
+                            "email": provider.tetEmail.text,
+                            "mobile": fullNumber,
+                            "store_name": user?.storeName??'',
+                            "message": provider.tetMessage.text,
+                            //  "fcm_token": "Hello, I need help with my order."
+                          };
+
+                          print('=======body$body');
+                           provider.addContactUsData(body: body);
                         }
                       },
                     ),
                   ],
                 ),
               ),
-              provider.isLoading?showLoaderList():SizedBox.shrink()
+              provider.isLoading ? showLoaderList() : SizedBox.shrink(),
             ],
           );
         },
@@ -151,10 +175,9 @@ class ContactUsScreen extends StatelessWidget {
 
           hintText: '',
 
-          contentPadding:prefixIcon?.isNotEmpty==false?EdgeInsetsGeometry.zero: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ) ,
+          contentPadding: prefixIcon?.isNotEmpty == false
+              ? EdgeInsetsGeometry.zero
+              : EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           //prefixIcon:prefixIcon?.isNotEmpty==true? commonPrefixIcon(image: prefixIcon??icUser):SizedBox(width: 0,),
           maxLines: maxLine ?? 1,
           controller: controller,

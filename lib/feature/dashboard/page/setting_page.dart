@@ -39,11 +39,7 @@ class _SettingPageState extends State<SettingPage> {
 
   Future<void> init() async {
     final profile = Provider.of<ProfileProvider>(context, listen: false);
-    await profile.loadUserData(); // <-- await here
-
-    /*print(
-      '==userData===${profile.userData.toString()}',
-    ); */ // Now it will have value
+    await profile.loadUserData();
   }
 
   @override
@@ -62,7 +58,7 @@ class _SettingPageState extends State<SettingPage> {
                   height: 150,
                   fit: BoxFit.cover,
                   width: size.width * 0.7,
-                  imageUrl: provider.userData?['logo_url'] ?? '',
+                  imageUrl: provider.userData?.logoUrl??'',
 
                   placeholder: (context, url) =>
                       Center(child: CircularProgressIndicator(strokeWidth: 2)),
@@ -80,7 +76,7 @@ class _SettingPageState extends State<SettingPage> {
                 SizedBox(height: 20),
                 commonText(
                   textAlign: TextAlign.center,
-                  text: provider.userData?['name'] ?? '',
+                  text: provider.userData?.name ?? '',
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: themeProvider.isDark ? Colors.white : colorLogo,
@@ -88,7 +84,7 @@ class _SettingPageState extends State<SettingPage> {
                 SizedBox(height: 4),
                 commonText(
                   textAlign: TextAlign.center,
-                  text: provider.userData?['email'] ?? '',
+                  text: provider.userData?.email ?? '',
                   fontSize: 13,
                   fontWeight: FontWeight.w400,
                   color: themeProvider.isDark
@@ -153,11 +149,12 @@ class _SettingPageState extends State<SettingPage> {
                       context: context,
                       content: "Are you sure want to delete account",
                       onPressed: () async {
-                        final authService = AuthService();
+                        provider.deleteUser();
+                       /* final authService = AuthService();
                         await authService.deleteCurrentUser(
                           context: context,
                           uid: provider.userData?['id'] ?? '',
-                        );
+                        );*/
                       },
                     );
                   },
@@ -184,7 +181,7 @@ class _SettingPageState extends State<SettingPage> {
                             context.read<CustomerProvider>().reset();
                             context.read<ProfileProvider>().resetState();
                             context.read<LoginProvider>().resetState();
-                            await AppConfigCache.clearConfig();
+                            await AppConfigCache.clearUserModel();
                             navigatorKey.currentState?.pushNamedAndRemoveUntil(
                               RouteName.loginScreen,
                               (Route<dynamic> route) => false,

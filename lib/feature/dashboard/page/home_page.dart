@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
      Future.wait([
 
       productProvider.getProductList(limit: 5,context: context),
-      productProvider.getCountPendingRequest(),
+       productProvider.getAllPendingRequestCount(),
       productProvider.getTotalProductCount(),
       orderProvider.getOrderList(limit: "5"),
       customerProvider.getTotalCustomerCount(),
@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                 padding: EdgeInsets.all(12),
                 children: [
                   homeTopView(
-                    totalPendingRequest: productProvider.pendingCount,
+                    totalPendingRequest: productProvider.pendingProductCount??0,
                     totalOrderPrice: orderProvider.totalOrderPrice,
                     totalOrder: orderProvider.totalOrderCount,
                     totalProduct: productProvider.totalProductCount,

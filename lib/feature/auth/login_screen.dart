@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:neeknots/admin/admin_dashboad.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
@@ -83,24 +82,18 @@ class LoginScreen extends StatelessWidget {
 
                                     if (formLoginKey.currentState?.validate() ==
                                         true) {
-                                      if (provider.tetPhone.text
-                                          .trim()
-                                          .isEmpty) {
-                                        return;
-                                      }
+                                      String fullNumber = getFullPhoneNumber(
+                                        phoneController: provider.tetPhone,
+                                        countryCodeController:
+                                        provider.tetCountryCodeController,
+                                      );
                                       try {
-                                        final userData = await provider.login(
-                                          countryCode: provider
-                                              .tetCountryCodeController
-                                              .text,
-                                          email: provider.tetEmail.text.trim(),
-                                          mobile: provider.tetPhone.text,
-                                        );
-
-                                        navigatorKey.currentState?.pushNamed(
-                                          RouteName.otpVerificationScreen,
-                                          arguments: userData,
-                                        );
+                                        Map<String, dynamic> body = {
+                                          "email": provider.tetEmail.text
+                                              .trim(),
+                                          "mobile": fullNumber,
+                                        };
+                                        provider.login(body: body);
                                       } catch (e) {
                                         print('======Z$e');
 

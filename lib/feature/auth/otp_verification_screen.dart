@@ -8,9 +8,6 @@ import 'package:provider/provider.dart';
 
 import '../../core/color/color_utils.dart';
 import '../../core/component/common_pin_code_field.dart';
-import '../../core/hive/app_config_cache.dart';
-import '../../main.dart';
-import '../../routes/app_routes.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -22,29 +19,17 @@ class OtpVerificationScreen extends StatefulWidget {
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
-  /*final TextEditingController _emailOtpController = TextEditingController();
-  final TextEditingController _phoneOtpController = TextEditingController();*/
-  /*@override
-  void dispose() {
-    _emailOtpController.dispose();
-    _phoneOtpController.dispose();
-    super.dispose();
-  }*/
+  final TextEditingController otpController = TextEditingController();
+
   @override
   void dispose() {
-    //_emailOtpController.dispose();
+    otpController.dispose();
     super.dispose();
   }
-
   Future<void> _validateOtp() async {
-    /* String emailOtp = _emailOtpController.text.trim();
-    String phoneOtp = _phoneOtpController.text.trim();*/
-
-    // Email OTP validation
-
     final provider = Provider.of<LoginProvider>(context, listen: false);
 
-    String emailOtp = provider.tetOTP.text.trim();
+    String emailOtp =otpController.text.trim();
     if (emailOtp.isEmpty) {
       ScaffoldMessenger.of(
         context,
@@ -57,45 +42,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       return;
     }
 
-    // Phone OTP validation
-
-    /*if (phoneOtp.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please enter Phone OTP")));
-      return;
-    } else if (phoneOtp.length != 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Phone OTP must be 4 digits")),
-      );
-      return;
-    }*/
-
     try {
-      final data = await provider.verifyOtp(
-        userID: widget.userData['uid'] ?? '',
-        enteredOtp: emailOtp,
-      );
-      if (data?.isNotEmpty == true) {
-        await AppConfigCache.saveUser(
-          uid: widget.userData['uid'],
-          name: widget.userData['name'] ?? '',
-          email: widget.userData['email'] ?? '',
-          photo: widget.userData['logo_url'] ?? '',
-          mobile: widget.userData['mobile'] ?? '',
-        );
-        await AppConfigCache.saveConfig(
-          accessToken: widget.userData['accessToken'] ?? '',
-          storeName: widget.userData['store_name'] ?? '',
-          versionCode: widget.userData['version_code'] ?? '',
-          logoUrl: widget.userData['logo_url'] ?? '',
-        );
-
-        navigatorKey.currentState?.pushNamedAndRemoveUntil(
-          RouteName.dashboardScreen,
-          (Route<dynamic> route) => false,
-        );
-      }
+      Map<String, dynamic> body = {
+        "email": widget.userData['email'],
+        "mobile": widget.userData['mobile'],
+        "otp": emailOtp,
+      };
+      await provider.verifyOtp(body: body);
     } catch (e) {
       String errorMessage = e.toString().split(": ").last;
 
@@ -205,7 +158,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                     Align(
                                       alignment: AlignmentGeometry.center,
                                       child: CommonPinCodeField(
-                                        controller: loginProvider.tetOTP,
+                                        controller:otpController,
                                         activeFillColor: colorLogo,
                                         inactiveFillColor: colorBorder,
                                         selectedFillColor: colorLogo.withValues(
@@ -272,9 +225,13 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                                   onTap: provider.canResend
                                       ? (TapGestureRecognizer()
                                           ..onTap = () async {
+                                            Map<String, dynamic> body = {
+                                              "email": widget.userData['email'],
+                                              "mobile":
+                                                  widget.userData['mobile'],
+                                            };
                                             await provider.resendOtp(
-                                              userId: widget.userData['uid'],
-                                              email: widget.userData["email"],
+                                              body: body,
                                             );
                                             // await provider.resendOtp(userId: widget.userData['uid'],email: "pathansameerahmed@gmail.com");
                                             ScaffoldMessenger.of(

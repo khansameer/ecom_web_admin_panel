@@ -107,6 +107,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           themeProvider,
                         );
                         if (path != null) {
+
+
+
+
                           provider.uploadProductImage(
                             imagePath: path,
                             productName:

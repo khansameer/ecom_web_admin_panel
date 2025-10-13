@@ -1,9 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../core/firebase/auth_service.dart';
+import '../core/component/component.dart';
 import '../core/hive/app_config_cache.dart';
+import '../main.dart';
+import '../models/user_model.dart';
+import '../routes/app_routes.dart';
+import '../service/api_config.dart';
+import '../service/gloable_status_code.dart';
+import '../service/network_repository.dart';
 
 class ProfileProvider with ChangeNotifier {
   bool _isFetching = false;
@@ -60,30 +67,75 @@ class ProfileProvider with ChangeNotifier {
     super.dispose();
   }
 
-  Map<String, dynamic>? _userData;
+  UserModel? _userData;
 
-  Map<String, dynamic>? get userData => _userData;
+  UserModel? get userData => _userData;
 
-  Future<Map<String, dynamic>?> loadUserData() async {
-    _userData?.clear();
+  Future<void> loadUserData() async {
+    UserModel? user = await AppConfigCache.getUserModel(); // await the future
     _isLoading = true;
     notifyListeners();
-    String? storedEmailOrMobile = await AppConfigCache.getStoredEmailOrMobile();
+    try {
+      final response = await callGETMethod(url: '${ApiConfig.authAPi}/${user?.id??0}');
 
-    final userData = await AuthService().checkUserStatus(
-      emailOrMobile: storedEmailOrMobile ?? '',
-    );
-
-    _userData = userData;
-
-    _isLoading = false;
-    notifyListeners();
-    return _userData;
+      if (globalStatusCode == 200) {
+        _userData = UserModel.fromJson(json.decode(response));
+      } else {
+        showCommonDialog(
+          showCancel: false,
+          title: "Error",
+          context: navigatorKey.currentContext!,
+          content: errorMessage,
+        );
+      }
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
+
+  Future<void> deleteUser() async {
+    UserModel? user = await AppConfigCache.getUserModel(); // await the future
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final response = await callDeleteMethod(url: '${ApiConfig.authAPi}/${user?.id??0}');
+
+      if (globalStatusCode == 200) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            RouteName.loginScreen,
+                (Route<dynamic> route) => false,
+          );
+        });
+      } else {
+       /* showCommonDialog(
+          showCancel: false,
+          title: "Error",
+          context: navigatorKey.currentContext!,
+          content: errorMessage,
+        );*/
+      }
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
 
   /// Optional: Clear user data
   void clearUserData() {
-    _userData?.clear();
+    _userData == null;
     notifyListeners();
   }
 }

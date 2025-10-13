@@ -19,17 +19,18 @@ class CommonAdminListView extends StatefulWidget {
 class _CommonAdminListViewState extends State<CommonAdminListView> {
 
   final List<Map<String, dynamic>> dashboardItems = [
-    {"title": "Users", "icon": icTotalUser},
-    {"title": "Orders", "icon": icOrderMenu},
-    {"title": "Products", "icon": icProductMenu},
-    {"title": "Contacts", "icon": icContact},
+    {"title": "users", "icon": icTotalUser},
+    {"title": "orders", "icon": icOrderMenu},
+    {"title": "products", "icon": icProductMenu},
+    {"title": "contacts", "icon": icContact},
   ];
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<AdminDashboardProvider>();
-      provider.fetchStoreCounts(storeName: widget.storeName);
+      provider.countByAllStoreName();
+      //provider.fetchStoreCounts(storeName: widget.storeName);
     });
   }
   @override

@@ -1,5 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../core/component/component.dart';
+import '../service/api_config.dart';
+import '../service/gloable_status_code.dart';
+import '../service/network_repository.dart';
 
 enum RequestStatus { pending, accepted, rejected }
 
@@ -53,5 +60,33 @@ class DashboardProvider with ChangeNotifier {
   void setName(String? value) {
     _name = value;
     notifyListeners();
+  }
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+  void _setLoading(bool val) {
+    _isLoading = val;
+    notifyListeners();
+  }
+
+
+  Future<void> updateFCMToken({required int id,required String token}) async {
+    _setLoading(true);
+    try {
+
+      Map<String, dynamic> body={
+        "fcm_token": token
+      };
+      final response = await callPutMethodWithToken(url:'${ApiConfig.authAPi}/$id/fcmToken',params:body);
+
+      print('=updateFCMToken==${json.decode(response)}');
+      
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
   }
 }

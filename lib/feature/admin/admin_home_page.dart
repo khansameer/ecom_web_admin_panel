@@ -47,12 +47,13 @@ class _AdminHomePageState extends State<AdminHomePage> {
   }
 
   void init() {
-    final customerProvider = Provider.of<AdminDashboardProvider>(
+    final adminProvider = Provider.of<AdminDashboardProvider>(
       context,
       listen: false,
     );
 
-    customerProvider.getStoreUserCounts();
+
+    adminProvider.getStoreUserCounts();
   }
 
   // 🔹 Detail page for selected section (e.g., Orders, Products)
@@ -306,9 +307,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
                     }
                     provider.setSelectedStore(index);
                     provider.setSelectedSection(null);
-                    await provider.fetchStoreCounts(
+                   /* await provider.fetchStoreCounts(
                       storeName: provider.storeCounts[index]['store_name'],
-                    );
+                    );*/
                   },
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 12),

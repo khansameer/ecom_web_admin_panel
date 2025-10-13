@@ -7,6 +7,7 @@ import 'package:neeknots/core/validation/validation.dart';
 import 'package:neeknots/provider/login_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/component/CommonPhoneField.dart';
 import '../../../core/component/phone_number_field.dart';
 import '../../../main.dart';
 import '../../../provider/theme_provider.dart';
@@ -73,7 +74,7 @@ Widget commonSignUpView({
           ),
         ],
       ),*/
-    PhoneNumberField(
+    /*PhoneNumberField(
         phoneController: provider.tetPhone,
         countryCodeController: provider.tetCountryCodeController,
         prefixIcon: commonPrefixIcon(image: icPhone),
@@ -84,6 +85,13 @@ Widget commonSignUpView({
           return null;
         },
           isCountryCodeEditable: true, // fixed +1
+      ),*/
+      CommonPhoneField(
+        phoneController: provider.tetPhone,
+        countryCodeController:
+        provider.tetCountryCodeController,
+
+        hintText: "Enter your phone",
       ),
       const SizedBox(height: 20),
       commonTextField(

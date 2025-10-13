@@ -48,22 +48,21 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
       body: commonAppBackground(
         child: Consumer<ProductProvider>(
           builder: (context, provider, child) {
-            if (provider.isLoading) {
+            /*if (provider.isLoading) {
               return SizedBox.shrink();
-            }
+            }*/
 
             return Stack(
               children: [
-                provider.allPendingRequest.isNotEmpty
+                provider.pendingProductModel?.products?.isNotEmpty==true
                     ? ListView.builder(
                         shrinkWrap: true,
-                        itemCount: provider.allPendingRequest.length,
+                        itemCount: provider.pendingProductModel?.products?.length,
                         itemBuilder: (context, index) {
-                          var data = provider.allPendingRequest[index];
+                          var data = provider.pendingProductModel?.products?[index];
                           Uint8List? imageBytes;
-                          if (data['image'] != null &&
-                              data['image'].isNotEmpty) {
-                            imageBytes = base64Decode(data['image']);
+                          if (data?.imagePath != null) {
+                            imageBytes = base64Decode(data?.imagePath??'');
                           }
                           return Container(
                             clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -108,7 +107,7 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       commonText(
-                                        text: data['name'],
+                                        text: data?.name??'',
                                         fontWeight: FontWeight.w500,
                                       ),
 
@@ -116,15 +115,15 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Expanded(
+                                          /*Expanded(
                                             child: commonText(
                                               text: formatTimestamp(
-                                                data['created_date'],
+                                                data?.createdDate,
                                               ),
                                               fontWeight: FontWeight.w400,
                                               fontSize: 12,
                                             ),
-                                          ),
+                                          ),*/
                                           _commonButton(
                                             color: Colors.green,
                                             onTap: () {
@@ -132,15 +131,17 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                                                 confirmText: "Upload",
                                                 title: "Approve",
                                                 onPressed: () {
-                                                  Navigator.pop(context);
+                                                 Navigator.pop(context);
 
                                                   provider
-                                                      .uploadProductImageViaAdmin(
-                                                        imagePath:
+                                                      .approvedRequest(
+                                                    imageBase64:data?.imagePath??'' ,
+                                                       productId:data?.imageId??'',
+                                                       /* imagePath:
                                                             data['image'],
                                                         productId:
                                                             data['product_id'],
-                                                        uid: data['uid'],
+                                                        uid: data['uid'],*/
                                                       );
                                                 },
                                                 context: context,
@@ -157,12 +158,12 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                                                 confirmText: "Yes",
                                                 title: "Decline",
                                                 onPressed: () {
-                                                  Navigator.pop(context);
+                                                  /*Navigator.pop(context);
                                                   provider.updateProductStatus(
                                                     uid: data['uid'],
                                                     title: "disapproved_date",
                                                   );
-                                                  //provider.uploadProductImageViaAdmin(imagePath: data['image'], productId: data['product_id'],uid:  data['uid']);
+                                                  provider.uploadProductImageViaAdmin(imagePath: data['image'], productId: data['product_id'],uid:  data['uid']);*/
                                                 },
                                                 context: context,
                                                 content:

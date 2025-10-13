@@ -61,3 +61,14 @@ String formatTimestamp(Timestamp? timestamp) {
   DateTime dateTime = timestamp.toDate(); // Firestore → DateTime
   return DateFormat("d MMMM yyyy, h:mm a").format(dateTime.toLocal());
 }
+
+String formatString(String? timestamp) {
+  if (timestamp == null || timestamp.isEmpty) return "N/A";
+
+  // Parse the string into DateTime
+  DateTime? dateTime = DateTime.tryParse(timestamp);
+  if (dateTime == null) return "N/A";
+
+  // Format the DateTime
+  return DateFormat("d MMMM yyyy, h:mm a").format(dateTime.toLocal());
+}

@@ -1,11 +1,20 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:neeknots/feature/admin/model/admin_contact_model.dart';
 import 'package:neeknots/main.dart';
 
 import '../core/component/component.dart';
 import '../core/firebase/auth_service.dart';
 import '../core/firebase/send_fcm_notification.dart';
+import '../core/hive/app_config_cache.dart';
 import '../feature/admin/admin_home_page.dart';
+import '../feature/admin/model/DashboardCount.dart';
+import '../models/user_model.dart';
+import '../service/api_config.dart';
+import '../service/gloable_status_code.dart';
+import '../service/network_repository.dart';
 
 class AdminDashboardProvider with ChangeNotifier {
   final tetFullName = TextEditingController();
@@ -133,17 +142,18 @@ class AdminDashboardProvider with ChangeNotifier {
     }
   }
 
-  Future<void> updateUserStatus({required String docId, String? token,required bool status}) async {
+  Future<void> updateUserStatus({
+    required String docId,
+    String? token,
+    required bool status,
+  }) async {
     try {
       _setUpdating(true);
       notifyListeners();
       await FirebaseFirestore.instance
           .collection(_authService.storesCollection)
           .doc(docId)
-          .update({
-
-        "active_status": status,
-      });
+          .update({"active_status": status});
       _setUpdating(false);
       notifyListeners();
       if (token != null && token.isNotEmpty) {
@@ -168,12 +178,12 @@ class AdminDashboardProvider with ChangeNotifier {
     }
   }
 
-  List<Map<String, dynamic>> _contacts = [];
+  /*  List<Map<String, dynamic>> _contacts = [];
 
-  List<Map<String, dynamic>> get contacts => _contacts;
+  List<Map<String, dynamic>> get contacts => _contacts;*/
   final AuthService _authService = AuthService();
 
-  Future<void> getAllContactList() async {
+  /*  Future<void> getAllContactList() async {
     _isLoading = true;
     notifyListeners();
 
@@ -188,7 +198,7 @@ class AdminDashboardProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-  }
+  }*/
 
   int _contactCount = 0;
 
@@ -483,7 +493,7 @@ class AdminDashboardProvider with ChangeNotifier {
 
   List<Map<String, dynamic>> get allPendingRequest => _allPendingRequest;
 
-  Future<void> getStoreCollectionData({
+  /*  Future<void> getStoreCollectionData({
     required String storeName,
     required String collectionName, // e.g., 'contact_us'
   }) async {
@@ -521,11 +531,11 @@ class AdminDashboardProvider with ChangeNotifier {
 
       _setLoading(false);
       notifyListeners();
-      /* return dataList;*/
+      */ /* return dataList;*/ /*
     } catch (e) {
       throw Exception("Failed to fetch $collectionName for $storeName: $e");
     }
-  }
+  }*/
 
   final List<Color> professionColors = [
     Colors.red,
@@ -649,76 +659,85 @@ class AdminDashboardProvider with ChangeNotifier {
   int productsCount = 0;
   int contactsCount = 0;
 
-  Future<void> fetchStoreCounts({required String storeName}) async {
-    _setLoading(true);
-    notifyListeners();
-
-    try {
-      // Product count
-      // ✅ Clear previous counts before fetching new data
-      productsCount = 0;
-      contactsCount = 0;
-      ordersCount = 0;
-      usersCount = 0;
-      notifyListeners(); // optional — updates UI immediately if shown
-      final productSnapshot = await _firestore
-          .collection(storeName)
-          .doc(
-            _authService.productCollection,
-          ) // if each store has a doc, adjust if needed
-          .collection(_authService.productCollection)
-          .where('status', isEqualTo: false) // ← only false status
-          .orderBy('created_date', descending: true)
-          .get();
-      productsCount = productSnapshot.docs.length;
-
-      final contactSnapshot = await _firestore
-          .collection(storeName)
-          .doc(_authService.contactUsCollection) // a document
-          .collection(_authService.contactUsCollection)
-          .get();
-
-      // Contact Us count
-      contactsCount = contactSnapshot.docs.length;
-
-      final orderSnapshot = await _firestore
-          .collection(storeName)
-          .doc(_authService.orderFilterCollection) // a document
-          .collection(_authService.orderFilterCollection)
-          .get();
-      ordersCount = orderSnapshot.docs.length;
-
-      final usersSnapshot = await _firestore
-          .collection(_authService.storesCollection)
-          .where('store_name', isEqualTo: storeName)
-          .get();
-      usersCount = usersSnapshot.docs.length;
-      _setLoading(false);
-      notifyListeners();
-    } catch (e) {
-    /*  showCommonDialog(
-        title: "title$contactsCount ${e}",
-        context: navigatorKey.currentContext!,
-      );*/
-      _setLoading(false);
-      notifyListeners();
-      throw Exception("Failed to fetch counts for $storeName: $e");
-    }
-  }
-
   // Helper to get count by title
   int getCountForTitle(String title) {
     switch (title) {
-      case "Users":
+      case "users":
         return usersCount;
-      case "Orders":
+      case "orders":
         return ordersCount;
-      case "Products":
+      case "products":
         return productsCount;
-      case "Contacts":
+      case "contacts":
         return contactsCount;
       default:
         return 0;
+    }
+  }
+
+  AdminContactListModel? _adminContactModel;
+
+  AdminContactListModel? get adminContactModel => _adminContactModel;
+
+  Future<void> getAllContact() async {
+    UserModel? user = await AppConfigCache.getUserModel(); // await the future
+    _setLoading(true);
+    try {
+      final response = await callGETMethod(
+        url: '${ApiConfig.contactUs}/store?store_name=${user?.storeName}',
+      );
+
+      print('============${json.decode(response)}');
+      if (globalStatusCode == 200) {
+        _adminContactModel = AdminContactListModel.fromJson(
+          json.decode(response),
+        );
+      } else {
+        _adminContactModel?.contacts = [];
+      }
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  List<DashboardCount> counts = [];
+
+  Future<void> countByAllStoreName() async {
+    UserModel? user = await AppConfigCache.getUserModel(); // await the future
+    _setLoading(true);
+    notifyListeners();
+    try {
+      final response = await callGETMethod(
+        url: '${ApiConfig.authAPi}/count_all',
+      );
+
+      print('============${json.decode(response)}');
+      if (globalStatusCode == 200) {
+        final data = json.decode(response);
+
+        final Map<String, dynamic> rawCounts = data['counts'];
+        productsCount = rawCounts['products'];
+        contactsCount = rawCounts['contacts'];
+        ordersCount = rawCounts['orders'];
+        usersCount = rawCounts['users'];
+        /*    counts = rawCounts.entries
+            .map((e) => DashboardCount.fromJson(e.key, e.value))
+            .toList();*/
+      } else {
+        // _totalContactCount =0;
+      }
+      notifyListeners();
+    } catch (e) {
+      //_totalContactCount =0;
+      _setLoading(false);
+      rethrow;
+    } finally {
+      //_totalContactCount =0;
+      _setLoading(false);
     }
   }
 }

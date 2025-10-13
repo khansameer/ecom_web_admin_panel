@@ -40,10 +40,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
       listen: false,
     );
 
-    customerProvider.getStoreCollectionData(
-      storeName: widget.storeName,
-      collectionName: widget.collectionName,
-    );
+    customerProvider.getAllContact();
   }
 
   @override
@@ -64,10 +61,10 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                       ? 1.3
                       : 2.1, // adjust roughly for initial layout
                 ),
-                itemCount: provider.contacts.length,
+                itemCount: provider.adminContactModel?.contacts?.length??0,
                 physics: BouncingScrollPhysics(),
                 itemBuilder: (context, index) {
-                  var data = provider.contacts[index];
+                  var data = provider.adminContactModel?.contacts?[index];
                   return Container(
                     decoration: commonBoxDecoration(
                       borderColor: colorBorder,
@@ -90,7 +87,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                               fontWeight: FontWeight.w600,
                             ),
                             commonText(
-                              text: data['name'].toString().toCapitalize(),
+                              text: data?.name.toString().toCapitalize()??'',
                               fontWeight: FontWeight.w600,
                             ),
                           ],
@@ -104,7 +101,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                               fontSize: 12,
                             ),
                             commonText(
-                              text: data['mobile'],
+                              text: data?.mobile??'',
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
                             ),
@@ -119,7 +116,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                               fontSize: 12,
                             ),
                             commonText(
-                              text: formatTimestamp(data['created_at']),
+                              text: formatString(data?.createdDate??''),
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
                             ),
@@ -128,7 +125,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
 
                         Flexible(
                           child: commonText(
-                            text: data['message'],
+                            text:data?.message??'',
                             maxLines: 5,
                             overflow: TextOverflow.ellipsis,
                             fontSize: 12,
@@ -154,7 +151,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                                 title: "Call",
                                 onTap: () {
                                   UrlLauncherService.launchPhoneCall(
-                                    data['mobile'],
+                                      data?.mobile??''
                                   );
                                 },
                               ),
@@ -164,7 +161,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                                 title: "Email",
                                 onTap: () {
                                   UrlLauncherService.launchEmail(
-                                    data['email'],
+                                    data?.email??'',
                                     body: "Test",
                                     subject: "Test",
                                   );
@@ -180,7 +177,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                                     showCancel: false,
                                     confirmText: "Close",
                                     context: context,
-                                    content: data['message'],
+                                    content:  data?.message??'',
                                   );
                                 },
                               ),

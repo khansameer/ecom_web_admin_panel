@@ -36,6 +36,7 @@ Widget commonLoginView({
       IntlPhoneField(
         initialCountryCode: 'US',
         controller: provider.tetPhone,
+
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         style: commonTextStyle(
           color: themeProvider.isDark ? Colors.white : Colors.black,
@@ -52,6 +53,14 @@ Widget commonLoginView({
           enabledBorder: commonTextFiledBorder(borderRadius: 12),
           focusedBorder: commonTextFiledBorder(borderRadius: 12),
         ),
+        validator: (phone) {
+          if (phone == null || phone.number.isEmpty) {
+            return "Please enter phone number";
+          } else if (phone.number.length < 6) {
+            return "Enter a valid phone number";
+          }
+          return null;
+        },
         onChanged: (phone) {
           provider.tetCountryCodeController.text = phone.countryCode;
         },

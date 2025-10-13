@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/main.dart';
 
-import '../core/firebase/auth_service.dart';
-import '../core/string/string_utils.dart';
+import '../core/hive/app_config_cache.dart';
+import '../models/user_model.dart';
+import '../routes/app_routes.dart';
+import '../service/api_config.dart';
+import '../service/gloable_status_code.dart';
+import '../service/network_repository.dart';
 
 class LoginProvider with ChangeNotifier {
   final bool _isFetching = false;
@@ -71,6 +73,15 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  String? _logoUrl;
+
+  String? get logoUrl => _logoUrl;
+
+  void setAppLogo(String value) {
+    _logoUrl = value;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     tetFullName.dispose();
@@ -84,7 +95,7 @@ class LoginProvider with ChangeNotifier {
     tetConfirmPassword.dispose();
     tetMessage.dispose();
     tetLogoUrl.dispose();
-    tetOTP.dispose(); // ✅ dispose here only
+
     _timer?.cancel();
     super.dispose();
   }
@@ -118,45 +129,32 @@ class LoginProvider with ChangeNotifier {
   Map<String, dynamic>? _userData;
 
   Map<String, dynamic>? get userData => _userData;
-  final AuthService _authService = AuthService();
 
-  String generateOtp() {
-    return (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
-  }
+  //final AuthService _authService = AuthService();
 
-  Future<Map<String, dynamic>> login({
-    required String email,
-    required String mobile,
-    required String countryCode,
-  }) async {
+  Future<void> login({required Map<String, dynamic> body}) async {
     _setLoading(true);
     try {
-      print("email:$email");
-      print("mobile:$mobile");
-      print("code:$countryCode");
-
-      _userData = await _authService.loginUser(
-        email: email,
-        mobile: mobile,
-        countryCode: countryCode,
+      final response = await callPostMethod(
+        url: ApiConfig.loginAPi,
+        params: body,
+        headers: null,
       );
 
-      notifyListeners();
-      if (_userData?.isNotEmpty == true) {
-        String otp = generateOtp();
-        // await sendOtpEmail(email: email, userID: userData?['uid'], otp: otp);
-        final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-        print('OTP sent successfully!');
-        await _firestore.collection("stores").doc(userData?['uid']).update({
-          "otp": otp,
-          "otp_created_at": FieldValue.serverTimestamp(),
-          "active_status": false, // Ensure user is inactive until OTP verified
-        });
-
-        //String otp = generateOtp();
+      print('============${json.decode(response)}');
+      if (globalStatusCode == 200) {
+        generateOtp(body: body);
       }
-
-      return _userData ?? {}; // 🔹 return the user data
+      else
+        {
+          showCommonDialog(
+            showCancel: false,
+            title: "Error",
+            context: navigatorKey.currentContext!,
+            content: errorMessage,
+          );
+        }
+      notifyListeners();
     } catch (e) {
       _setLoading(false);
       rethrow;
@@ -165,52 +163,112 @@ class LoginProvider with ChangeNotifier {
     }
   }
 
-  Future<void> sendOtpEmail({
-    required String email,
-    required String otp,
-    required String userID,
-  }) async {
+  Future<void> generateOtp({required Map<String, dynamic> body}) async {
     _setLoading(true);
-    print('=====eail;#$email');
+    try {
+      final response = await callPostMethod(
+        url: ApiConfig.generateOtpAPI,
+        params: body,
+        headers: null,
+      );
 
-    if (email.isEmpty) {
-      print('Recipient email is empty!');
-      return; // stop execution
+      print('============${json.decode(response)}');
+      if (globalStatusCode == 200) {
+        Map<String, dynamic> data = {
+          "email": body['email'],
+          "mobile": body['mobile'],
+        };
+        navigatorKey.currentState?.pushNamed(
+          RouteName.otpVerificationScreen,
+          arguments: data,
+        );
+      } else {
+        showCommonDialog(
+          showCancel: false,
+          title: "Error",
+          context: navigatorKey.currentContext!,
+          content: errorMessage,
+        );
+      }
+
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    } finally {
+      _setLoading(false);
     }
+  }
 
-    final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+  Future<void> checkStatus({int? id}) async {
+    _setLoading(true);
+    try {
+      final response = await callGETMethod(url: '${ApiConfig.authAPi}/$id');
 
-    final response = await http.post(
-      url,
-      headers: {
-        'origin': 'http://localhost',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'service_id': otpServiceID,
-        'template_id': otpTemplateID,
-        'user_id': otpPublicID,
-        'template_params': {
-          'email': email,
-          'passcode': otp,
-          'time': '15 minutes', // or generate expiry dynamically
-        },
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-      print('OTP sent successfully!');
-      await _firestore.collection("stores").doc(userID).update({
-        "otp": otp,
-        "otp_created_at": FieldValue.serverTimestamp(),
-        "active_status": false, // Ensure user is inactive until OTP verified
-      });
-
+      if (globalStatusCode == 200) {
+        UserModel user = UserModel.fromJson(json.decode(response));
+        if (user.id != null && user.activeStatus == 1) {
+          await AppConfigCache.saveUserModel(user);
+          setAppLogo(user.logoUrl ?? '');
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            RouteName.dashboardScreen,
+            (Route<dynamic> route) => false,
+          );
+        } else {
+          navigatorKey.currentState?.pushNamedAndRemoveUntil(
+            RouteName.inactiveAccountScreen,
+            (Route<dynamic> route) => false,
+          );
+        }
+      } else {
+        showCommonDialog(
+          showCancel: false,
+          title: "Error",
+          context: navigatorKey.currentContext!,
+          content: errorMessage,
+        );
+      }
+      notifyListeners();
+    } catch (e) {
       _setLoading(false);
-    } else {
+      rethrow;
+    } finally {
       _setLoading(false);
-      print('Failed to send OTP: ${response.body}');
+    }
+  }
+
+  Future<void> verifyOtp({required Map<String, dynamic> body}) async {
+    _setLoading(true);
+    try {
+      final response = await callPostMethod(
+        url: ApiConfig.verifyOtpAPI,
+        params: body,
+        headers: null,
+      );
+
+      print('============${json.decode(response)}');
+      if (globalStatusCode == 200) {
+        UserModel user = UserModel.fromJson(json.decode(response));
+        await AppConfigCache.saveUserModel(user);
+
+        navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          RouteName.dashboardScreen,
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        showCommonDialog(
+          showCancel: false,
+          title: "Error",
+          context: navigatorKey.currentContext!,
+          content: errorMessage,
+        );
+      }
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    } finally {
+      _setLoading(false);
     }
   }
 
@@ -239,51 +297,36 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addContactUsData({
-    required String email,
-    required String name,
-
-    required String mobile,
-
-    required String message,
-  }) async {
+  Future<void> addContactUsData({required Map<String, dynamic> body}) async {
     _setLoading(true);
     try {
-      await _authService.insetContactUSForm(
-        email: email,
-        message: message,
-        mobile: mobile,
-        name: name,
+      final response = await callPostMethod(
+        url: ApiConfig.contactUs,
+        params: body,
+        headers: null,
       );
 
-      showCommonDialog(
-        title: "Success",
-        context: navigatorKey.currentContext!,
-        content: "Your message has been sent successfully.",
+      print('============${json.decode(response)}');
+      if (globalStatusCode == 200) {
+        UserModel user = UserModel.fromJson(json.decode(response));
+        await AppConfigCache.saveUserModel(user);
 
-        showCancel: false,
-        onPressed: () {
-          resetAll();
-          navigatorKey.currentState?.pop(); // ✅ Close dialog
-          navigatorKey.currentState
-              ?.pop(); // ✅ Navigate back to previous screen
-        },
-        confirmText: "Close",
-      );
-
+        navigatorKey.currentState?.pushNamedAndRemoveUntil(
+          RouteName.dashboardScreen,
+              (Route<dynamic> route) => false,
+        );
+      } else {
+        showCommonDialog(
+          showCancel: false,
+          title: "Error",
+          context: navigatorKey.currentContext!,
+          content: errorMessage,
+        );
+      }
       notifyListeners();
-
-      _setLoading(false);
     } catch (e) {
-      showCommonDialog(
-        title: "Error",
-        context: navigatorKey.currentContext!,
-        content: "Failed to send message.",
-
-        showCancel: false,
-
-        confirmText: "Close",
-      );
+      _setLoading(false);
+      rethrow;
     } finally {
       _setLoading(false);
     }
@@ -294,6 +337,7 @@ class LoginProvider with ChangeNotifier {
   Timer? _timer;
 
   bool get canResend => _canResend;
+
   int get secondsRemaining => _secondsRemaining;
 
   void startResendTimer() {
@@ -314,30 +358,7 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>?> verifyOtp({
-    required String userID,
-    required String enteredOtp,
-  }) async {
-    _setLoading(true);
-    try {
-      _userData = await _authService.verifyOtp(
-        userID: userID,
-        enteredOtp: enteredOtp,
-      );
-      notifyListeners();
-      return _userData;
-    } catch (e) {
-      _setLoading(false);
-      rethrow;
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  Future<void> resendOtp({
-    required String userId,
-    required String email,
-  }) async {
+  Future<void> resendOtp({required Map<String, dynamic> body}) async {
     if (!_canResend) return;
     _setLoading(true);
     notifyListeners();
@@ -347,17 +368,25 @@ class LoginProvider with ChangeNotifier {
       await Future.delayed(
         const Duration(seconds: 2),
       ); // simulate network delay
-      if (_userData?.isNotEmpty == true) {
-        String otp = generateOtp();
-        await sendOtpEmail(email: email, userID: userId, otp: otp);
-        final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-        print('OTP sent successfully!');
-        await _firestore.collection("stores").doc(userId).update({
-          "otp": otp,
-          "otp_created_at": FieldValue.serverTimestamp(),
-          "active_status": false, // Ensure user is inactive until OTP verified
-        });
+      final response = await callPostMethod(
+        url: ApiConfig.generateOtpAPI,
+        params: body,
+        headers: null,
+      );
+
+      print('============${json.decode(response)}');
+      if (globalStatusCode == 200) {
+        Map<String, dynamic> data = {
+          "email": body['email'],
+          "mobile": body['mobile'],
+        };
+        navigatorKey.currentState?.pushNamed(
+          RouteName.otpVerificationScreen,
+          arguments: data,
+        );
       }
+
+      notifyListeners();
       _startNewCycle();
     } catch (e) {
       debugPrint("Resend OTP failed: $e");

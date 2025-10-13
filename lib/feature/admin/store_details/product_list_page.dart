@@ -40,10 +40,10 @@ class _ProductListPageState extends State<ProductListPage> {
       listen: false,
     );
 
-    customerProvider.getStoreCollectionData(
+    /*customerProvider.getStoreCollectionData(
       storeName: widget.storeName,
       collectionName: widget.collectionName,
-    );
+    );*/
   }
 
   @override

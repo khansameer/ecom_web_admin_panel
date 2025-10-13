@@ -40,10 +40,10 @@ class _AdminProductListState extends State<AdminProductList> {
       listen: false,
     );
 
-    customerProvider.getStoreCollectionData(
+/*    customerProvider.getStoreCollectionData(
       storeName: widget.storeName,
       collectionName: widget.collectionName,
-    );
+    );*/
   }
 
   @override
@@ -156,13 +156,13 @@ class _AdminProductListState extends State<AdminProductList> {
                                                     )
                                                     .then((_) async {
 
-                                                      await provider
+                                                   /*   await provider
                                                           .getStoreCollectionData(
                                                             storeName: widget
                                                                 .storeName,
                                                             collectionName: widget
                                                                 .collectionName,
-                                                          ); // ya koi refresh method
+                                                          ); // ya koi refresh method*/
                                                     });
                                               },
                                               context: context,
@@ -199,13 +199,13 @@ class _AdminProductListState extends State<AdminProductList> {
                                                       title: "disapproved_date",
                                                     )
                                                     .then((_) async {
-                                                      await provider
+                                                    /*  await provider
                                                           .getStoreCollectionData(
                                                             storeName: widget
                                                                 .storeName,
                                                             collectionName: widget
                                                                 .collectionName,
-                                                          ); // ya koi refresh method
+                                                          ); */
                                                     });
                                                 //provider.uploadProductImageViaAdmin(imagePath: data['image'], productId: data['product_id'],uid:  data['uid']);
                                               },

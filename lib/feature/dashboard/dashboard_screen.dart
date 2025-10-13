@@ -23,6 +23,7 @@ import 'package:provider/provider.dart';
 import '../../admin/common_admin_widget.dart';
 import '../../core/firebase/auth_service.dart';
 import '../../core/hive/app_config_cache.dart';
+import '../../models/user_model.dart';
 import '../../provider/product_provider.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -59,13 +60,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> init() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      String? storedEmailOrMobile = await AppConfigCache.getName();
-      String? id = await AppConfigCache.getID();
+      UserModel? user = await AppConfigCache.getUserModel(); // await the future
       final provider = Provider.of<DashboardProvider>(
         navigatorKey.currentContext!,
         listen: false,
       );
-      provider.setName(storedEmailOrMobile);
+      provider.setName(user?.name??'');
 
       //09-Oct-2025 Girish Chauhan
       //Step 1 request notification permission first
@@ -93,9 +93,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         String? fcmToken = await messaging.getToken();
 
         debugPrint('🔥 FCM Token: $fcmToken');
+          provider.updateFCMToken(id: user?.id??0,token: fcmToken??'');
         // 🔹 Step 4: Save token to backend
-        final authService = AuthService();
-        await authService.updateFcm(userID: id ?? '', fcmToken: fcmToken ?? '');
+        /*final authService = AuthService();
+        await authService.updateFcm(userID: id ?? '', fcmToken: fcmToken ?? '');*/
       } else {
         debugPrint('❌ Notification permission denied');
       }
