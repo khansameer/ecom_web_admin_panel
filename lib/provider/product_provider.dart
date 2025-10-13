@@ -521,13 +521,14 @@ class ProductProvider with ChangeNotifier {
           .doc(uid); // actual product document ID
 
 
-      await productCollection.update({
+      /*await productCollection.update({
         "status": true,
         title: DateTime.now(),
       });
-      print("✅ Product $uid approved successfully");
+      print("✅ Product $uid approved successfully");*/
+      await productCollection.delete();
       //   await getAllPendingRequest();
-
+      print("❌ Product $uid disapproved and deleted successfully");
     }
 
     catch(e){
@@ -587,39 +588,45 @@ class ProductProvider with ChangeNotifier {
     _isImageUpdating = true;
     notifyListeners();
 
-    final urlString =
-        "${await ApiConfig.baseUrl}/products/$productId/images.json";
+    try{
+      final urlString =
+          "${await ApiConfig.baseUrl}/products/$productId/images.json";
 
-    final response = await callPostMethodWithToken(
-      body: {
-        "image": {"attachment": imagePath},
-      },
-      url: urlString,
-    );
-
-    if (globalStatusCode == 200) {
-      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-        SnackBar(
-          content: Text("Product Approved successfully!"),
-          backgroundColor: Colors.green,
-        ),
+      final response = await callPostMethodWithToken(
+        body: {
+          "image": {"attachment": imagePath},
+        },
+        url: urlString,
       );
 
-      await updateProductStatusWeb(uid: uid, title: "approved_date",storeName: storeRoom);
+      if (globalStatusCode == 200) {
+        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text("Product Approved successfully!"),
+            backgroundColor: Colors.green,
+          ),
+        );
 
-      final data = json.decode(response);
-      final imageJson = data["image"];
+        await updateProductStatusWeb(uid: uid, title: "approved_date",storeName: storeRoom);
 
-      if (imageJson != null) {
-        //  final newImage = Images.fromJson(imageJson);
-        // productImages.add(newImage);
+        final data = json.decode(response);
+        final imageJson = data["image"];
+
+        if (imageJson != null) {
+          //  final newImage = Images.fromJson(imageJson);
+          // productImages.add(newImage);
+          _isImageUpdating = false;
+          notifyListeners(); // ✅ UI refresh
+        }
+      } else {
         _isImageUpdating = false;
-        notifyListeners(); // ✅ UI refresh
+        notifyListeners();
       }
-    } else {
-      _isImageUpdating = false;
-      notifyListeners();
     }
+    catch(e){
+      showCommonDialog(title: "e$e", context: navigatorKey.currentContext!);
+    }
+
   }
   Future<void> deleteProductImage({
     required int imageId,

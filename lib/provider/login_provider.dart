@@ -50,7 +50,7 @@ class LoginProvider with ChangeNotifier {
 
   void toggleCurrentPassword() {
     _obscureCurrentPassword = !_obscureCurrentPassword;
-    notifyListeners();
+    notifyListeners(); // 🔥 must be present
   }
 
   bool _obscureNewPassword = true;
