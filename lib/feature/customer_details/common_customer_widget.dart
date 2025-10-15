@@ -4,16 +4,14 @@ import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/feature/order_details/order_common_widget.dart';
-import 'package:neeknots/main.dart';
 import 'package:neeknots/provider/order_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/component/date_utils.dart';
 import '../../models/customer_model.dart';
-import '../../provider/customer_provider.dart';
 
-customerDetailsInfo({required Customer customer}) {
-  final provider = Provider.of<CustomerProvider>(navigatorKey.currentContext!);
+Widget customerDetailsInfo({required Customer customer}) {
+  //final provider = Provider.of<CustomerProvider>(navigatorKey.currentContext!);
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: EdgeInsets.only(left: 16, right: 16, top: 16),
@@ -87,7 +85,7 @@ customerDetailsInfo({required Customer customer}) {
   );
 }
 
-customerOrderDetailsInfo({required Customer customer}) {
+Widget customerOrderDetailsInfo({required Customer customer}) {
   return Container(
     decoration: commonBoxDecoration(borderColor: colorBorder, borderRadius: 8),
     margin: const EdgeInsets.all(16),
@@ -117,7 +115,7 @@ customerOrderDetailsInfo({required Customer customer}) {
   );
 }
 
-customerProductInfo({required Customer customer}) {
+Widget customerProductInfo({required Customer customer}) {
   return Consumer<OrdersProvider>(
     builder: (context, provider, child) {
       return Container(

@@ -2,14 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:neeknots/models/PendingProductModel.dart' hide Products;
 import 'package:neeknots/models/product_model.dart' hide Variants, Images;
 
 import '../core/component/component.dart';
-import '../core/firebase/auth_service.dart';
 import '../core/hive/app_config_cache.dart';
 import '../main.dart';
 import '../models/product_details_model.dart';
@@ -162,20 +158,6 @@ class ProductProvider with ChangeNotifier {
     tetDesc.clear();
     tetPrice.clear();
     tetQty.clear();
-    notifyListeners();
-  }
-
-  File? _imageFile;
-
-  File? get imageFile => _imageFile;
-
-  void setImageFilePath({required File img}) {
-    _imageFile = img;
-    notifyListeners();
-  }
-
-  void imagePathClear() {
-    _imageFile = null;
     notifyListeners();
   }
 
@@ -413,38 +395,6 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  final AuthService _authService = AuthService();
-
-  Future<String?> addProductInFirebase({
-    required String name,
-    required String image,
-    required bool status,
-    required int productID,
-  }) async {
-    try {
-      final productCollection = await _authService.getStoreSubCollection(
-        _authService.productCollection,
-      );
-      // 🔹 2. Add new filter
-      final docRef = await productCollection.add({
-        "name": name,
-        "image": image,
-        "product_id": productID,
-        "status": status,
-        "created_date": DateTime.now(),
-      });
-
-      notifyListeners();
-
-      // _setLoading(false);
-      return null; // means success
-    } catch (e) {
-      debugPrint("Error adding new filter: $e");
-      //_setLoading(false);
-      return "Error adding new filter";
-    }
-  }
-
   Future<void> uploadProductImage({
     required String imagePath,
     required int productId,
@@ -465,11 +415,7 @@ class ProductProvider with ChangeNotifier {
       "store_name": user?.storeName,
       "image_id": productId,
     };
-    final response = await callPostMethod(
-      url: ApiConfig.product,
-      params: body,
-      headers: {},
-    );
+    await callPostMethod(url: ApiConfig.product, params: body, headers: {});
 
     if (globalStatusCode == 200) {
       ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
@@ -491,148 +437,6 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
 
     // Agar result null hai => success
-  }
-
-  Future<void> updateProductStatus({
-    required String uid,
-    required String title,
-  }) async {
-    try {
-      final productCollection = await _authService.getStoreSubCollection(
-        _authService.productCollection,
-      );
-      await productCollection.doc(uid).update({
-        "status": true,
-        //"approved_date": DateTime.now(), // optional
-        title: DateTime.now(), // optional
-      });
-      //   await getAllPendingRequest();
-    } catch (e) {
-      print("e$e");
-    }
-  }
-
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<void> updateProductStatusWeb({
-    required String uid,
-    required String storeName, // you must pass the store name or store docId
-    required String title,
-  }) async {
-    print('--uid----${uid}');
-    try {
-      final productCollection = _firestore
-          .collection(storeName)
-          .doc(_authService.productCollection)
-          .collection(_authService.productCollection)
-          .doc(uid); // actual product document ID
-
-      /*await productCollection.update({
-        "status": true,
-        title: DateTime.now(),
-      });
-      print("✅ Product $uid approved successfully");*/
-      await productCollection.delete();
-      //   await getAllPendingRequest();
-      print("❌ Product $uid disapproved and deleted successfully");
-    } catch (e) {
-      print("e$e");
-    }
-  }
-
-  Future<void> uploadProductImageViaAdmin({
-    required String imagePath,
-    required int productId,
-    required String uid,
-  }) async {
-    _isImageUpdating = true;
-    notifyListeners();
-
-    final urlString =
-        "${await ApiConfig.baseUrl}/products/$productId/images.json";
-
-    final response = await callPostMethodWithToken(
-      body: {
-        "image": {"attachment": imagePath},
-      },
-      url: urlString,
-    );
-
-    if (globalStatusCode == 200) {
-      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-        SnackBar(
-          content: Text("Product Approved successfully!"),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      await updateProductStatus(uid: uid, title: "approved_date");
-
-      final data = json.decode(response);
-      final imageJson = data["image"];
-
-      if (imageJson != null) {
-        //  final newImage = Images.fromJson(imageJson);
-        // productImages.add(newImage);
-        _isImageUpdating = false;
-        notifyListeners(); // ✅ UI refresh
-      }
-    } else {
-      _isImageUpdating = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> uploadProductImageViaAdminWeb({
-    required String imagePath,
-    required int productId,
-    required String storeRoom,
-    required String uid,
-  }) async {
-    _isImageUpdating = true;
-    notifyListeners();
-
-    try {
-      final urlString =
-          "${await ApiConfig.baseUrl}/products/$productId/images.json";
-
-      final response = await callPostMethodWithToken(
-        body: {
-          "image": {"attachment": imagePath},
-        },
-        url: urlString,
-      );
-
-      if (globalStatusCode == 200) {
-        ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-          SnackBar(
-            content: Text("Product Approved successfully!"),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        await updateProductStatusWeb(
-          uid: uid,
-          title: "approved_date",
-          storeName: storeRoom,
-        );
-
-        final data = json.decode(response);
-        final imageJson = data["image"];
-
-        if (imageJson != null) {
-          //  final newImage = Images.fromJson(imageJson);
-          // productImages.add(newImage);
-          _isImageUpdating = false;
-          notifyListeners(); // ✅ UI refresh
-        }
-      } else {
-        _isImageUpdating = false;
-        notifyListeners();
-      }
-    } catch (e) {
-      showCommonDialog(title: "e$e", context: navigatorKey.currentContext!);
-    }
   }
 
   Future<void> deleteProductImage({
@@ -709,46 +513,6 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /*  List<Map<String, dynamic>> _allPendingRequest = [];
-
-  List<Map<String, dynamic>> get allPendingRequest => _allPendingRequest;*/
-
-  PendingProductModel? _pendingProductModel;
-
-  PendingProductModel? get pendingProductModel => _pendingProductModel;
-
-  Future<void> getAllPendingRequest() async {
-    _setLoading(true);
-    notifyListeners();
-    try {
-      UserModel? user = await AppConfigCache.getUserModel(); // await the future
-      final response = await callGETMethod(
-        url: '${ApiConfig.product}?store_name=${user?.storeName}',
-      );
-
-      print('==============${json.decode(response)}');
-      if (globalStatusCode == 200) {
-        _pendingProductModel = PendingProductModel.fromJson(
-          json.decode(response),
-        );
-      } else {
-        showCommonDialog(
-          showCancel: false,
-          title: "Error",
-          context: navigatorKey.currentContext!,
-          content: errorMessage,
-        );
-      }
-
-      _setLoading(false);
-      notifyListeners();
-    } catch (e) {
-      _setLoading(false);
-      notifyListeners();
-      debugPrint("Error fetching filter list: $e");
-    }
-  }
-
   int? _pendingProductCount;
 
   int? get pendingProductCount => _pendingProductCount;
@@ -762,7 +526,6 @@ class ProductProvider with ChangeNotifier {
         url: '${ApiConfig.product}/count/?store_name=${user?.storeName}',
       );
 
-      print('==============${json.decode(response)}');
       if (globalStatusCode == 200) {
         final data = json.decode(response);
         _pendingProductCount = data['count'];
@@ -780,38 +543,53 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  Future<void> approvedRequest({
-    required String productId,
-    required String imageBase64,
+  Future<bool> approvedProductImage({
+    required Map<String, dynamic> params,
+
+    required String imageID,
   }) async {
     _setLoading(true);
-    notifyListeners();
     try {
-      UserModel? user = await AppConfigCache.getUserModel();
-
-      final url = Uri.parse('http://10.0.10.152:3000/product/approve');
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'shopifyProductId': '7313803968703',
-          // product ID (image_id in your DB)
-          'imagePath': imageBase64,
-          // base64 string of your image
-          'storeName': 'merlettenyc-demo',
-          'versionCode': '2025-07',
-        }),
+      await callPostMethod(
+        params: params,
+        url: '${ApiConfig.approvedProductImage}/$imageID/images',
       );
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        print('✅ Product approved: ${data['message']}');
+
+      if (globalStatusCode == 200) {
+        notifyListeners();
+        return true;
       } else {
-        print('❌ Error: ${response.statusCode} - ${response.body}');
+        notifyListeners();
+        return false;
       }
     } catch (e) {
-      _setLoading(false);
       notifyListeners();
-      debugPrint("Error fetching filter list: $e");
+      _setLoading(false);
+
+      return false;
+    }
+  }
+
+  Future<bool> disApprovedProductImage({required int productID}) async {
+    _setLoading(true);
+    try {
+      await callPostMethod(
+        params: {},
+        url: '${ApiConfig.approvedProductImage}/disapprove/$productID',
+      );
+
+      if (globalStatusCode == 200) {
+        notifyListeners();
+        return true;
+      } else {
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      notifyListeners();
+      _setLoading(false);
+
+      return false;
     }
   }
 }

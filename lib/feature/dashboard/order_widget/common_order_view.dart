@@ -1,14 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:neeknots/core/component/order_page.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/component/component.dart';
 import '../../../core/component/context_extension.dart';
 import '../../../core/component/date_utils.dart';
+import '../../../core/hive/app_config_cache.dart';
 import '../../../core/image/image_utils.dart';
 import '../../../core/string/string_utils.dart';
 import '../../../main.dart';
+import '../../../models/user_model.dart';
+import '../../../provider/admin_dashboard_provider.dart';
 import '../../../provider/order_provider.dart';
 import '../../../routes/app_routes.dart';
 import 'common_order_widget.dart';
@@ -43,7 +45,7 @@ class _CommonOrderViewState extends State<CommonOrderView> {
     init();
   }
 
-  void init() {
+  Future<void> init() async {
     Future.microtask(
       () => Provider.of<OrdersProvider>(context, listen: false).getOrderList(
         status: widget.status,
@@ -54,15 +56,17 @@ class _CommonOrderViewState extends State<CommonOrderView> {
         loadMore: false,
       ),
     );
+    UserModel? user = await AppConfigCache.getUserModel(); // await the future
     Future.microtask(
-          () => Provider.of<OrdersProvider>(context, listen: false).getAllFilterOrderList(),
+          () => Provider.of<AdminDashboardProvider>(context, listen: false).getAllOrder(storeRoom: user?.storeName??''),
     );
+
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<OrdersProvider>(
-      builder: (context, provider, child) {
+    return Consumer2<OrdersProvider,AdminDashboardProvider>(
+      builder: (context, provider,adminDashboardProvider, child) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
@@ -89,7 +93,7 @@ class _CommonOrderViewState extends State<CommonOrderView> {
 
                     onPressed: () {
                       final activeFilters =
-                          provider.activeFilters; // from OrdersProvider
+                          adminDashboardProvider.activeFilters; // from OrdersProvider
 
                       if (activeFilters.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -111,7 +115,7 @@ class _CommonOrderViewState extends State<CommonOrderView> {
                         options: options,
                         selectedValue: provider.selectedStatus
                             .toString()
-                            .toCapitalize(),
+                        ,
                       );
 
                       showCommonFilterDialog(

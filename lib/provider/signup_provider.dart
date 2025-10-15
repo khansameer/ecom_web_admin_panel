@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../core/component/component.dart';
-import '../core/firebase/auth_service.dart';
 import '../main.dart';
 import '../routes/app_routes.dart';
 import '../service/api_config.dart';
@@ -14,8 +12,6 @@ import '../service/network_repository.dart';
 import 'login_provider.dart';
 
 class SignupProvider extends ChangeNotifier {
-  final AuthService _authService = AuthService();
-
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
@@ -34,12 +30,11 @@ class SignupProvider extends ChangeNotifier {
   Future<void> signup({required Map<String, dynamic> params}) async {
     _setLoading(true);
     try {
-      final response = await callPostMethod(
+      await callPostMethod(
         url: ApiConfig.authAPi,
-        params:params,
+        params: params,
         headers: null,
       );
-      print('============${json.decode(response)}');
       if (globalStatusCode == 200) {
         showCommonDialog(
           title: "Success",
@@ -54,8 +49,7 @@ class SignupProvider extends ChangeNotifier {
                 navigatorKey.currentContext!,
                 listen: false,
               );
-              provider.resetState();
-              // navigatorKey.currentContext?.read<LoginProvider>().resetState();
+              provider.resetState(); // navigatorKey.currentContext?.read<LoginProvider>().resetState();
             });
           },
           context: navigatorKey.currentContext!,

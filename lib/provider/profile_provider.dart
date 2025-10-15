@@ -104,7 +104,7 @@ class ProfileProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final response = await callDeleteMethod(url: '${ApiConfig.authAPi}/${user?.id??0}');
+     await callDeleteMethod(url: '${ApiConfig.authAPi}/${user?.id??0}');
 
       if (globalStatusCode == 200) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -114,12 +114,7 @@ class ProfileProvider with ChangeNotifier {
           );
         });
       } else {
-       /* showCommonDialog(
-          showCancel: false,
-          title: "Error",
-          context: navigatorKey.currentContext!,
-          content: errorMessage,
-        );*/
+
       }
       notifyListeners();
     } catch (e) {

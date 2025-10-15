@@ -23,26 +23,7 @@ class TotalOrderScreen extends StatefulWidget {
 }
 
 class _TotalOrderScreenState extends State<TotalOrderScreen> {
-  /*
-  @override
-  void initState() {
-    super.initState();
-    init();
-  }
 
-  Future<void> init() async {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final postMdl = Provider.of<OrdersProvider>(
-        navigatorKey.currentContext!,
-        listen: false,
-      );
-
-      postMdl.resetData();
-      postMdl.orderCountStatusValue();
-      postMdl.getAllFilterOrderList();
-    });
-  }
-*/
 
   @override
   void initState() {
@@ -55,7 +36,6 @@ class _TotalOrderScreenState extends State<TotalOrderScreen> {
       final postMdl = Provider.of<OrdersProvider>(context, listen: false);
 
       postMdl.resetData1();
-      await postMdl.getAllFilterOrderList1();
       await postMdl.orderCountStatusValue();
     });
   }

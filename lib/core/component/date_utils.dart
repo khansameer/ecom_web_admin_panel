@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:intl/intl.dart';
 
 String formatDateTime(String isoString) {
@@ -55,12 +55,7 @@ String formatCreatedAt(String createdAt, {String source = "Draft Orders"}) {
 
 
 }
-String formatTimestamp(Timestamp? timestamp) {
-  if (timestamp == null) return "N/A";
 
-  DateTime dateTime = timestamp.toDate(); // Firestore → DateTime
-  return DateFormat("d MMMM yyyy, h:mm a").format(dateTime.toLocal());
-}
 
 String formatString(String? timestamp) {
   if (timestamp == null || timestamp.isEmpty) return "N/A";

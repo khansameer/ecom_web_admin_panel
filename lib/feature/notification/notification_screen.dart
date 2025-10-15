@@ -31,8 +31,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       listen: false,
     );
 
-    //productProvider.getAllContactList();
-    productProvider.markAllAsSeen();
+
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:neeknots/admin/admin_dashboad.dart';
 import 'package:neeknots/core/color/color_utils.dart';
+import 'package:neeknots/core/component/common_switch.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/provider/dashboard_provider.dart';
@@ -11,14 +11,12 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/component/common_switch.dart';
-import '../../../core/firebase/auth_service.dart';
+
 import '../../../core/hive/app_config_cache.dart';
 import '../../../main.dart';
 import '../../../provider/customer_provider.dart';
 import '../../../provider/order_provider.dart';
 import '../../../provider/product_provider.dart';
-import '../../admin/admin_home_page.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -112,7 +110,7 @@ class _SettingPageState extends State<SettingPage> {
                     onChanged: (value) => themeProvider.setNotification(true),
                     activeThumbColor: Colors.white,
                     inactiveThumbColor: colorLogo,
-                    activeTrackColor: colorLogo,
+
                     inactiveTrackColor: Colors.white,
                   ),
                 ),
@@ -126,7 +124,7 @@ class _SettingPageState extends State<SettingPage> {
                     onChanged: (value) => themeProvider.toggleTheme(),
                     activeThumbColor: Colors.white,
                     inactiveThumbColor: colorLogo,
-                    activeTrackColor: colorLogo,
+
                     inactiveTrackColor: Colors.white,
                   ),
                 ),
@@ -174,7 +172,6 @@ class _SettingPageState extends State<SettingPage> {
                         showCommonDialog(
                           confirmText: "Yes",
                           onPressed: () async {
-                            await AppConfigCache.clearAll();
                             context.read<DashboardProvider>().resetTab();
                             context.read<ProductProvider>().reset();
                             context.read<OrdersProvider>().resetData();
@@ -218,7 +215,7 @@ class _SettingPageState extends State<SettingPage> {
                   ],
                 ),
                 SizedBox(height: 8),
-                _commonView(
+               /* _commonView(
                   onTap: () {
                     Navigator.push(
                       context,
@@ -231,7 +228,7 @@ class _SettingPageState extends State<SettingPage> {
                   provider: themeProvider,
                   text: "Edit Information",
                   image: icInfo,
-                ),
+                ),*/
               ],
             ),
 

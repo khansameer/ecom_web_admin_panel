@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/context_extension.dart';
 import 'package:provider/provider.dart';
@@ -12,12 +13,10 @@ import '../../../provider/theme_provider.dart';
 
 class ContactListPage extends StatefulWidget {
   final String storeName;
-  final String collectionName;
 
   const ContactListPage({
     super.key,
     required this.storeName,
-    required this.collectionName,
   });
 
   @override
@@ -40,7 +39,7 @@ class _StoreCollectionTabState extends State<ContactListPage> {
       listen: false,
     );
 
-    customerProvider.getAllContact();
+    customerProvider.getAllContact(storeName: widget.storeName);
   }
 
   @override
@@ -160,11 +159,22 @@ class _StoreCollectionTabState extends State<ContactListPage> {
                                 icon: Icons.email_outlined,
                                 title: "Email",
                                 onTap: () {
-                                  UrlLauncherService.launchEmail(
-                                    data?.email??'',
-                                    body: "Test",
-                                    subject: "Test",
-                                  );
+                                  if (kIsWeb) {
+                                    // ✅ For Flutter Web
+                                    UrlLauncherService.launchEmailWeb(
+                                      data?.email??'',
+                                      body: "Test",
+                                      subject: "Test",
+                                    );
+                                  }
+                                  else{
+                                    UrlLauncherService.launchEmail(
+                                      data?.email??'',
+                                      body: "Test",
+                                      subject: "Test",
+                                    );
+                                  }
+
                                 },
                               ),
                               _commonView(

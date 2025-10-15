@@ -1,6 +1,5 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:neeknots/admin/admin_dashboad.dart';
+
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
@@ -13,8 +12,7 @@ import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/component/responsive.dart';
-import '../auth/login_widget.dart';
-import 'admin_home_sameer.dart';
+
 
 class AdminLoginPage extends StatelessWidget {
   const AdminLoginPage({super.key});
@@ -132,13 +130,14 @@ class AdminLoginPage extends StatelessWidget {
                                   text: "Login",
                                   width: size.width,
                                   onPressed: () {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      RouteName.adminHomePage,
+                                          (Route<dynamic> route) => false,
+                                    );
                                     if (formLoginKey.currentState?.validate() ==
                                         true) {
-                                      Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        RouteName.adminHomePage,
-                                        (Route<dynamic> route) => false,
-                                      );
+
                                     }
                                   },
                                 ),

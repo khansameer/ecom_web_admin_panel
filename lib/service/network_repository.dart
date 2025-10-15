@@ -82,7 +82,7 @@ Future callDeleteMethod({
     request.body = json.encode(params);
   }
 
-  print('==DeleteUrl==${url}');
+  debugPrint('==DeleteUrl==$url');
   final streamedResponse = await request.send();
   final response = await http.Response.fromStream(streamedResponse);
 

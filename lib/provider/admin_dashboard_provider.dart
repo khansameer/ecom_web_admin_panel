@@ -1,17 +1,12 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:neeknots/feature/admin/model/AllUserModel.dart';
 import 'package:neeknots/feature/admin/model/admin_contact_model.dart';
-import 'package:neeknots/main.dart';
+import 'package:neeknots/feature/admin/model/all_order_model.dart';
+import 'package:neeknots/feature/admin/model/all_product_model.dart';
 
-import '../core/component/component.dart';
-import '../core/firebase/auth_service.dart';
-import '../core/firebase/send_fcm_notification.dart';
-import '../core/hive/app_config_cache.dart';
-import '../feature/admin/admin_home_page.dart';
-import '../feature/admin/model/DashboardCount.dart';
-import '../models/user_model.dart';
+import '../feature/admin/model/all_store_room_model.dart';
 import '../service/api_config.dart';
 import '../service/gloable_status_code.dart';
 import '../service/network_repository.dart';
@@ -44,498 +39,12 @@ class AdminDashboardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool _isUpdated = false;
 
-  bool get isUpdated => _isUpdated;
 
-  void _setUpdating(bool val) {
-    _isUpdated = val;
-    notifyListeners();
-  }
-
-  List<Map<String, dynamic>> _allUsers = [];
-
-  List<Map<String, dynamic>> get allUsers => _allUsers;
-  List<Map<String, dynamic>> _filteredUsers = [];
-
-  List<Map<String, dynamic>> get userData => _filteredUsers;
-
-  String _searchQuery = "";
-
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<void> fetchUsers() async {
-    _setLoading(true);
-    try {
-      final querySnapshot = await _firestore
-          .collection(_authService.storesCollection)
-          .get();
-      _allUsers = querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        data["uid"] = doc.id;
-        return data;
-      }).toList();
-
-      applySearch(_searchQuery); // Apply any current search
-      _setLoading(false);
-    } catch (e) {
-      debugPrint("Error fetching users: $e");
-    }
-    _setLoading(false);
-  }
-
-  void applySearch(String query) {
-    _searchQuery = query.toLowerCase();
-
-    if (_searchQuery.isEmpty) {
-      _filteredUsers = List.from(_allUsers);
-    } else {
-      _filteredUsers = _allUsers.where((user) {
-        final name = user["name"]?.toString().toLowerCase() ?? "";
-        final email = user["email"]?.toString().toLowerCase() ?? "";
-        return name.contains(_searchQuery) || email.contains(_searchQuery);
-      }).toList();
-    }
-
-    notifyListeners();
-  }
-
-  Future<void> updateUser({required String docId, String? token}) async {
-    try {
-      _setUpdating(true);
-      notifyListeners();
-      await FirebaseFirestore.instance
-          .collection(_authService.storesCollection)
-          .doc(docId)
-          .update({
-            "name": tetFullName.text.trim(),
-            "email": tetEmail.text.trim(),
-            "mobile": tetPhone.text.trim(),
-            "store_name": tetStoreName.text.trim(),
-            "accessToken": tetAccessToken.text.trim(),
-            "version_code": tetVersionCode.text.trim(),
-            "logo_url": tetAppLogo.text.trim(),
-            "website_url": tetWebsiteUrl.text.trim(),
-            "active_status": _status,
-          });
-      _setUpdating(false);
-      notifyListeners();
-      if (token != null && token.isNotEmpty) {
-        final payload = buildNotificationPayload(
-          token: token,
-          title: tetFullName.text.trim(),
-          body: _status
-              ? "Your account is activated, open the app"
-              : "Your account has been deactivated, please contact support",
-          data: {"category": "chat"},
-        );
-        await sendFCMNotification(bodyMap: payload);
-      }
-
-      //fetchUsers();
-      _setUpdating(false);
-      notifyListeners();
-    } catch (e) {
-      debugPrint("Error updating user: $e");
-      _setUpdating(false);
-      notifyListeners();
-    }
-  }
-
-  Future<void> updateUserStatus({
-    required String docId,
-    String? token,
-    required bool status,
-  }) async {
-    try {
-      _setUpdating(true);
-      notifyListeners();
-      await FirebaseFirestore.instance
-          .collection(_authService.storesCollection)
-          .doc(docId)
-          .update({"active_status": status});
-      _setUpdating(false);
-      notifyListeners();
-      if (token != null && token.isNotEmpty) {
-        final payload = buildNotificationPayload(
-          token: token,
-          title: tetFullName.text.trim(),
-          body: status
-              ? "Your account is activated, open the app"
-              : "Your account has been deactivated, please contact support",
-          data: {"category": "chat"},
-        );
-        await sendFCMNotification(bodyMap: payload);
-      }
-
-      //fetchUsers();
-      _setUpdating(false);
-      notifyListeners();
-    } catch (e) {
-      debugPrint("Error updating user: $e");
-      _setUpdating(false);
-      notifyListeners();
-    }
-  }
-
-  /*  List<Map<String, dynamic>> _contacts = [];
-
-  List<Map<String, dynamic>> get contacts => _contacts;*/
-  final AuthService _authService = AuthService();
-
-  /*  Future<void> getAllContactList() async {
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      final users = await _authService.getAllContactList();
-
-      _contacts = users; // Already a List<Map<String, dynamic>>
-    } catch (e) {
-      debugPrint("❌ Failed to fetch users: $e");
-      _contacts = [];
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }*/
-
-  int _contactCount = 0;
-
-  int get contactCount => _contactCount;
-
-  Future<void> getUnseenContactCount() async {
-    _isLoading = true;
-    notifyListeners();
-
-    try {
-      var count = await _authService.getUnseenContactCount();
-      _contactCount = count ?? 0;
-    } catch (e) {
-      debugPrint("❌ Failed to fetch unseen count: $e");
-      _contactCount = 0;
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> markAllAsSeen() async {
-    try {
-      await _authService.markAllAsSeen();
-      getUnseenContactCount();
-      notifyListeners();
-
-      debugPrint("✅ All contacts marked as seen");
-    } catch (e) {
-      debugPrint("❌ Failed to mark all as seen: $e");
-    }
-  }
-
-  List<Map<String, dynamic>> _allOrderFilterList = [];
-
-  List<Map<String, dynamic>> get allOrderFilterList => _allOrderFilterList;
-
-  Future<void> getAllFilterOrderList() async {
-    _setLoading(true);
-    try {
-      final users = await _authService.getAllFilterOrderList();
-
-      _allOrderFilterList = users;
-      notifyListeners();
-
-      _setLoading(false);
-    } catch (e) {
-      debugPrint("Error fetching users: $e");
-    }
-    _setLoading(false);
-    notifyListeners();
-  }
-
-  Future<void> updateAllStatusesToFirebase({required String storeName}) async {
-    /* final contactCollection = await _authService.getStoreSubCollection(
-      _authService.orderFilterCollection,
-    );*/
-
-    final contactCollection = _firestore
-        .collection(storeName)
-        .doc(_authService.orderFilterCollection)
-        .collection(_authService.orderFilterCollection);
-    _setLoading(true);
-    try {
-      final batch = _firestore.batch();
-      for (var item in _allOrderFilterList) {
-        final docRef = contactCollection.doc(item["id"]);
-        batch.update(docRef, {"status": item["status"]});
-      }
-      await batch.commit();
-      debugPrint("✅ All statuses updated successfully");
-    } catch (e) {
-      debugPrint("❌ Error updating statuses: $e");
-    }
-    _setLoading(false);
-  }
-
-  /// 🟩 Update local checkbox state only (not Firebase yet)
-  /*
-  void toggleStatus(String uid, bool value) {
-    final index = _allOrderFilterList.indexWhere((item) => item["uid"] == uid);
-    if (index != -1) {
-      _allOrderFilterList[index]["status"] = value;
-      notifyListeners();
-    }
-  }
-*/
-
-  void toggleStatus(String uid, bool value) {
-    final index = _allOrderFilterList.indexWhere((item) => item["id"] == uid);
-    if (index != -1) {
-      // Create a new map instead of mutating the old one
-      final updatedItem = {..._allOrderFilterList[index], "status": value};
-      _allOrderFilterList[index] = updatedItem;
-      notifyListeners();
-    }
-  }
-
-  Future<String?> addNewOrderFilter({
-    required String name,
-    required bool status,
-    required String storeName,
-  }) async {
-    _setLoading(true);
-    try {
-      /*final contactCollection = await _authService.getStoreSubCollection(
-        _authService.orderFilterCollection,
-      );
-*/
-      final contactCollection = _firestore
-          .collection(storeName)
-          .doc(_authService.orderFilterCollection)
-          .collection(_authService.orderFilterCollection);
-
-      // 🔹 1. Check if name already exists (case-insensitive)
-      final existing = await contactCollection
-          .where("title", isEqualTo: name.trim())
-          .get();
-
-      if (existing.docs.isNotEmpty) {
-        _setLoading(false);
-        return "Filter with this name already exists!";
-      }
-
-      // 🔹 2. Add new filter
-      final docRef = await contactCollection.add({
-        "title": name.trim(),
-        "status": status,
-      });
-
-      // 🔹 3. Update local list immediately
-      _allOrderFilterList.add({
-        "uid": docRef.id,
-        "title": name.trim(),
-        "status": status,
-      });
-      notifyListeners();
-
-      _setLoading(false);
-      return null; // means success
-    } catch (e) {
-      debugPrint("Error adding new filter: $e");
-      _setLoading(false);
-      return "Error adding new filter";
-    }
-  }
-
-  Future<void> deleteOrderFilter({
-    required String storeName,
-    required String uid,
-  }) async {
-    try {
-      // Get the collection reference
-      final collectionRef = _firestore
-          .collection(storeName)
-          .doc(_authService.orderFilterCollection)
-          .collection(_authService.orderFilterCollection);
-
-      // Check if the document exists
-      final docSnapshot = await collectionRef.doc(uid).get();
-      if (!docSnapshot.exists) {
-        debugPrint('❌ Document with uid $uid does not exist!');
-        ScaffoldMessenger.of(
-          navigatorKey.currentContext!,
-        ).showSnackBar(SnackBar(content: Text('Document does not exist!')));
-        return;
-      }
-
-      // Delete from Firestore
-      await collectionRef.doc(uid).delete();
-
-      // Remove from local list immediately
-      _allOrderFilterList.removeWhere((item) => item["id"] == uid);
-      notifyListeners();
-
-      debugPrint("✅ Filter deleted: $uid");
-      ScaffoldMessenger.of(
-        navigatorKey.currentContext!,
-      ).showSnackBar(SnackBar(content: Text('Deleted successfully')));
-    } catch (e) {
-      debugPrint("❌ Error deleting filter: $e");
-      ScaffoldMessenger.of(
-        navigatorKey.currentContext!,
-      ).showSnackBar(SnackBar(content: Text('Error deleting: $e')));
-    }
-  }
-
-  List<Map<String, dynamic>> activeFilters = [];
-
-  Future<void> addFilter({
-    required String title,
-    String? status,
-    String? financialStatus,
-    String? fulfillmentStatus,
-    String? createdMinDate,
-    String? createdMaxDate,
-  }) async {
-    final lowerTitle = title.toLowerCase().trim();
-
-    // Prevent duplicate
-    final exists = activeFilters.any(
-      (filter) => filter['title'].toString().toLowerCase() == lowerTitle,
-    );
-    if (exists) return;
-    final contactCollection = await _authService.getStoreSubCollection(
-      _authService.orderFilterCollection,
-    );
-    final docRef = await contactCollection.add({
-      "title": title,
-      "status": status,
-      "financialStatus": financialStatus,
-      "fulfillmentStatus": fulfillmentStatus,
-      "createdMinDate": createdMinDate,
-      "createdMaxDate": createdMaxDate,
-    });
-
-    activeFilters.add({
-      "id": docRef.id,
-      "title": title,
-      "status": status,
-      "financialStatus": financialStatus,
-      "fulfillmentStatus": fulfillmentStatus,
-      "createdMinDate": createdMinDate,
-      "createdMaxDate": createdMaxDate,
-    });
-
-    notifyListeners();
-  }
-
-  List<Map<String, dynamic>> _storeCounts = [];
-
-  List<Map<String, dynamic>> get storeCounts => _storeCounts;
-
-  Future<void> getStoreUserCounts() async {
-    _setLoading(true);
-    notifyListeners();
-    try {
-      final querySnapshot = await _firestore
-          .collection(_authService.storesCollection)
-          .get();
-
-      // Temporary map to count users per store
-      final Map<String, int> countsMap = {};
-
-      for (var doc in querySnapshot.docs) {
-        final data = doc.data();
-        final storeName = data['store_name'] ?? '';
-        if (countsMap.containsKey(storeName)) {
-          countsMap[storeName] = countsMap[storeName]! + 1;
-        } else {
-          countsMap[storeName] = 1;
-        }
-      }
-
-      // Convert map to list of maps
-      _storeCounts = countsMap.entries.map((e) {
-        return {'store_name': e.key, 'count': e.value};
-      }).toList();
-
-      _setLoading(false);
-      notifyListeners();
-    } catch (e) {
-      throw Exception("Failed to fetch store counts: $e");
-    }
-  }
-
-  Future<void> getUsersByStoreName(String storeName) async {
-    try {
-      _setLoading(true);
-      notifyListeners();
-      final querySnapshot = await _firestore
-          .collection(_authService.storesCollection)
-          .where('store_name', isEqualTo: storeName)
-          .get();
-
-      //if (querySnapshot.docs.isEmpty) return [];
-
-      _allUsers = querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        data['id'] = doc.id; // optional: add document ID
-        return data;
-      }).toList();
-
-      _setLoading(false);
-      notifyListeners();
-    } catch (e) {
-      throw Exception("Failed to fetch users for $storeName: $e");
-    }
-  }
 
   List<Map<String, dynamic>> _allPendingRequest = [];
 
   List<Map<String, dynamic>> get allPendingRequest => _allPendingRequest;
-
-  /*  Future<void> getStoreCollectionData({
-    required String storeName,
-    required String collectionName, // e.g., 'contact_us'
-  }) async {
-    _setLoading(true);
-    notifyListeners();
-    try {
-      final querySnapshot = await _firestore
-          .collection(storeName)
-
-          .doc(collectionName) // if each store has a doc, adjust if needed
-          .collection(collectionName)
-       //   .where('status', isEqualTo: false) // ← only false status
-         // .orderBy('created_date', descending: true)
-          .get();
-
-      final dataList = querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        data['id'] = doc.id;
-        return data;
-      }).toList();
-
-      print('=====${dataList.length}');
-      if (collectionName == _authService.productCollection) {
-        _allPendingRequest = dataList;
-        notifyListeners();
-      }
-      if (collectionName == _authService.contactUsCollection) {
-        _contacts = dataList;
-        notifyListeners();
-      }
-      if (collectionName == _authService.orderFilterCollection) {
-        _allOrderFilterList = dataList;
-        notifyListeners();
-      }
-
-      _setLoading(false);
-      notifyListeners();
-      */ /* return dataList;*/ /*
-    } catch (e) {
-      throw Exception("Failed to fetch $collectionName for $storeName: $e");
-    }
-  }*/
 
   final List<Color> professionColors = [
     Colors.red,
@@ -602,40 +111,12 @@ class AdminDashboardProvider with ChangeNotifier {
 
   int _selectedIndex = 0;
   String? _selectedSection;
-  List<AdminUserModel> _users = [
-    AdminUserModel(
-      name: "Girish Chauhan",
-      email: "girish@redefinesolution.com",
-      phone: "9558697986",
-      isActive: true,
-    ),
-    AdminUserModel(
-      name: "Sameer Khan",
-      email: "sammerkhan@example.com",
-      phone: "9558697987",
-      isActive: false,
-    ),
-    AdminUserModel(
-      name: "Jane Smith",
-      email: "jane@example.com",
-      phone: "9558697988",
-      isActive: true,
-    ),
-  ];
-  final List<Map<String, dynamic>> dashboardItems = [
-    {"title": "Users", "icon": Icons.people},
-    {"title": "Orders", "icon": Icons.shopping_cart},
-    {"title": "Products", "icon": Icons.inventory},
-    {"title": "Contacts", "icon": Icons.contact_mail},
-    {"title": "Filter", "icon": Icons.filter_alt},
-  ];
 
   // Getters
   int get selectedIndex => _selectedIndex;
 
   String? get selectedSection => _selectedSection;
 
-  List<AdminUserModel> get users => _users;
 
   // Methods
   void setSelectedStore(int index) {
@@ -649,10 +130,6 @@ class AdminDashboardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleUserStatus(int index, bool value) {
-    _users[index].isActive = value;
-    notifyListeners();
-  }
 
   int usersCount = 0;
   int ordersCount = 0;
@@ -679,15 +156,13 @@ class AdminDashboardProvider with ChangeNotifier {
 
   AdminContactListModel? get adminContactModel => _adminContactModel;
 
-  Future<void> getAllContact() async {
-    UserModel? user = await AppConfigCache.getUserModel(); // await the future
+  Future<void> getAllContact({required String storeName}) async {
     _setLoading(true);
     try {
       final response = await callGETMethod(
-        url: '${ApiConfig.contactUs}/store?store_name=${user?.storeName}',
+        url: '${ApiConfig.getAllContact}?store_name=$storeName',
       );
 
-      print('============${json.decode(response)}');
       if (globalStatusCode == 200) {
         _adminContactModel = AdminContactListModel.fromJson(
           json.decode(response),
@@ -704,18 +179,39 @@ class AdminDashboardProvider with ChangeNotifier {
     }
   }
 
-  List<DashboardCount> counts = [];
+  AllStoreNameModel? _allStoreNameModel;
 
-  Future<void> countByAllStoreName() async {
-    UserModel? user = await AppConfigCache.getUserModel(); // await the future
+  AllStoreNameModel? get allStoreNameModel => _allStoreNameModel;
+
+  Future<void> getAllStoreName() async {
+    _setLoading(true);
+    try {
+      final response = await callGETMethod(url: ApiConfig.allStoreList);
+
+      if (globalStatusCode == 200) {
+        _allStoreNameModel = AllStoreNameModel.fromJson(json.decode(response));
+      } else {
+        _allStoreNameModel?.stores = [];
+      }
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+
+
+  Future<void> countByAllStoreName({required String storeRoom}) async {
     _setLoading(true);
     notifyListeners();
     try {
       final response = await callGETMethod(
-        url: '${ApiConfig.authAPi}/count_all',
+        url: '${ApiConfig.storeWiseGetCount}?store_name=$storeRoom',
       );
 
-      print('============${json.decode(response)}');
       if (globalStatusCode == 200) {
         final data = json.decode(response);
 
@@ -724,9 +220,6 @@ class AdminDashboardProvider with ChangeNotifier {
         contactsCount = rawCounts['contacts'];
         ordersCount = rawCounts['orders'];
         usersCount = rawCounts['users'];
-        /*    counts = rawCounts.entries
-            .map((e) => DashboardCount.fromJson(e.key, e.value))
-            .toList();*/
       } else {
         // _totalContactCount =0;
       }
@@ -740,4 +233,206 @@ class AdminDashboardProvider with ChangeNotifier {
       _setLoading(false);
     }
   }
+
+  AllUserModel? _allUserModel;
+
+  AllUserModel? get allUserModel => _allUserModel;
+
+  Future<void> getAllUser({required String storeRoom}) async {
+    _setLoading(true);
+    notifyListeners();
+    try {
+      final response = await callGETMethod(
+        url: '${ApiConfig.getAllUser}?store_name=$storeRoom',
+      );
+
+      if (globalStatusCode == 200) {
+        _allUserModel = AllUserModel.fromJson(json.decode(response));
+      } else {
+        _allUserModel?.users = [];
+      }
+      notifyListeners();
+    } catch (e) {
+      //_totalContactCount =0;
+      _setLoading(false);
+      rethrow;
+    } finally {
+      //_totalContactCount =0;
+      _setLoading(false);
+    }
+  }
+
+  Future<void> updateUserDetails({
+    required Map<String, dynamic> body,
+    required String storeRoom,
+  }) async {
+    _setLoading(true);
+    notifyListeners();
+    try {
+       await callPutMethodWithToken(
+        params: body,
+        url: ApiConfig.updateUserDetails,
+      );
+
+      if (globalStatusCode == 200) {
+        getAllUser(storeRoom: storeRoom);
+      }
+      notifyListeners();
+    } catch (e) {
+      //_totalContactCount =0;
+      _setLoading(false);
+      rethrow;
+    } finally {
+      //_totalContactCount =0;
+      _setLoading(false);
+    }
+  }
+
+  AllProductModel? _allProductModel;
+
+  AllProductModel? get allProductModel => _allProductModel;
+
+  Future<void> getAllProduct({required String storeRoom}) async {
+    _setLoading(true);
+    try {
+      final response = await callGETMethod(
+        url: '${ApiConfig.getALlProduct}?store_name=$storeRoom',
+      );
+
+      if (globalStatusCode == 200) {
+        _allProductModel = AllProductModel.fromJson(json.decode(response));
+      } else {
+        _allProductModel?.products = [];
+      }
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  AllOrderModel? _allOrderModel;
+
+  AllOrderModel? get allOrderModel => _allOrderModel;
+
+  Future<void> getAllOrder({required String storeRoom}) async {
+    _setLoading(true);
+    try {
+      final response = await callGETMethod(
+        url: '${ApiConfig.getAlOrder}?store_name=$storeRoom',
+      );
+
+      if (globalStatusCode == 200) {
+        _allOrderModel = AllOrderModel.fromJson(json.decode(response));
+      } else {
+        _allOrderModel?.orders = [];
+      }
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+  List<Map<String, dynamic>> get activeFilters {
+    if (_allOrderModel?.orders == null || _allOrderModel?.orders?.isEmpty==true) {
+      return [];
+    }
+
+    // Example: create filter options based on order status
+    final statuses = _allOrderModel?.orders!=null?_allOrderModel!.orders!
+        .map((o) => o.title ?? "Unknown")
+        .toSet()
+        .toList():[];
+
+    return statuses.map((s) => {"title": s}).toList();
+  }
+  Future<bool> createOrder({
+    required Map<String, dynamic> params,
+    required String storeRoom,
+  }) async {
+    _setLoading(true);
+    try {
+      await callPostMethod(
+        params: params,
+        headers: {},
+        url: ApiConfig.createOrder,
+      );
+
+      if (globalStatusCode == 200) {
+        getAllOrder(storeRoom: storeRoom);
+
+        notifyListeners();
+        return true;
+      } else {
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+     // showCommonDialog(title: "$e", context: navigatorKey.currentContext!);
+      notifyListeners();
+      _setLoading(false);
+
+      return false;
+    }
+  }
+
+  Future<bool> updateOrder({
+    required Map<String, dynamic> params,
+    required String storeRoom,
+    required int orderID,
+  }) async {
+    _setLoading(true);
+    try {
+      await callPutMethodWithToken(
+        params: params,
+        url: '${ApiConfig.updateOrder}/$orderID',
+      );
+
+      if (globalStatusCode == 200) {
+        getAllOrder(storeRoom: storeRoom);
+
+        notifyListeners();
+        return true;
+      } else {
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      //showCommonDialog(title: "${e}", context: navigatorKey.currentContext!);
+      notifyListeners();
+      _setLoading(false);
+
+      return false;
+    }
+  }
+
+  Future<void> deleteOrderByID({
+    required String storeRoom,
+    required int orderID,
+  }) async {
+    _setLoading(true);
+    try {
+       await callDeleteMethod(
+        url: '${ApiConfig.deleteOrderByID}/$orderID',
+      );
+
+      if (globalStatusCode == 200) {
+        getAllOrder(storeRoom: storeRoom);
+        notifyListeners();
+      } else {}
+      notifyListeners();
+    } catch (e) {
+      _setLoading(false);
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+
+  // /users/update
 }

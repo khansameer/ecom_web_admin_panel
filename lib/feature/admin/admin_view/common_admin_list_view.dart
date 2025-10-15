@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/component/context_extension.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/provider/admin_dashboard_provider.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +30,7 @@ class _CommonAdminListViewState extends State<CommonAdminListView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<AdminDashboardProvider>();
-      provider.countByAllStoreName();
+      provider.countByAllStoreName(storeRoom: widget.storeName );
       //provider.fetchStoreCounts(storeName: widget.storeName);
     });
   }
@@ -103,14 +104,10 @@ class _CommonAdminListViewState extends State<CommonAdminListView> {
                           children: [
 
                             commonAssetImage(item["icon"],width:  isMobile?55:64,height: isMobile?55:64,color: storeColor),
-                          /*  Icon(
-                              item["icon"] as IconData,
-                              size: 40,
-                              color: Colors.black54,
-                            ),*/
+
                             const SizedBox(height: 10),
                             commonText(
-                              text: item["title"].toString(),
+                              text: item["title"].toString().toCapitalize(),
                               fontSize:  isMobile?14:16,
                               fontWeight: FontWeight.w600,
                               color: storeColor,

@@ -3,6 +3,7 @@ import 'package:neeknots/main.dart';
 
 
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'component.dart';
 
 class UrlLauncherService {
@@ -79,6 +80,36 @@ context:  navigatorKey.currentContext!,
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
         debugPrint('No email app found for $email');
+      }
+    } catch (e) {
+      debugPrint('Error launching email: $e');
+    }
+  }
+
+  static Future<void> launchEmailWeb(
+      String email, {
+        String? subject,
+        String? body,
+      }) async {
+    final Uri uri = Uri(
+      scheme: 'mailto',
+      path: email,
+      queryParameters: {
+        if (subject != null) 'subject': subject,
+        if (body != null) 'body': body,
+      },
+    );
+
+    final String url = uri.toString();
+
+    try {
+      final bool launched = await launchUrlString(
+        url,
+        mode: LaunchMode.platformDefault,
+      );
+
+      if (!launched) {
+        debugPrint('Could not launch email client for $email');
       }
     } catch (e) {
       debugPrint('Error launching email: $e');

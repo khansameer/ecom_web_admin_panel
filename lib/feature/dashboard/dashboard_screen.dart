@@ -20,8 +20,7 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
-import '../../admin/common_admin_widget.dart';
-import '../../core/firebase/auth_service.dart';
+import '../admin/admin_view/common_admin_widget.dart';
 import '../../core/hive/app_config_cache.dart';
 import '../../models/user_model.dart';
 import '../../provider/product_provider.dart';

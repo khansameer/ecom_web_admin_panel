@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:neeknots/core/component/component.dart';
@@ -9,7 +8,6 @@ import 'package:neeknots/models/order_model.dart';
 import 'package:neeknots/service/gloable_status_code.dart';
 import 'package:neeknots/service/network_repository.dart';
 
-import '../core/firebase/auth_service.dart';
 import '../models/order_details_model.dart'
     as orderDetails
     show OrderDetailsModel;
@@ -33,20 +31,6 @@ class OrdersProvider with ChangeNotifier {
 
   String get selectedStatus => _selectedStatus;
 
-  /// 🏷️ Filter by status (Pending, Shipped, Delivered, or All)
-
-  /*  void filterByStatus(String status) {
-    String apiStatus = status.toLowerCase().replaceAll(' ', '_');
-    if (status == "all") {
-      getOrderList(financialStatus: null);
-    } else {
-      getOrderList(financialStatus: apiStatus);
-    }
-
-    _selectedStatus = status;
-    notifyListeners();
-    //_applyFilters();
-  }*/
 
   bool _isFetching = false;
 
@@ -100,122 +84,10 @@ class OrdersProvider with ChangeNotifier {
   /*List<Order> get selectedOrders =>
       _ordersByStatus[selectedTab.toLowerCase()] ?? [];*/
 
-  Future<void> orderCountStatusValue1({
-    int? limit,
-    String? financialStatus,
-  }) async {
-    _isFetching = true;
-    notifyListeners();
-    final effectiveLimit = limit ?? _limit;
 
-    try {
-      String url =
-          '${await ApiConfig.ordersUrl}?status=any&limit=$effectiveLimit&order=id+asc';
-      if (financialStatus != null && financialStatus.isNotEmpty) {
-        final encodedTitle = "&financial_status=$financialStatus";
-        url += encodedTitle;
-      }
 
-      final response = await callGETMethod(url: url);
-      if (globalStatusCode == 200) {
-        final data = json.decode(response); // ✅ now .body works
 
-        final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
-        int todaysOrderCount = 0;
-        int openOrderCount = 0;
-        int closedOrderCount = 0;
-        int pendingToChargeCount = 0;
-        int pendingShipmentCount = 0;
-        int shippedCount = 0;
-        int awaitingReturnCount = 0;
-        int completedCount = 0;
-        final todayStart = DateTime.now().toUtc().subtract(
-          Duration(
-            hours: DateTime.now().hour,
-            minutes: DateTime.now().minute,
-            seconds: DateTime.now().second,
-          ),
-        );
-        final todayEnd = todayStart.add(const Duration(days: 1));
 
-        for (var order in fetchedOrders) {
-          final status = order.financialStatus?.toLowerCase() ?? 'unknown';
-          final createdAt = DateTime.parse(
-            order.createdAt ?? DateTime.now().toString(),
-          );
-
-          // Total counts by financial status
-          if (status == 'paid') totalPaid++;
-          if (status == 'pending') totalPending++;
-          if (status == 'refunded') totalRefunded++;
-          if (status == 'shipping') totalShipping++;
-          if (status == 'cancelled') totalCancel++;
-
-          // Custom status counts
-          if (createdAt.isAfter(todayStart) && createdAt.isBefore(todayEnd))
-            todaysOrderCount++;
-          if (status == 'pending') pendingToChargeCount++; // example mapping
-          if (status == 'shipping') pendingShipmentCount++;
-          if (status == 'shipped') shippedCount++;
-          if (status == 'completed') completedCount++;
-          // Map awaiting return depending on your data, example:
-          if (status == 'awaiting_return') awaitingReturnCount++;
-          // Closed Orders example: maybe cancelled + refunded
-          if (status == 'cancelled' || status == 'refunded') closedOrderCount++;
-          // Open Orders: all others that are not closed
-          if (!(status == 'cancelled' ||
-              status == 'refunded' ||
-              status == 'completed'))
-            openOrderCount++;
-        }
-
-        debugPrint("===== ORDER COUNTS =====");
-        debugPrint("Today’s Order: $todaysOrderCount");
-        debugPrint("Open Order: $openOrderCount");
-        debugPrint("Closed Orders: $closedOrderCount");
-        debugPrint("Pending To Charge: $pendingToChargeCount");
-        debugPrint("Pending Shipment: $pendingShipmentCount");
-        debugPrint("Shipped: $shippedCount");
-        debugPrint("Awaiting Return: $awaitingReturnCount");
-        debugPrint("Completed: $completedCount");
-        debugPrint("Total Paid: $totalPaid");
-        debugPrint("Total Pending: $totalPending");
-        debugPrint("Total Refunded: $totalRefunded");
-        debugPrint("Total Shipping: $totalShipping");
-        debugPrint("Total Cancel: $totalCancel");
-
-        totalPaid = fetchedOrders
-            .where((e) => e.financialStatus?.toLowerCase() == 'paid')
-            .length;
-        totalPending = fetchedOrders
-            .where((e) => e.financialStatus?.toLowerCase() == 'pending')
-            .length;
-        totalRefunded = fetchedOrders
-            .where((e) => e.financialStatus?.toLowerCase() == 'refunded')
-            .length;
-        totalShipping = fetchedOrders
-            .where((e) => e.financialStatus?.toLowerCase() == 'shipping')
-            .length;
-        totalCancel = fetchedOrders
-            .where((e) => e.financialStatus?.toLowerCase() == 'cancelled')
-            .length;
-        _ordersByStatus.clear(); // ✅ naya fetch hote hi purana clear karo
-        for (var order in fetchedOrders) {
-          final status = order.financialStatus?.toLowerCase() ?? 'unknown';
-          _ordersByStatus.putIfAbsent(status, () => []);
-          _ordersByStatus[status]!.add(order);
-        }
-
-        _isFetching = false;
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error fetching orders: $e');
-    } finally {
-      _isFetching = false;
-      notifyListeners();
-    }
-  }
 
   Map<String, int> orderStatusCounts = {
     "Today’s Order": 0,
@@ -338,28 +210,6 @@ class OrdersProvider with ChangeNotifier {
 
   int get totalOrderCount => _totalOrderCount;
 
-  /* Future<void> getTotalOrderCount({
-    DateTime? startDate,
-    DateTime? endDate,
-  }) async {
-    _isFetching = true;
-    notifyListeners();
-
-    final response =  callGETMethod(
-      url: '${ApiConfig.totalOrderUrl}?status=any',
-    );
-
-    if (globalStatusCode == 200) {
-      final data = json.decode(await response);
-
-      _totalOrderCount = data["count"] ?? 0;
-      _isFetching = false;
-      notifyListeners();
-    }
-
-    _isFetching = false;
-    notifyListeners();
-  }*/
 
   Future<void> getTotalOrderCount({
     DateTime? startDate,
@@ -418,7 +268,7 @@ class OrdersProvider with ChangeNotifier {
 
   OrderDetailsModel? get orderDetailsModel => _orderDetailsModel;
 
-  clearOrderDetailsData() {
+  void clearOrderDetailsData() {
     _orderDetailsModel?.orderData = null;
     notifyListeners();
   }
@@ -637,7 +487,6 @@ class OrdersProvider with ChangeNotifier {
       if (createdMaxDate != null) 'created_at_max': createdMaxDate,
     };
 
-    print('==queryParams==${queryParams}');
     final baseUrl = await ApiConfig.baseUrl;
 
     final uri = Uri.parse(
@@ -649,13 +498,11 @@ class OrdersProvider with ChangeNotifier {
       headers: await ApiConfig.getCommonHeaders(),
     );
 
-    print('=======OrderUrl$uri');
     if (response.statusCode != 200) {
       _isFetching = false;
       notifyListeners();
 
-      print('=======OrderUrl$_isFetching');
-      throw Exception("Error fetching orders: ${response.body}");
+      //throw Exception("Error fetching orders: ${response.body}");
     }
 
     final data = json.decode(response.body);
@@ -700,7 +547,6 @@ class OrdersProvider with ChangeNotifier {
         fulfillmentStatus: null,
       );
     } else {
-      print('==click');
       getOrderList(
         loadMore: false,
         status: apiStatus,
@@ -811,76 +657,21 @@ class OrdersProvider with ChangeNotifier {
     }
   }
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
 
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  void _setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
   List<Map<String, dynamic>> _allOrderFilterList = [];
   List<Map<String, dynamic>> get allOrderFilterList => _allOrderFilterList;
 
 
-  final AuthService _authService = AuthService();
-  Future<void> getAllFilterOrderList() async {
-    _setLoading(true);
-    try {
-      final contactCollection = await _authService.getStoreSubCollection(
-        _authService.orderFilterCollection,
-      );
 
-      final querySnapshot = await contactCollection.get();
-      _allOrderFilterList = querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        data["uid"] = doc.id;
-        return data;
-      }).toList();
-    } catch (e) {
-      debugPrint("Error fetching filters: $e");
-    }
-    _setLoading(false);
-  }
 
-  Future<void> getAllFilterOrderList1() async {
-    _setLoading(true);
-    try {
-      final contactCollection = await _authService.getStoreSubCollection(
-        _authService.orderFilterCollection,
-      );
-
-      final snapshot = await contactCollection
-          .where('status', isEqualTo: true) // ✅ fetch only active ones
-          .get();
-
-      _allOrderFilterList = snapshot.docs.map((doc) {
-        return {"title": doc['title'] ?? '', "status": doc['status'] ?? ''};
-      }).toList();
-
-      // Initialize counts to 0
-      orderStatusCounts = {for (var f in allOrderFilterList) f['title']!: 0};
-
-      // ✅ Set default tab to 0th index after fetching list
-      if (_allOrderFilterList.isNotEmpty) {
-        selectedTab = _allOrderFilterList.first['title'];
-        debugPrint("Default selected tab: $selectedTab");
-      }
-      _setLoading(false);
-      notifyListeners();
-    } catch (e) {
-      _setLoading(false);
-      notifyListeners();
-      debugPrint("Error fetching filter list: $e");
-    }
-  }
-
-  /// Return only filters where status == true
+/*  /// Return only filters where status == true
   List<Map<String, dynamic>> get activeFilters =>
-      _allOrderFilterList.where((f) => f["status"] == true).toList();
+      _allOrderFilterList.where((f) => f["status"] == true).toList();*/
+
 }
 
 class SalesData {

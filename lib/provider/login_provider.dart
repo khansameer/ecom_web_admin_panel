@@ -308,8 +308,6 @@ class LoginProvider with ChangeNotifier {
 
       print('============${json.decode(response)}');
       if (globalStatusCode == 200) {
-        UserModel user = UserModel.fromJson(json.decode(response));
-        await AppConfigCache.saveUserModel(user);
 
         navigatorKey.currentState?.pushNamedAndRemoveUntil(
           RouteName.dashboardScreen,
@@ -395,7 +393,10 @@ class LoginProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+  void cancelResendTimer() {
 
+    _timer = null;
+  }
   void _startNewCycle() {
     startResendTimer();
   }

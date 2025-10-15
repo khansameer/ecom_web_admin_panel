@@ -32,7 +32,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       context,
       listen: false,
     );
-    await customerProvider.clearOrderDetailsData();
     await customerProvider.getOrderById(orderID: widget.orderID);
   }
 

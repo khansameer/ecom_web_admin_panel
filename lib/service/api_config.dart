@@ -3,32 +3,45 @@ import 'package:neeknots/models/user_model.dart';
 import '../core/hive/app_config_cache.dart';
 
 class ApiConfig {
+  static String apiBASEURL = "http://10.0.10.152:3000";
 
+  //=======================user and Login Api
+  static String authAPi = "$apiBASEURL/user";
+  static String loginAPi = "$apiBASEURL/login";
+  static String generateOtpAPI = "$apiBASEURL/generate-otp";
+  static String verifyOtpAPI = "$apiBASEURL/verify-otp";
 
+  //=======================contact Us
 
+  static String contactUs = "$apiBASEURL/contact-us";
 
- static String apiBASEURL="http://10.0.10.152:3000";
+  //=======================Product
+  static String product = "$apiBASEURL/product";
+  static String order = "$apiBASEURL/order";
+  static String createOrder = "$order/create";
+  static String updateOrder = "$order/update";
+  static String deleteOrderByID = "$order/delete_order";
 
- //=======================user and Login Api
- static String authAPi="$apiBASEURL/user";
- static String loginAPi="$apiBASEURL/login";
- static String generateOtpAPI="$apiBASEURL/generate-otp";
- static String verifyOtpAPI="$apiBASEURL/verify-otp";
- //=======================contact Us
+  //======Admin
 
- static String contactUs="$apiBASEURL/contact-us";
- //=======================Product
- static String product="$apiBASEURL/product";
-
+  static String admin = "$apiBASEURL/adminRoutes";
+  static String allStoreList = "$admin/store_list";
+  static String storeWiseGetCount = "$admin/store_summary";
+  static String getAllUser = "$admin/users/store";
+  static String updateUserDetails = "$admin/users/update";
+  static String getALlProduct = "$admin/products/store";
+  static String getAllContact = "$admin/contacts/store";
+  static String getAlOrder = "$admin/orders/store";
+  static String approvedProductImage = "$admin/products";
 
   //==========================================================Shopify API=================================================================================================================
   static Future<String> get accessToken async {
     UserModel? user = await AppConfigCache.getUserModel(); // await the future
-   // final config = await AppConfigCache.loadConfig();
+
     return user?.accessToken ?? '';
   }
 
- static Future<Map<String, String>> getCommonHeaders() async {
+  static Future<Map<String, String>> getCommonHeaders() async {
     final token = await accessToken;
     return {
       'Content-Type': 'application/json',
@@ -36,25 +49,24 @@ class ApiConfig {
       "X-Shopify-Access-Token": token,
     };
   }
-/*  static const String accessToken = "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";
+
+  /*  static const String accessToken = "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";
   static const String storeName = "merlettenyc-demo";
   static const String versionCode = "2025-07";*/
   static Future<String> get baseUrl async {
     UserModel? user = await AppConfigCache.getUserModel(); // await the future
     //final config = await AppConfigCache.loadConfig();
     //final storeName = config['storeName'] ?? '';
-    final storeName = user?.storeName?? '';
+    final storeName = user?.storeName ?? '';
     //final versionCode = config['versionCode'] ?? '';
-    final versionCode =user?.versionCode ?? '';
+    final versionCode = user?.versionCode ?? '';
     return "https://$storeName.myshopify.com/admin/api/$versionCode";
   }
-
 
   static Future<String> get productsUrl async =>
       "${await baseUrl}/products.json";
 
-  static Future<String> get ordersUrl async =>
-      "${await baseUrl}/orders.json";
+  static Future<String> get ordersUrl async => "${await baseUrl}/orders.json";
 
   static Future<String> get customerUrl async =>
       "${await baseUrl}/customers.json";
@@ -68,12 +80,10 @@ class ApiConfig {
   static Future<String> get totalOrderUrl async =>
       "${await baseUrl}/orders/count.json";
 
-  static Future<String> get getImageUrl async =>
-      "${await baseUrl}/products";
+  static Future<String> get getImageUrl async => "${await baseUrl}/products";
 
   static Future<String> get getCustomerImage async =>
       "${await baseUrl}/customers";
 
-  static Future<String> get getOrderById async =>
-      "${await baseUrl}/orders";
+  static Future<String> get getOrderById async => "${await baseUrl}/orders";
 }

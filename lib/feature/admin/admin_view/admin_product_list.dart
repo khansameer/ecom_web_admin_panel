@@ -12,13 +12,8 @@ import '../../../provider/product_provider.dart';
 
 class AdminProductList extends StatefulWidget {
   final String storeName;
-  final String collectionName;
 
-  const AdminProductList({
-    super.key,
-    required this.storeName,
-    required this.collectionName,
-  });
+  const AdminProductList({super.key, required this.storeName});
 
   @override
   State<AdminProductList> createState() => _AdminProductListState();
@@ -35,15 +30,12 @@ class _AdminProductListState extends State<AdminProductList> {
   }
 
   void init() {
-    final customerProvider = Provider.of<AdminDashboardProvider>(
+    final provider = Provider.of<AdminDashboardProvider>(
       context,
       listen: false,
     );
 
-/*    customerProvider.getStoreCollectionData(
-      storeName: widget.storeName,
-      collectionName: widget.collectionName,
-    );*/
+    provider.getAllProduct(storeRoom: widget.storeName);
   }
 
   @override
@@ -51,25 +43,26 @@ class _AdminProductListState extends State<AdminProductList> {
     var isMobile = Responsive.isMobile(context);
     return Consumer2<AdminDashboardProvider, ProductProvider>(
       builder: (context, provider, productProvider, child) {
-        if (provider.isLoading) {
+        /*if (provider.isLoading) {
           return SizedBox.shrink();
-        }
+        }*/
 
         return Stack(
           children: [
-            provider.allPendingRequest.isNotEmpty
+            provider.allProductModel?.products?.isNotEmpty == true
                 ? GridView.builder(
-                    itemCount: provider.allPendingRequest.length,
+                    itemCount: provider.allProductModel?.products?.length ?? 0,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: isMobile ? 1 : 3,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
                     ),
                     itemBuilder: (context, index) {
-                      var data = provider.allPendingRequest[index];
+                      var data = provider.allProductModel?.products?[index];
                       Uint8List? imageBytes;
-                      if (data['image'] != null && data['image'].isNotEmpty) {
-                        imageBytes = base64Decode(data['image']);
+                      if (data?.imagePath != null &&
+                          data?.imagePath?.isNotEmpty == true) {
+                        imageBytes = base64Decode(data?.imagePath ?? '');
                       }
                       return Container(
                         margin: const EdgeInsets.all(8),
@@ -108,7 +101,7 @@ class _AdminProductListState extends State<AdminProductList> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   commonText(
-                                    text: data['name'],
+                                    text: data?.name ?? '',
                                     fontWeight: FontWeight.w600,
                                   ),
                                   const SizedBox(height: 4),
@@ -116,7 +109,7 @@ class _AdminProductListState extends State<AdminProductList> {
                                     fontSize: 12,
                                     color: Colors.black54,
                                     text:
-                                        'Requested: ${formatTimestamp(data['created_date'])}',
+                                        'Requested: ${formatString(data?.createdDate ?? DateTime.now().toString())}',
                                   ),
                                   const SizedBox(height: 12),
                                   Row(
@@ -143,27 +136,40 @@ class _AdminProductListState extends State<AdminProductList> {
                                             showCommonDialog(
                                               confirmText: "Upload",
                                               title: "Approve",
-                                              onPressed: () {
+                                              onPressed: () async {
                                                 Navigator.pop(context);
 
-                                                productProvider
-                                                    .uploadProductImageViaAdminWeb(
-                                                      imagePath: data['image'],
-                                                      storeRoom: widget.storeName,
-                                                      productId:
-                                                          data['product_id'],
-                                                      uid: data['id'],
-                                                    )
-                                                    .then((_) async {
+                                                Map<String, dynamic> body = {
+                                                  "product_id":
+                                                      data?.productId ?? 0,
+                                                  "imagePath":
+                                                      data?.imagePath ?? '',
+                                                  "storeName":
+                                                      data?.storeName ?? '',
+                                                  "versionCode":
+                                                      data?.version_code ?? '',
+                                                  "accessToken":
+                                                      data?.accessToken ?? '',
+                                                };
 
-                                                   /*   await provider
-                                                          .getStoreCollectionData(
-                                                            storeName: widget
-                                                                .storeName,
-                                                            collectionName: widget
-                                                                .collectionName,
-                                                          ); // ya koi refresh method*/
-                                                    });
+                                                final isSuccess =
+                                                    await productProvider
+                                                        .approvedProductImage(
+                                                          params: body,
+                                                          imageID:
+                                                              data?.imageId ??
+                                                              '',
+                                                        );
+                                                if (isSuccess) {
+                                                  final provider =
+                                                      Provider.of<
+                                                        AdminDashboardProvider
+                                                      >(context, listen: false);
+
+                                                  provider.getAllProduct(
+                                                    storeRoom: widget.storeName,
+                                                  );
+                                                }
                                               },
                                               context: context,
                                               content:
@@ -189,25 +195,26 @@ class _AdminProductListState extends State<AdminProductList> {
                                             showCommonDialog(
                                               confirmText: "Yes",
                                               title: "Decline",
-                                              onPressed: () {
-                                                 Navigator.pop(context);
-                                                productProvider
-                                                    .updateProductStatusWeb(
-                                                  storeName:    widget.storeName,
-                                                      uid: data['id'],
+                                              onPressed: () async {
+                                                Navigator.pop(context);
 
-                                                      title: "disapproved_date",
-                                                    )
-                                                    .then((_) async {
-                                                    /*  await provider
-                                                          .getStoreCollectionData(
-                                                            storeName: widget
-                                                                .storeName,
-                                                            collectionName: widget
-                                                                .collectionName,
-                                                          ); */
-                                                    });
-                                                //provider.uploadProductImageViaAdmin(imagePath: data['image'], productId: data['product_id'],uid:  data['uid']);
+                                                final isSuccess =
+                                                    await productProvider
+                                                        .disApprovedProductImage(
+                                                          productID:
+                                                              data?.productId ??
+                                                              0,
+                                                        );
+                                                if (isSuccess) {
+                                                  final provider =
+                                                      Provider.of<
+                                                        AdminDashboardProvider
+                                                      >(context, listen: false);
+
+                                                  provider.getAllProduct(
+                                                    storeRoom: widget.storeName,
+                                                  );
+                                                }
                                               },
                                               context: context,
                                               content:

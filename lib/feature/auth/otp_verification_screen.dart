@@ -21,8 +21,30 @@ class OtpVerificationScreen extends StatefulWidget {
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final TextEditingController otpController = TextEditingController();
 
+ /* @override
+  void dispose() {
+    // Stop any running timer from provider before screen destroys
+    Provider.of<LoginProvider>(context, listen: false).cancelResendTimer();
+
+    // Dispose controller safely
+    otpController.dispose();
+
+    super.dispose();
+  }*/
+  LoginProvider? _loginProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Save the provider reference safely while widget is active
+    _loginProvider = Provider.of<LoginProvider>(context, listen: false);
+  }
+
   @override
   void dispose() {
+    // Use the saved reference instead of context
+    _loginProvider?.cancelResendTimer();
+
     otpController.dispose();
     super.dispose();
   }
