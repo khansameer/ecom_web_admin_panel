@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:flutter/services.dart';
@@ -6,21 +7,23 @@ import 'package:neeknots/core/component/component.dart';
 class CommonPhoneField extends StatelessWidget {
   final TextEditingController phoneController;
   final TextEditingController countryCodeController;
-
+  final String? apiCountryCode; // from API, e.g. "IN"
   final String hintText;
 
   const CommonPhoneField({
     super.key,
     required this.phoneController,
     required this.countryCodeController,
+    this.apiCountryCode,
     this.hintText = "Phone Number",
   });
 
   @override
   Widget build(BuildContext context) {
+
     return IntlPhoneField(
       controller: phoneController,
-      initialCountryCode: 'US',
+      initialCountryCode: apiCountryCode ?? 'US', // ← set from API
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       style: commonTextStyle(
         color: Colors.black,
@@ -32,6 +35,7 @@ class CommonPhoneField extends StatelessWidget {
           horizontal: 16,
           vertical: 14,
         ),
+        counterText: '',
         border: commonTextFiledBorder(),
         enabledBorder: commonTextFiledBorder(),
         focusedBorder:commonTextFiledBorder(),
@@ -39,9 +43,9 @@ class CommonPhoneField extends StatelessWidget {
       validator: (phone) {
         if (phone == null || phone.number.isEmpty) {
           return "Please enter phone number";
-        } else if (phone.number.length < 6) {
+        } /*else if (phone.number.length < 6) {
           return "Enter a valid phone number";
-        }
+        }*/
         return null;
       },
       onChanged: (phone) {

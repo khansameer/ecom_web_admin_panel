@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:neeknots/core/component/CommonPhoneField.dart';
 import 'package:neeknots/core/component/common_switch.dart';
 import 'package:neeknots/feature/admin/model/AllUserModel.dart';
 import 'package:neeknots/provider/admin_dashboard_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/component/component.dart';
-import '../../../core/component/phone_number_field.dart';
 import '../../../core/image/image_utils.dart';
 import '../../../core/validation/validation.dart';
 import '../../../main.dart';
@@ -32,17 +32,31 @@ class CommonAdminWidget extends StatefulWidget {
 }
 
 class _State extends State<CommonAdminWidget> {
+  String? isoCode;
+
   @override
   void initState() {
     super.initState();
     widget.provider.tetFullName.text = widget.data?.name ?? '';
     widget.provider.tetEmail.text = widget.data?.email ?? '';
-    widget.provider.tetPhone.text = widget.data?.mobile ?? '';
+    // widget.provider.tetPhone.text = widget.data?.mobile ?? '';
     // widget.provider.tetCountryCodeController.text = widget.data["country_code"];
     widget.provider.tetStoreName.text = widget.data?.storeName ?? '';
     widget.provider.tetAccessToken.text = widget.data?.accessToken ?? '';
     widget.provider.tetVersionCode.text = widget.data?.versionCode ?? '';
     widget.provider.tetAppLogo.text = widget.data?.logoUrl ?? '';
+
+    final result = splitPhoneNumber(widget.data?.mobile ?? '');
+
+    setState(() {
+      var isCodeValue = getCountryCodeFromDialCode(
+        dialCode: result['dialCode'] ?? "+1",
+      );
+      isoCode = isCodeValue;
+      widget.provider.tetPhone.text = result['phoneNumber'] ?? '';
+      widget.provider.tetCountryCodeController.text = result['dialCode'] ?? "+1";
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final isActive = (widget.data?.activeStatus == 1);
       widget.provider.setStatus(isActive);
@@ -79,7 +93,7 @@ class _State extends State<CommonAdminWidget> {
                 ),
 
                 const SizedBox(height: 20),
-                PhoneNumberField(
+                /*  PhoneNumberField(
                   fillColor: Colors.grey.withValues(alpha: 0.1),
                   filled: true,
                   phoneController: widget.provider.tetPhone,
@@ -96,18 +110,14 @@ class _State extends State<CommonAdminWidget> {
                   // fixed +1
                   isPhoneEditable: false, // fixed +1
                 ),
-                /*commonTextField(
-                  hintText: "Phone No",
-                  controller: widget.provider.tetPhone,
-                  readOnly: true,
-                  maxLines: 1,
-                  fillColor: Colors.grey.withValues(alpha: 0.1),
-                  filled: true,
+               */
+                CommonPhoneField(
+                  apiCountryCode: isoCode,
+                  phoneController: widget.provider.tetPhone,
+                  countryCodeController:  widget.provider.tetCountryCodeController,
 
-                  keyboardType: TextInputType.phone,
-                  validator: validateTenDigitPhone,
-                  prefixIcon: commonPrefixIcon(image: icPhone),
-                ),*/
+                  hintText: "Enter your phone",
+                ),
                 const SizedBox(height: 20),
                 commonTextField(
                   hintText: "Store Name",
@@ -188,12 +198,17 @@ class _State extends State<CommonAdminWidget> {
                   width: MediaQuery.sizeOf(context).width,
                   onPressed: () async {
                     Navigator.pop(context);
+                    String fullNumber = getFullPhoneNumber(
+                      phoneController: widget.provider.tetPhone,
+                      countryCodeController:  widget.provider.tetCountryCodeController,
+                    );
 
+                    print('Full Phone Number: $fullNumber'); // 👈 e.g. +919876543210
                     Map<String, dynamic> body = {
                       "id": widget.data?.id,
                       "name": widget.provider.tetFullName.text.trim(),
                       "email": widget.provider.tetEmail.text.trim(),
-                      "mobile": widget.provider.tetPhone.text.trim(),
+                      "mobile":fullNumber,
                       "store_name": widget.provider.tetStoreName.text.trim(),
                       "accessToken": widget.provider.tetAccessToken.text.trim(),
                       "version_code": widget.provider.tetVersionCode.text
@@ -203,8 +218,9 @@ class _State extends State<CommonAdminWidget> {
                       "active_status": provider.status,
                     };
 
-                    {}
-                    await widget.provider.updateUserDetails(
+
+                    print('=======bodu$body');
+                      await widget.provider.updateUserDetails(
                       storeRoom: widget.storeRoom,
                       body: body,
                     );

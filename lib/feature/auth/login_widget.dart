@@ -1,14 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:neeknots/core/color/color_utils.dart';
 import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/core/image/image_utils.dart';
 import 'package:neeknots/provider/login_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/component/phone_number_field.dart';
+import '../../core/component/CommonPhoneField.dart';
 import '../../core/validation/validation.dart';
 import '../../main.dart';
 import '../../provider/theme_provider.dart';
@@ -33,7 +31,7 @@ Widget commonLoginView({
       ),
       const SizedBox(height: 20),
 
-      IntlPhoneField(
+      /* IntlPhoneField(
         initialCountryCode: 'US',
         controller: provider.tetPhone,
 
@@ -67,6 +65,12 @@ Widget commonLoginView({
         onCountryChanged: (value) {
           provider.tetCountryCodeController.text = value.dialCode;
         },
+      ),*/
+      CommonPhoneField(
+        phoneController: provider.tetPhone,
+        countryCodeController: provider.tetCountryCodeController,
+
+        hintText: "Enter your phone",
       ),
 
       // PhoneNumberField(

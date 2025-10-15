@@ -79,6 +79,11 @@ context:  navigatorKey.currentContext!,
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       } else {
+
+        showCommonDialog(
+            showCancel: false,
+            confirmText: "Close",
+            title: "Error", context: navigatorKey.currentContext!,content: "No email app found");
         debugPrint('No email app found for $email');
       }
     } catch (e) {

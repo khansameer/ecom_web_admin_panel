@@ -107,7 +107,9 @@ class OrdersProvider with ChangeNotifier {
     try {
       String url =
           '${await ApiConfig.ordersUrl}?status=any&limit=$_limit&order=id+asc';
-      final response = await callGETMethod(url: url);
+      final response = await callApi(
+          method: HttpMethod.GET,
+          url: url);
 
       if (response != null) {
         final data = json.decode(response);
@@ -220,7 +222,9 @@ class OrdersProvider with ChangeNotifier {
 
     final url = "${await ApiConfig.totalOrderUrl}?status=any";
 
-    final response = await callGETMethod(url: url);
+    final response = await callApi(
+        method: HttpMethod.GET,
+        url: url);
 
     if (globalStatusCode == 200) {
       final data = json.decode(await response);
@@ -250,7 +254,9 @@ class OrdersProvider with ChangeNotifier {
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
     final url =
         "${await ApiConfig.totalOrderUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax&status=any";
-    final response = await callGETMethod(url: url);
+    final response = await callApi(
+        method: HttpMethod.GET,
+        url: url);
 
     if (globalStatusCode == 200) {
       final data = json.decode(response);
@@ -280,7 +286,9 @@ class OrdersProvider with ChangeNotifier {
     try {
       final url = '${await ApiConfig.getOrderById}/$orderID.json';
 
-      final response = await callGETMethod(url: url);
+      final response = await callApi(
+          method: HttpMethod.GET,
+          url: url);
 
       _orderDetailsModel = orderDetails.OrderDetailsModel.fromJson(
         json.decode(response),
@@ -325,7 +333,9 @@ class OrdersProvider with ChangeNotifier {
     try {
       final url =
           '${await ApiConfig.getCustomerImage}/$customerId/orders.json?status=any';
-      final response = await callGETMethod(url: url);
+      final response = await callApi(
+          method: HttpMethod.GET,
+          url: url);
       if (globalStatusCode == 200) {
         final data = json.decode(response);
         final fetchedOrders = OrderModel.fromJson(data).orders ?? [];
@@ -388,7 +398,9 @@ class OrdersProvider with ChangeNotifier {
     final createdAtMax = Uri.encodeComponent(utcEnd.toIso8601String());
     final url =
         "${await ApiConfig.ordersUrl}?created_at_min=$createdAtMin&created_at_max=$createdAtMax&status=any";
-    final response = await callGETMethod(url: url);
+    final response = await callApi(
+        method: HttpMethod.GET,
+        url: url);
 
     if (globalStatusCode == 200) {
       _orderModelByDate = OrderModel.fromJson(json.decode(response));

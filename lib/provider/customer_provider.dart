@@ -35,7 +35,9 @@ class CustomerProvider with ChangeNotifier {
     _isFetching = true;
     notifyListeners();
     try{
-      final response = await callGETMethod(url: await ApiConfig.totalCustomerUrl);
+      final response = await callApi(
+          method: HttpMethod.GET,
+          url: await ApiConfig.totalCustomerUrl);
 
       if (globalStatusCode == 200) {
         final data = json.decode(response);
@@ -60,7 +62,8 @@ class CustomerProvider with ChangeNotifier {
   Future<void> getCustomerList() async {
     _isFetching = true;
     notifyListeners();
-    final response = await callGETMethod(
+    final response = await callApi(
+      method: HttpMethod.GET,
       url: '${await ApiConfig.customerUrl}?order=updated_at+desc',
     );
 

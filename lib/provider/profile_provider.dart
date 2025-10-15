@@ -76,7 +76,9 @@ class ProfileProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final response = await callGETMethod(url: '${ApiConfig.authAPi}/${user?.id??0}');
+      final response = await callApi(
+          method: HttpMethod.GET,
+          url: '${ApiConfig.authAPi}/${user?.id??0}');
 
       if (globalStatusCode == 200) {
         _userData = UserModel.fromJson(json.decode(response));
@@ -104,7 +106,9 @@ class ProfileProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-     await callDeleteMethod(url: '${ApiConfig.authAPi}/${user?.id??0}');
+     await callApi(
+         method: HttpMethod.DELETE,
+         url: '${ApiConfig.authAPi}/${user?.id??0}');
 
       if (globalStatusCode == 200) {
         WidgetsBinding.instance.addPostFrameCallback((_) {

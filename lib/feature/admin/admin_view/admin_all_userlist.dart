@@ -120,7 +120,9 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
                                           ),
                                           const SizedBox(height: 4),
                                           commonText(
-                                            text: user?.mobile ?? '',
+                                            text: (user?.mobile ?? '').startsWith('+')
+                                                ? (user?.mobile ?? '')
+                                                : '+${user?.mobile ?? ''}',
                                             fontSize: isMobile ? 12 : 14,
                                             fontWeight: FontWeight.w400,
                                             color: Colors.black45,

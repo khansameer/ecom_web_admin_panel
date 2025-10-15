@@ -91,6 +91,7 @@ class LoginProvider with ChangeNotifier {
     tetWebsiteUrl.dispose();
     tetPassword.dispose();
     tetCurrentPassword.dispose();
+    tetCountryCodeController.dispose();
     tetNewPassword.dispose();
     tetConfirmPassword.dispose();
     tetMessage.dispose();
@@ -135,13 +136,14 @@ class LoginProvider with ChangeNotifier {
   Future<void> login({required Map<String, dynamic> body}) async {
     _setLoading(true);
     try {
-      final response = await callPostMethod(
+     await callApi(
         url: ApiConfig.loginAPi,
-        params: body,
+       method: HttpMethod.POST,
+        body: body,
         headers: null,
       );
 
-      print('============${json.decode(response)}');
+
       if (globalStatusCode == 200) {
         generateOtp(body: body);
       }
@@ -150,12 +152,20 @@ class LoginProvider with ChangeNotifier {
           showCommonDialog(
             showCancel: false,
             title: "Error",
+            confirmText: "Close",
             context: navigatorKey.currentContext!,
             content: errorMessage,
           );
         }
       notifyListeners();
     } catch (e) {
+      showCommonDialog(
+        showCancel: false,
+        title: "Error",
+        confirmText: "Close",
+        context: navigatorKey.currentContext!,
+        content: errorMessage,
+      );
       _setLoading(false);
       rethrow;
     } finally {
@@ -166,9 +176,10 @@ class LoginProvider with ChangeNotifier {
   Future<void> generateOtp({required Map<String, dynamic> body}) async {
     _setLoading(true);
     try {
-      final response = await callPostMethod(
+      final response = await callApi(
         url: ApiConfig.generateOtpAPI,
-        params: body,
+        method: HttpMethod.POST,
+        body: body,
         headers: null,
       );
 
@@ -203,7 +214,9 @@ class LoginProvider with ChangeNotifier {
   Future<void> checkStatus({int? id}) async {
     _setLoading(true);
     try {
-      final response = await callGETMethod(url: '${ApiConfig.authAPi}/$id');
+      final response = await callApi(
+          method: HttpMethod.GET,
+          url: '${ApiConfig.authAPi}/$id');
 
       if (globalStatusCode == 200) {
         UserModel user = UserModel.fromJson(json.decode(response));
@@ -240,9 +253,10 @@ class LoginProvider with ChangeNotifier {
   Future<void> verifyOtp({required Map<String, dynamic> body}) async {
     _setLoading(true);
     try {
-      final response = await callPostMethod(
+      final response = await callApi(
         url: ApiConfig.verifyOtpAPI,
-        params: body,
+        method: HttpMethod.POST,
+        body: body,
         headers: null,
       );
 
@@ -300,9 +314,10 @@ class LoginProvider with ChangeNotifier {
   Future<void> addContactUsData({required Map<String, dynamic> body}) async {
     _setLoading(true);
     try {
-      final response = await callPostMethod(
+      final response = await callApi(
+        method: HttpMethod.POST,
         url: ApiConfig.contactUs,
-        params: body,
+        body: body,
         headers: null,
       );
 
@@ -366,9 +381,10 @@ class LoginProvider with ChangeNotifier {
       await Future.delayed(
         const Duration(seconds: 2),
       ); // simulate network delay
-      final response = await callPostMethod(
+      final response = await callApi(
+        method: HttpMethod.POST,
         url: ApiConfig.generateOtpAPI,
-        params: body,
+        body: body,
         headers: null,
       );
 
