@@ -39,9 +39,6 @@ class AdminDashboardProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
-
-
   List<Map<String, dynamic>> _allPendingRequest = [];
 
   List<Map<String, dynamic>> get allPendingRequest => _allPendingRequest;
@@ -117,7 +114,6 @@ class AdminDashboardProvider with ChangeNotifier {
 
   String? get selectedSection => _selectedSection;
 
-
   // Methods
   void setSelectedStore(int index) {
     _selectedIndex = index;
@@ -129,7 +125,6 @@ class AdminDashboardProvider with ChangeNotifier {
     _selectedSection = section;
     notifyListeners();
   }
-
 
   int usersCount = 0;
   int ordersCount = 0;
@@ -202,8 +197,6 @@ class AdminDashboardProvider with ChangeNotifier {
     }
   }
 
-
-
   Future<void> countByAllStoreName({required String storeRoom}) async {
     _setLoading(true);
     notifyListeners();
@@ -269,7 +262,7 @@ class AdminDashboardProvider with ChangeNotifier {
     _setLoading(true);
     notifyListeners();
     try {
-       await callPutMethodWithToken(
+      await callPutMethodWithToken(
         params: body,
         url: ApiConfig.updateUserDetails,
       );
@@ -337,19 +330,24 @@ class AdminDashboardProvider with ChangeNotifier {
       _setLoading(false);
     }
   }
+
   List<Map<String, dynamic>> get activeFilters {
-    if (_allOrderModel?.orders == null || _allOrderModel?.orders?.isEmpty==true) {
+    if (_allOrderModel?.orders == null ||
+        _allOrderModel?.orders?.isEmpty == true) {
       return [];
     }
 
     // Example: create filter options based on order status
-    final statuses = _allOrderModel?.orders!=null?_allOrderModel!.orders!
-        .map((o) => o.title ?? "Unknown")
-        .toSet()
-        .toList():[];
+    final statuses = _allOrderModel?.orders != null
+        ? _allOrderModel!.orders!
+              .map((o) => o.title ?? "Unknown")
+              .toSet()
+              .toList()
+        : [];
 
     return statuses.map((s) => {"title": s}).toList();
   }
+
   Future<bool> createOrder({
     required Map<String, dynamic> params,
     required String storeRoom,
@@ -372,7 +370,7 @@ class AdminDashboardProvider with ChangeNotifier {
         return false;
       }
     } catch (e) {
-     // showCommonDialog(title: "$e", context: navigatorKey.currentContext!);
+      // showCommonDialog(title: "$e", context: navigatorKey.currentContext!);
       notifyListeners();
       _setLoading(false);
 
@@ -416,9 +414,7 @@ class AdminDashboardProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     try {
-       await callDeleteMethod(
-        url: '${ApiConfig.deleteOrderByID}/$orderID',
-      );
+      await callDeleteMethod(url: '${ApiConfig.deleteOrderByID}/$orderID');
 
       if (globalStatusCode == 200) {
         getAllOrder(storeRoom: storeRoom);
@@ -432,7 +428,6 @@ class AdminDashboardProvider with ChangeNotifier {
       _setLoading(false);
     }
   }
-
 
   // /users/update
 }

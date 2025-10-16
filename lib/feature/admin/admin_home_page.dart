@@ -61,7 +61,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
         storeRoom: adminProvider.allStoreNameModel?.stores?[0].storeName ?? '',
       );
     }
-
   }
 
   // 🔹 Detail page for selected section (e.g., Orders, Products)
@@ -70,7 +69,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
     required String section,
     required AdminDashboardProvider provider,
   }) {
-
     switch (section) {
       case "orders":
         return OrderFilterListPage(
@@ -83,7 +81,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
         );
       case "products":
         return AdminProductList(
-
           storeName:
               provider
                   .allStoreNameModel
@@ -253,14 +250,19 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   ),
                                 commonText(
                                   text: provider.selectedSection == null
-                                      ? (provider.allStoreNameModel?.stores?[provider.selectedIndex]
-                                      .storeName
-                                      ?.toString()
-                                      .toUpperCase() ??
-                                      "")
+                                      ? (provider
+                                                .allStoreNameModel
+                                                ?.stores?[provider
+                                                    .selectedIndex]
+                                                .storeName
+                                                ?.toString()
+                                                .toUpperCase() ??
+                                            "")
                                       : "${(provider.allStoreNameModel?.stores?[provider.selectedIndex].storeName?.toString().toCapitalize() ?? '')} / ${provider.selectedSection!}",
                                   fontSize: isMobile ? 16 : 20,
-                                  fontWeight: isMobile ? FontWeight.w500 : FontWeight.bold,
+                                  fontWeight: isMobile
+                                      ? FontWeight.w500
+                                      : FontWeight.bold,
                                 ),
                               ],
                             ),
@@ -392,5 +394,3 @@ class _AdminHomePageState extends State<AdminHomePage> {
     );
   }
 }
-
-

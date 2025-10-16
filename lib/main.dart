@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -57,9 +56,11 @@ List<SingleChildWidget> providers = [
   ),
 
   ChangeNotifierProvider<InternetProvider>(create: (_) => InternetProvider()),
-  ChangeNotifierProvider<AdminDashboardProvider>(create: (_) => AdminDashboardProvider(),),
+  ChangeNotifierProvider<AdminDashboardProvider>(
+    create: (_) => AdminDashboardProvider(),
+  ),
 
-  ChangeNotifierProvider<AdminHomeProvider>(create: (_) => AdminHomeProvider(),),
+  ChangeNotifierProvider<AdminHomeProvider>(create: (_) => AdminHomeProvider()),
 ];
 
 Future<void> main() async {
