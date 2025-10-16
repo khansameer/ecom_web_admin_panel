@@ -224,9 +224,7 @@ class ProductProvider with ChangeNotifier {
       if (status != null && status.isNotEmpty) url += "&status=$status";
       if (_lastId != null) url += '&since_id=$_lastId';
 
-      final response = await callApi(
-          method: HttpMethod.GET,
-          url: url);
+      final response = await callApi(method: HttpMethod.GET, url: url);
 
       if (globalStatusCode == 200) {
         final fetchedProducts =
@@ -294,9 +292,7 @@ class ProductProvider with ChangeNotifier {
         url += '&since_id=$_lastId';
       }
 
-      final response = await callApi(
-          method: HttpMethod.GET,
-          url: url);
+      final response = await callApi(method: HttpMethod.GET, url: url);
 
       if (globalStatusCode == 200) {
         final fetchedProducts =
@@ -346,9 +342,7 @@ class ProductProvider with ChangeNotifier {
   Future<void> getProductById({required String productId}) async {
     try {
       final url = "${await ApiConfig.getImageUrl}/$productId.json";
-      final response = await callApi(
-          method: HttpMethod.GET,
-          url: url);
+      final response = await callApi(method: HttpMethod.GET, url: url);
       if (globalStatusCode == 200) {
         final jsonData = json.decode(response);
 
@@ -369,8 +363,9 @@ class ProductProvider with ChangeNotifier {
     _isFetching = true;
     notifyListeners();
     final response = await callApi(
-        method: HttpMethod.GET,
-        url: await ApiConfig.totalProductUrl);
+      method: HttpMethod.GET,
+      url: await ApiConfig.totalProductUrl,
+    );
 
     if (globalStatusCode == 200) {
       final data = json.decode(response);
@@ -424,8 +419,11 @@ class ProductProvider with ChangeNotifier {
       "image_id": productId,
     };
     await callApi(
-        method: HttpMethod.POST,
-        url: ApiConfig.product, body: body, headers: {});
+      method: HttpMethod.POST,
+      url: ApiConfig.product,
+      body: body,
+      headers: {},
+    );
 
     if (globalStatusCode == 200) {
       ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
@@ -459,9 +457,7 @@ class ProductProvider with ChangeNotifier {
     final urlString =
         "${await ApiConfig.baseUrl}/products/$productId/images/$imageId.json";
 
-    await callApi(
-        method: HttpMethod.DELETE,
-        url: urlString);
+    await callApi(method: HttpMethod.DELETE, url: urlString);
 
     if (globalStatusCode == 200) {
       productImages.removeWhere((img) => img.id == imageId);

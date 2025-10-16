@@ -340,11 +340,7 @@ class AdminDashboardProvider with ChangeNotifier {
       _allProductModel?.products = [];
       notifyListeners();
       _setLoading(false);
-      rethrow;
-    } finally {
-      _allProductModel?.products = [];
-      notifyListeners();
-      _setLoading(false);
+      //rethrow;
     }
   }
 
