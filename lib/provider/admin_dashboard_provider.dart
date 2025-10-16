@@ -119,7 +119,6 @@ class AdminDashboardProvider with ChangeNotifier {
 
   String? get selectedSection => _selectedSection;
 
-
   // Methods
   void setSelectedStore(int index) {
     _selectedIndex = index;
@@ -131,7 +130,6 @@ class AdminDashboardProvider with ChangeNotifier {
     _selectedSection = section;
     notifyListeners();
   }
-
 
   int usersCount = 0;
   int ordersCount = 0;
@@ -193,8 +191,9 @@ class AdminDashboardProvider with ChangeNotifier {
     _setLoading(true);
     try {
       final response = await callApi(
-          method: HttpMethod.GET,
-          url: ApiConfig.allStoreList);
+        method: HttpMethod.GET,
+        url: ApiConfig.allStoreList,
+      );
 
       if (globalStatusCode == 200) {
         _allStoreNameModel = AllStoreNameModel.fromJson(json.decode(response));
@@ -215,8 +214,6 @@ class AdminDashboardProvider with ChangeNotifier {
       rethrow;
     }
   }
-
-
 
   Future<void> countByAllStoreName({required String storeRoom}) async {
     _setLoading(true);
@@ -252,9 +249,12 @@ class AdminDashboardProvider with ChangeNotifier {
       usersCount = 0;
       notifyListeners();
       showCommonDialog(
-          showCancel: false,
-          confirmText: "Close",
-          title: "Error", context: navigatorKey.currentContext!,content: errorMessage);
+        showCancel: false,
+        confirmText: "Close",
+        title: "Error",
+        context: navigatorKey.currentContext!,
+        content: errorMessage,
+      );
       _setLoading(false);
       rethrow;
     }
@@ -297,9 +297,9 @@ class AdminDashboardProvider with ChangeNotifier {
     _setLoading(true);
     notifyListeners();
     try {
-       await callApi(
+      await callApi(
         body: body,
-         method: HttpMethod.PUT,
+        method: HttpMethod.PUT,
         url: ApiConfig.updateUserDetails,
       );
 
@@ -370,19 +370,24 @@ class AdminDashboardProvider with ChangeNotifier {
 
     }
   }
+
   List<Map<String, dynamic>> get activeFilters {
-    if (_allOrderModel?.orders == null || _allOrderModel?.orders?.isEmpty==true) {
+    if (_allOrderModel?.orders == null ||
+        _allOrderModel?.orders?.isEmpty == true) {
       return [];
     }
 
     // Example: create filter options based on order status
-    final statuses = _allOrderModel?.orders!=null?_allOrderModel!.orders!
-        .map((o) => o.title ?? "Unknown")
-        .toSet()
-        .toList():[];
+    final statuses = _allOrderModel?.orders != null
+        ? _allOrderModel!.orders!
+              .map((o) => o.title ?? "Unknown")
+              .toSet()
+              .toList()
+        : [];
 
     return statuses.map((s) => {"title": s}).toList();
   }
+
   Future<bool> createOrder({
     required Map<String, dynamic> params,
     required String storeRoom,
@@ -467,7 +472,6 @@ class AdminDashboardProvider with ChangeNotifier {
       _setLoading(false);
     }
   }
-
 
   // /users/update
 }

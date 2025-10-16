@@ -33,9 +33,12 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
 
   Future<void> init() async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final provider = Provider.of<AdminDashboardProvider>(context, listen: false);
+      final provider = Provider.of<AdminDashboardProvider>(
+        context,
+        listen: false,
+      );
       UserModel? user = await AppConfigCache.getUserModel(); // await the future
-      provider.getAllProduct(storeRoom: user?.storeName??'');
+      provider.getAllProduct(storeRoom: user?.storeName ?? '');
     });
   }
 
@@ -49,9 +52,8 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
         centerTitle: true,
       ),
       body: commonAppBackground(
-        child: Consumer2<AdminDashboardProvider,ProductProvider>(
-          builder: (context, provider,productProvider, child) {
-
+        child: Consumer2<AdminDashboardProvider, ProductProvider>(
+          builder: (context, provider, productProvider, child) {
             /*if (provider.isLoading) {
               return SizedBox.shrink();
             }*/
@@ -61,9 +63,9 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                 provider.allProductModel?.products?.isNotEmpty == true
                     ? ListView.builder(
                         shrinkWrap: true,
-                        itemCount:  provider.allProductModel?.products?.length,
+                        itemCount: provider.allProductModel?.products?.length,
                         itemBuilder: (context, index) {
-                          var data =  provider.allProductModel?.products?[index];
+                          var data = provider.allProductModel?.products?[index];
                           Uint8List? imageBytes;
 
                           if (data?.imagePath != null) {
@@ -114,7 +116,7 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       commonText(
-                                        text: data?.name??'',
+                                        text: data?.name ?? '',
                                         fontWeight: FontWeight.w500,
                                       ),
 
@@ -134,43 +136,48 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                                           _commonButton(
                                             color: Colors.green,
                                             onTap: () async {
-                                              UserModel? user = await AppConfigCache.getUserModel(); // await the future
+                                              UserModel? user =
+                                                  await AppConfigCache.getUserModel(); // await the future
                                               showCommonDialog(
                                                 confirmText: "Upload",
                                                 title: "Approve",
                                                 onPressed: () async {
-                                                 Navigator.pop(context);
-                                                 Map<String, dynamic> body = {
-                                                   "product_id":
-                                                   data?.productId ?? 0,
-                                                   "imagePath":
-                                                   data?.imagePath ?? '',
-                                                   "storeName":
-                                                   data?.storeName ?? '',
-                                                   "versionCode":
-                                                   data?.version_code ?? '',
-                                                   "accessToken":
-                                                   data?.accessToken ?? '',
-                                                 };
-                                                 final isSuccess =
-                                                     await productProvider
-                                                     .approvedProductImage(
-                                                   params: body,
-                                                   imageID:
-                                                   data?.imageId ??
-                                                       '',
-                                                 );
-                                                 if (isSuccess) {
-                                                   final provider =
-                                                   Provider.of<
-                                                       AdminDashboardProvider
-                                                   >(context, listen: false);
+                                                  Navigator.pop(context);
+                                                  Map<String, dynamic> body = {
+                                                    "product_id":
+                                                        data?.productId ?? 0,
+                                                    "imagePath":
+                                                        data?.imagePath ?? '',
+                                                    "storeName":
+                                                        data?.storeName ?? '',
+                                                    "versionCode":
+                                                        data?.version_code ??
+                                                        '',
+                                                    "accessToken":
+                                                        data?.accessToken ?? '',
+                                                  };
+                                                  final isSuccess =
+                                                      await productProvider
+                                                          .approvedProductImage(
+                                                            params: body,
+                                                            imageID:
+                                                                data?.imageId ??
+                                                                '',
+                                                          );
+                                                  if (isSuccess) {
+                                                    final provider =
+                                                        Provider.of<
+                                                          AdminDashboardProvider
+                                                        >(
+                                                          context,
+                                                          listen: false,
+                                                        );
 
-                                                   provider.getAllProduct(
-                                                     storeRoom: user?.storeName??'',
-                                                   );
-                                                 }
-
+                                                    provider.getAllProduct(
+                                                      storeRoom:
+                                                          user?.storeName ?? '',
+                                                    );
+                                                  }
                                                 },
                                                 context: context,
                                                 content:
@@ -182,7 +189,8 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                                           _commonButton(
                                             color: Colors.red,
                                             onTap: () async {
-                                              UserModel? user = await AppConfigCache.getUserModel(); // await the future
+                                              UserModel? user =
+                                                  await AppConfigCache.getUserModel(); // await the future
                                               showCommonDialog(
                                                 confirmText: "Yes",
                                                 title: "Decline",
@@ -191,19 +199,23 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
 
                                                   final isSuccess =
                                                       await productProvider
-                                                      .disApprovedProductImage(
-                                                    productID:
-                                                    data?.productId ??
-                                                        0,
-                                                  );
+                                                          .disApprovedProductImage(
+                                                            productID:
+                                                                data?.productId ??
+                                                                0,
+                                                          );
                                                   if (isSuccess) {
                                                     final provider =
-                                                    Provider.of<
-                                                        AdminDashboardProvider
-                                                    >(context, listen: false);
+                                                        Provider.of<
+                                                          AdminDashboardProvider
+                                                        >(
+                                                          context,
+                                                          listen: false,
+                                                        );
 
                                                     provider.getAllProduct(
-                                                      storeRoom: user?.storeName??'',
+                                                      storeRoom:
+                                                          user?.storeName ?? '',
                                                     );
                                                   }
                                                 },
@@ -233,9 +245,7 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                       )
                     : commonErrorView(),
 
-                provider.isLoading
-                    ? showLoaderList()
-                    : SizedBox.shrink(),
+                provider.isLoading ? showLoaderList() : SizedBox.shrink(),
               ],
             );
           },

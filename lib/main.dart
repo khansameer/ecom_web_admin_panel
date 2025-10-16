@@ -57,9 +57,11 @@ List<SingleChildWidget> providers = [
   ),
 
   ChangeNotifierProvider<InternetProvider>(create: (_) => InternetProvider()),
-  ChangeNotifierProvider<AdminDashboardProvider>(create: (_) => AdminDashboardProvider(),),
+  ChangeNotifierProvider<AdminDashboardProvider>(
+    create: (_) => AdminDashboardProvider(),
+  ),
 
-  ChangeNotifierProvider<AdminHomeProvider>(create: (_) => AdminHomeProvider(),),
+  ChangeNotifierProvider<AdminHomeProvider>(create: (_) => AdminHomeProvider()),
 ];
 
 Future<void> main() async {
