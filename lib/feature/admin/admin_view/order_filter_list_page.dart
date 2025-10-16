@@ -217,18 +217,21 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            commonButton(
-              height: 45,
-              colorBorder: colorBorder,
-              color: Colors.white,
-              textColor: colorLogo,
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              fontSize: 12,
+            Flexible(
+              child: commonButton(
+                height: 45,
 
-              text: "Add New Order Filter",
-              onPressed: () {
-                _showAddFilterDialog(context);
-              },
+                colorBorder: colorBorder,
+                color: Colors.white,
+                textColor: colorLogo,
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                fontSize: 12,
+
+                text: "Add New Order Filter",
+                onPressed: () {
+                  _showAddFilterDialog(context);
+                },
+              ),
             ),
           ],
         ),
@@ -246,12 +249,11 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8,
+                      horizontal: 0.0,
+                      vertical: 0,
                     ),
                     child: Column(
                       children: [
-                        SizedBox(height: 10),
 
                         SizedBox(height: 10),
                         Expanded(

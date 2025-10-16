@@ -3,10 +3,9 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../core/component/component.dart';
 import '../service/api_config.dart';
-import '../service/gloable_status_code.dart';
 import '../service/network_repository.dart';
+
 
 enum RequestStatus { pending, accepted, rejected }
 
@@ -77,7 +76,9 @@ class DashboardProvider with ChangeNotifier {
       Map<String, dynamic> body={
         "fcm_token": token
       };
-      final response = await callPutMethodWithToken(url:'${ApiConfig.authAPi}/$id/fcmToken',params:body);
+      final response = await callApi(
+          method: HttpMethod.PUT,
+          url:'${ApiConfig.authAPi}/$id/fcmToken',body:body);
 
       print('=updateFCMToken==${json.decode(response)}');
       

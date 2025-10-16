@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:neeknots/core/component/component.dart';
 import 'package:neeknots/feature/admin/model/AllUserModel.dart';
 import 'package:neeknots/feature/admin/model/admin_contact_model.dart';
 import 'package:neeknots/feature/admin/model/all_order_model.dart';
 import 'package:neeknots/feature/admin/model/all_product_model.dart';
+import 'package:neeknots/main.dart';
 
 import '../feature/admin/model/all_store_room_model.dart';
 import '../service/api_config.dart';
@@ -154,7 +156,8 @@ class AdminDashboardProvider with ChangeNotifier {
   Future<void> getAllContact({required String storeName}) async {
     _setLoading(true);
     try {
-      final response = await callGETMethod(
+      final response = await callApi(
+        method: HttpMethod.GET,
         url: '${ApiConfig.getAllContact}?store_name=$storeName',
       );
 
@@ -168,9 +171,13 @@ class AdminDashboardProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _setLoading(false);
+      _adminContactModel?.contacts = [];
+      notifyListeners();
       rethrow;
     } finally {
       _setLoading(false);
+      _adminContactModel?.contacts = [];
+      notifyListeners();
     }
   }
 
@@ -181,7 +188,10 @@ class AdminDashboardProvider with ChangeNotifier {
   Future<void> getAllStoreName() async {
     _setLoading(true);
     try {
-      final response = await callGETMethod(url: ApiConfig.allStoreList);
+      final response = await callApi(
+        method: HttpMethod.GET,
+        url: ApiConfig.allStoreList,
+      );
 
       if (globalStatusCode == 200) {
         _allStoreNameModel = AllStoreNameModel.fromJson(json.decode(response));
@@ -190,10 +200,17 @@ class AdminDashboardProvider with ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
+      _allStoreNameModel?.stores = [];
+      notifyListeners();
+      showCommonDialog(
+        showCancel: false,
+        confirmText: "Close",
+        title: "Error",
+        context: navigatorKey.currentContext!,
+        content: errorMessage,
+      );
       _setLoading(false);
       rethrow;
-    } finally {
-      _setLoading(false);
     }
   }
 
@@ -201,7 +218,8 @@ class AdminDashboardProvider with ChangeNotifier {
     _setLoading(true);
     notifyListeners();
     try {
-      final response = await callGETMethod(
+      final response = await callApi(
+        method: HttpMethod.GET,
         url: '${ApiConfig.storeWiseGetCount}?store_name=$storeRoom',
       );
 
@@ -213,17 +231,30 @@ class AdminDashboardProvider with ChangeNotifier {
         contactsCount = rawCounts['contacts'];
         ordersCount = rawCounts['orders'];
         usersCount = rawCounts['users'];
+        notifyListeners();
       } else {
-        // _totalContactCount =0;
+        productsCount = 0;
+        contactsCount = 0;
+        ordersCount = 0;
+        usersCount = 0;
+        notifyListeners();
       }
       notifyListeners();
     } catch (e) {
-      //_totalContactCount =0;
+      productsCount = 0;
+      contactsCount = 0;
+      ordersCount = 0;
+      usersCount = 0;
+      notifyListeners();
+      showCommonDialog(
+        showCancel: false,
+        confirmText: "Close",
+        title: "Error",
+        context: navigatorKey.currentContext!,
+        content: errorMessage,
+      );
       _setLoading(false);
       rethrow;
-    } finally {
-      //_totalContactCount =0;
-      _setLoading(false);
     }
   }
 
@@ -235,7 +266,8 @@ class AdminDashboardProvider with ChangeNotifier {
     _setLoading(true);
     notifyListeners();
     try {
-      final response = await callGETMethod(
+      final response = await callApi(
+        method: HttpMethod.GET,
         url: '${ApiConfig.getAllUser}?store_name=$storeRoom',
       );
 
@@ -248,10 +280,14 @@ class AdminDashboardProvider with ChangeNotifier {
     } catch (e) {
       //_totalContactCount =0;
       _setLoading(false);
+      _allUserModel?.users = [];
+      notifyListeners();
+
       rethrow;
     } finally {
-      //_totalContactCount =0;
       _setLoading(false);
+      _allUserModel?.users = [];
+      notifyListeners();
     }
   }
 
@@ -262,8 +298,9 @@ class AdminDashboardProvider with ChangeNotifier {
     _setLoading(true);
     notifyListeners();
     try {
-      await callPutMethodWithToken(
-        params: body,
+      await callApi(
+        body: body,
+        method: HttpMethod.PUT,
         url: ApiConfig.updateUserDetails,
       );
 
@@ -288,7 +325,8 @@ class AdminDashboardProvider with ChangeNotifier {
   Future<void> getAllProduct({required String storeRoom}) async {
     _setLoading(true);
     try {
-      final response = await callGETMethod(
+      final response = await callApi(
+        method: HttpMethod.GET,
         url: '${ApiConfig.getALlProduct}?store_name=$storeRoom',
       );
 
@@ -299,9 +337,13 @@ class AdminDashboardProvider with ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
+      _allProductModel?.products = [];
+      notifyListeners();
       _setLoading(false);
       rethrow;
     } finally {
+      _allProductModel?.products = [];
+      notifyListeners();
       _setLoading(false);
     }
   }
@@ -313,7 +355,8 @@ class AdminDashboardProvider with ChangeNotifier {
   Future<void> getAllOrder({required String storeRoom}) async {
     _setLoading(true);
     try {
-      final response = await callGETMethod(
+      final response = await callApi(
+        method: HttpMethod.GET,
         url: '${ApiConfig.getAlOrder}?store_name=$storeRoom',
       );
 
@@ -324,6 +367,8 @@ class AdminDashboardProvider with ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
+      _allOrderModel?.orders = [];
+      notifyListeners();
       _setLoading(false);
       rethrow;
     } finally {
@@ -354,9 +399,10 @@ class AdminDashboardProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     try {
-      await callPostMethod(
-        params: params,
-        headers: {},
+      await callApi(
+        body: params,
+
+        method: HttpMethod.POST,
         url: ApiConfig.createOrder,
       );
 
@@ -385,8 +431,9 @@ class AdminDashboardProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     try {
-      await callPutMethodWithToken(
-        params: params,
+      await callApi(
+        body: params,
+        method: HttpMethod.PUT,
         url: '${ApiConfig.updateOrder}/$orderID',
       );
 
@@ -414,7 +461,10 @@ class AdminDashboardProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     try {
-      await callDeleteMethod(url: '${ApiConfig.deleteOrderByID}/$orderID');
+      await callApi(
+        method: HttpMethod.DELETE,
+        url: '${ApiConfig.deleteOrderByID}/$orderID',
+      );
 
       if (globalStatusCode == 200) {
         getAllOrder(storeRoom: storeRoom);

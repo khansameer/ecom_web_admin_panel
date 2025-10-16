@@ -224,7 +224,9 @@ class ProductProvider with ChangeNotifier {
       if (status != null && status.isNotEmpty) url += "&status=$status";
       if (_lastId != null) url += '&since_id=$_lastId';
 
-      final response = await callGETMethod(url: url);
+      final response = await callApi(
+          method: HttpMethod.GET,
+          url: url);
 
       if (globalStatusCode == 200) {
         final fetchedProducts =
@@ -292,7 +294,9 @@ class ProductProvider with ChangeNotifier {
         url += '&since_id=$_lastId';
       }
 
-      final response = await callGETMethod(url: url);
+      final response = await callApi(
+          method: HttpMethod.GET,
+          url: url);
 
       if (globalStatusCode == 200) {
         final fetchedProducts =
@@ -342,7 +346,9 @@ class ProductProvider with ChangeNotifier {
   Future<void> getProductById({required String productId}) async {
     try {
       final url = "${await ApiConfig.getImageUrl}/$productId.json";
-      final response = await callGETMethod(url: url);
+      final response = await callApi(
+          method: HttpMethod.GET,
+          url: url);
       if (globalStatusCode == 200) {
         final jsonData = json.decode(response);
 
@@ -362,7 +368,9 @@ class ProductProvider with ChangeNotifier {
   Future<void> getTotalProductCount() async {
     _isFetching = true;
     notifyListeners();
-    final response = await callGETMethod(url: await ApiConfig.totalProductUrl);
+    final response = await callApi(
+        method: HttpMethod.GET,
+        url: await ApiConfig.totalProductUrl);
 
     if (globalStatusCode == 200) {
       final data = json.decode(response);
@@ -415,7 +423,9 @@ class ProductProvider with ChangeNotifier {
       "store_name": user?.storeName,
       "image_id": productId,
     };
-    await callPostMethod(url: ApiConfig.product, params: body, headers: {});
+    await callApi(
+        method: HttpMethod.POST,
+        url: ApiConfig.product, body: body, headers: {});
 
     if (globalStatusCode == 200) {
       ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
@@ -449,7 +459,9 @@ class ProductProvider with ChangeNotifier {
     final urlString =
         "${await ApiConfig.baseUrl}/products/$productId/images/$imageId.json";
 
-    await callDeleteMethod(url: urlString);
+    await callApi(
+        method: HttpMethod.DELETE,
+        url: urlString);
 
     if (globalStatusCode == 200) {
       productImages.removeWhere((img) => img.id == imageId);
@@ -477,8 +489,9 @@ class ProductProvider with ChangeNotifier {
     if (title != null) productData["title"] = title;
     if (description != null) productData["body_html"] = description;
     if (variants != null) productData["variants"] = variants;
-    final _ = await callPutMethodWithToken(
-      params: {"product": productData},
+    final _ = await callApi(
+      method: HttpMethod.PUT,
+      body: {"product": productData},
       url: urlString,
     );
     if (globalStatusCode == 200) {
@@ -522,7 +535,8 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
     try {
       UserModel? user = await AppConfigCache.getUserModel(); // await the future
-      final response = await callGETMethod(
+      final response = await callApi(
+        method: HttpMethod.GET,
         url: '${ApiConfig.product}/count/?store_name=${user?.storeName}',
       );
 
@@ -550,8 +564,9 @@ class ProductProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     try {
-      await callPostMethod(
-        params: params,
+      await callApi(
+        body: params,
+        method: HttpMethod.POST,
         url: '${ApiConfig.approvedProductImage}/$imageID/images',
       );
 
@@ -573,8 +588,9 @@ class ProductProvider with ChangeNotifier {
   Future<bool> disApprovedProductImage({required int productID}) async {
     _setLoading(true);
     try {
-      await callPostMethod(
-        params: {},
+      await callApi(
+        body: {},
+        method: HttpMethod.POST,
         url: '${ApiConfig.approvedProductImage}/disapprove/$productID',
       );
 

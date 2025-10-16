@@ -30,9 +30,9 @@ class SignupProvider extends ChangeNotifier {
   Future<void> signup({required Map<String, dynamic> params}) async {
     _setLoading(true);
     try {
-      await callPostMethod(
+      await callApi(
         url: ApiConfig.authAPi,
-        params: params,
+        body: params,
         headers: null,
       );
       if (globalStatusCode == 200) {
