@@ -166,6 +166,9 @@ class AdminDashboardProvider with ChangeNotifier {
         url: '${ApiConfig.getAllContact}?store_name=$storeName',
       );
 
+
+      print('=globalStatusCode==${globalStatusCode}');
+      print('=globalStatusCode==${ json.decode(response)}');
       if (globalStatusCode == 200) {
         _adminContactModel = AdminContactListModel.fromJson(
           json.decode(response),
@@ -178,11 +181,7 @@ class AdminDashboardProvider with ChangeNotifier {
       _setLoading(false);
       _adminContactModel?.contacts = [];
       notifyListeners();
-      rethrow;
-    } finally {
-      _setLoading(false);
-      _adminContactModel?.contacts = [];
-      notifyListeners();
+
     }
   }
 
@@ -202,15 +201,17 @@ class AdminDashboardProvider with ChangeNotifier {
       } else {
         _allStoreNameModel?.stores = [];
       }
+      _setLoading(false);
       notifyListeners();
     } catch (e) {
       _allStoreNameModel?.stores = [];
       notifyListeners();
+      _setLoading(false);
       showCommonDialog(
           showCancel: false,
           confirmText: "Close",
           title: "Error", context: navigatorKey.currentContext!,content: errorMessage);
-      _setLoading(false);
+
       rethrow;
     }
   }
@@ -234,14 +235,15 @@ class AdminDashboardProvider with ChangeNotifier {
         contactsCount = rawCounts['contacts'];
         ordersCount = rawCounts['orders'];
         usersCount = rawCounts['users'];
-        notifyListeners();
+
       } else {
         productsCount = 0;
         contactsCount = 0;
         ordersCount = 0;
         usersCount = 0;
-        notifyListeners();
+
       }
+      _setLoading(false);
       notifyListeners();
     } catch (e) {
       productsCount = 0;
@@ -276,6 +278,7 @@ class AdminDashboardProvider with ChangeNotifier {
       } else {
         _allUserModel?.users = [];
       }
+      _setLoading(false);
       notifyListeners();
     } catch (e) {
       //_totalContactCount =0;
@@ -283,11 +286,6 @@ class AdminDashboardProvider with ChangeNotifier {
       _allUserModel?.users = [];
       notifyListeners();
 
-      rethrow;
-    } finally {
-      _setLoading(false);
-      _allUserModel?.users = [];
-      notifyListeners();
 
     }
   }
@@ -336,16 +334,13 @@ class AdminDashboardProvider with ChangeNotifier {
       } else {
         _allProductModel?.products = [];
       }
+      _setLoading(false);
       notifyListeners();
     } catch (e) {
       _allProductModel?.products = [];
       notifyListeners();
       _setLoading(false);
-      rethrow;
-    } finally {
-      _allProductModel?.products = [];
-      notifyListeners();
-      _setLoading(false);
+
     }
   }
 
@@ -366,14 +361,13 @@ class AdminDashboardProvider with ChangeNotifier {
       } else {
         _allOrderModel?.orders = [];
       }
+      _setLoading(false);
       notifyListeners();
     } catch (e) {
       _allOrderModel?.orders = [];
       notifyListeners();
       _setLoading(false);
-      rethrow;
-    } finally {
-      _setLoading(false);
+
     }
   }
   List<Map<String, dynamic>> get activeFilters {
@@ -404,7 +398,7 @@ class AdminDashboardProvider with ChangeNotifier {
 
       if (globalStatusCode == 200) {
         getAllOrder(storeRoom: storeRoom);
-
+        _setLoading(false);
         notifyListeners();
         return true;
       } else {
@@ -436,6 +430,7 @@ class AdminDashboardProvider with ChangeNotifier {
       if (globalStatusCode == 200) {
         getAllOrder(storeRoom: storeRoom);
 
+        _setLoading(false);
         notifyListeners();
         return true;
       } else {
@@ -465,12 +460,10 @@ class AdminDashboardProvider with ChangeNotifier {
       if (globalStatusCode == 200) {
         getAllOrder(storeRoom: storeRoom);
         notifyListeners();
-      } else {}
-      notifyListeners();
+      }
+       _setLoading(false);
+       notifyListeners();
     } catch (e) {
-      _setLoading(false);
-      rethrow;
-    } finally {
       _setLoading(false);
     }
   }

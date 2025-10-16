@@ -322,7 +322,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
             fontWeight: FontWeight.w600,
           ),
           SizedBox(height: isMobile ? 10 : 24),
-          Expanded(
+          provider.allStoreNameModel?.stores?.isNotEmpty==true?   Expanded(
             child: ListView.builder(
               itemCount: provider.allStoreNameModel?.stores?.length,
               itemBuilder: (context, index) {
@@ -386,7 +386,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 );
               },
             ),
-          ),
+          ):SizedBox.shrink(),
         ],
       ),
     );

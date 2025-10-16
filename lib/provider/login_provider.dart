@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:neeknots/core/component/component.dart';
+import 'package:neeknots/core/string/string_utils.dart';
 import 'package:neeknots/main.dart';
 
 import '../core/hive/app_config_cache.dart';
@@ -189,7 +192,9 @@ class LoginProvider with ChangeNotifier {
           "email": body['email'],
           "mobile": body['mobile'],
         };
-        navigatorKey.currentState?.pushNamed(
+
+        //sendEmail(recipientsEmail: body['email']);
+       navigatorKey.currentState?.pushNamed(
           RouteName.otpVerificationScreen,
           arguments: data,
         );
@@ -415,5 +420,44 @@ class LoginProvider with ChangeNotifier {
   }
   void _startNewCycle() {
     startResendTimer();
+  }
+
+  bool isSending = false;
+  String statusMessage = '';
+  Future<void> sendEmail({String ? recipientsEmail,String ?otp }) async {
+    print("Email sending started..."); // ✅ log start
+    isSending = true;
+    statusMessage = '';
+    notifyListeners();
+
+    String username = 'sameerflutter@gmail.com';
+    String password = 'pvyj xocw gekj ymyi';
+
+    final smtpServer = gmail(username, password);
+
+    final message = Message()
+      ..from = Address(username, appName)
+      ..recipients.add(recipientsEmail)
+      ..subject = 'OTP for your $appName authentication'
+      ..html = """
+      <p>To authenticate, please use the following One Time Password (OTP):</p>
+      <h1 style="color: blue;">$otp</h1>
+      <p>This OTP will be valid for <b>15 minutes</b>.</p>
+      <p>Do not share this OTP with anyone. If you didn't make this request, you can safely ignore this email.</p>
+      <p><b>$appName</b> will never contact you about this email or ask for any login codes or links. Beware of phishing scams.</p>
+      <p>Thanks for visiting <b>$appName</b>!</p>
+    """;
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      statusMessage = 'Email sent successfully!';
+      print("Email sent successfully: $sendReport"); // ✅ log success
+    } on MailerException catch (e) {
+      print("Email failed: $e"); // ✅ log error
+      statusMessage = 'Failed to send email: ${e.toString()}';
+    }
+
+    isSending = false;
+    notifyListeners();
   }
 }

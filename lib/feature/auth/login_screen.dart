@@ -9,6 +9,7 @@ import 'package:neeknots/provider/theme_provider.dart';
 import 'package:neeknots/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 
+import '../admin/admin_home_page.dart';
 import 'login_widget.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -69,11 +70,18 @@ class LoginScreen extends StatelessWidget {
                                   onPressSignUp: TapGestureRecognizer()
                                     ..onTap = () {
                                       hideKeyboard(context);
-                                      context
+                                     /* context
                                           .read<LoginProvider>()
                                           .resetState();
                                       navigatorKey.currentState?.pushNamed(
                                         RouteName.signupScreen,
+                                      );*/
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AdminHomePage(),
+                                        ),
                                       );
                                     },
 
@@ -113,6 +121,7 @@ class LoginScreen extends StatelessWidget {
                                     }
                                   },
                                 ),
+
                               ],
                             ),
                           ),

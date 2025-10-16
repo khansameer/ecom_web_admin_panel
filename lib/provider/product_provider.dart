@@ -13,7 +13,7 @@ import '../models/user_model.dart';
 import '../service/api_config.dart';
 import '../service/gloable_status_code.dart';
 import '../service/network_repository.dart';
-
+import 'package:http/http.dart' as http;
 class ProductProvider with ChangeNotifier {
   var tetName = TextEditingController();
   var tetDesc = TextEditingController();
@@ -403,48 +403,86 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String> convertImageToBase64(String imagePath) async {
+    // Read image bytes
+    final bytes = await File(imagePath).readAsBytes();
+
+    // Convert bytes to Base64 string
+    final base64Image = base64Encode(bytes);
+
+    // Add prefix to make it a valid data URL
+    final formattedImage = 'data:image/png;base64,$base64Image';
+
+    return formattedImage;
+  }
   Future<void> uploadProductImage({
     required String imagePath,
     required int productId,
 
     required String productName,
   }) async {
-    _isImageUpdating = true;
-    notifyListeners();
-    UserModel? user = await AppConfigCache.getUserModel(); // await the future
-    final bytes = await File(imagePath).readAsBytes();
 
-    final base64Image = base64Encode(bytes);
 
-    Map<String, dynamic> body = {
-      "id": user?.id ?? 0,
-      "name": productName,
-      "image_path": base64Image,
-      "store_name": user?.storeName,
-      "image_id": productId,
-    };
-    await callApi(
-        method: HttpMethod.POST,
-        url: ApiConfig.product, body: body, headers: {});
+    try{
+      _isImageUpdating = true;
+      notifyListeners();
+      UserModel? user = await AppConfigCache.getUserModel(); // await the future
 
-    if (globalStatusCode == 200) {
-      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-        SnackBar(
-          content: Text("Product uploaded successfully!"),
-          backgroundColor: Colors.green,
-        ),
+      final base64Image = await convertImageToBase64(imagePath);
+
+      Map<String, dynamic> body = {
+        "id": user?.id ?? 0,
+        "name": productName,
+        "image_path": base64Image,
+        "store_name": user?.storeName,
+        "image_id": productId,
+      };
+
+      final uri = Uri.parse(ApiConfig.product);
+
+      final headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+
+      final response = await http.post(
+        uri,
+        headers: headers,
+        body: jsonEncode(body),
       );
-    } else {
-      ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage ?? ''),
-          backgroundColor: Colors.red,
-        ),
-      );
+
+      if (response.statusCode == 200) {
+
+
+        showCommonDialog(
+            confirmText: "Close",
+            showCancel: false,
+            title: "Success", context: navigatorKey.currentContext!,content: "Product uploaded successfully!");
+       /* ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
+          SnackBar(
+            content: Text("Product uploaded successfully!"),
+            backgroundColor: Colors.green,
+          ),
+        );*/
+        print('===========================done');
+      } else {
+        showCommonDialog(
+            confirmText: "Close",
+            showCancel: false,
+            title: "Error", context: navigatorKey.currentContext!,content: "Product not uploaded ");
+      }
+
+      _isImageUpdating = false;
+      notifyListeners();
     }
 
-    _isImageUpdating = false;
-    notifyListeners();
+    catch(e){
+
+      _isImageUpdating = false;
+      notifyListeners();
+    }
+
 
     // Agar result null hai => success
   }

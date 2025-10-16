@@ -253,6 +253,8 @@ Future callApi({
 }) async {
   try {
     final uri = Uri.parse(url).replace(queryParameters: queryParams);
+
+    print('====R{$url');
     final requestHeaders = headers ?? await ApiConfig.getCommonHeaders();
 
     late http.Response response;
@@ -308,6 +310,8 @@ Future callApi({
       'message': errorMessage
     };
   } catch (e) {
+
+    print('====R{$e');
     errorMessage = "Something went wrong. Please try again.";
     //_showErrorDialog(errorMessage ?? '');
     return {
@@ -323,6 +327,7 @@ Future getResponse(Response response) async {
   if (globalStatusCode == 500 ||
       globalStatusCode == 502 ||
       globalStatusCode == 503) {
+    print('${response.body.toString()}');
     final parsedJson = jsonDecode(response.body.toString());
     errorMessage = parsedJson['message'].toString();
 

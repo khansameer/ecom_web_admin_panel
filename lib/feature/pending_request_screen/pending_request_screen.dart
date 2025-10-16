@@ -65,8 +65,11 @@ class _PendingRequestScreenState extends State<PendingRequestScreen> {
                         itemBuilder: (context, index) {
                           var data =  provider.allProductModel?.products?[index];
                           Uint8List? imageBytes;
+
                           if (data?.imagePath != null) {
-                            imageBytes = base64Decode(data?.imagePath??'');
+                            // Remove the 'data:image/png;base64,' part if it exists
+                            final base64String = data!.imagePath!.split(',').last;
+                            imageBytes = base64Decode(base64String);
                           }
                           return Container(
                             clipBehavior: Clip.antiAliasWithSaveLayer,
