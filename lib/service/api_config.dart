@@ -51,15 +51,10 @@ class ApiConfig {
     };
   }
 
-  /*  static const String accessToken = "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";
-  static const String storeName = "merlettenyc-demo";
-  static const String versionCode = "2025-07";*/
+
   static Future<String> get baseUrl async {
     UserModel? user = await AppConfigCache.getUserModel(); // await the future
-    //final config = await AppConfigCache.loadConfig();
-    //final storeName = config['storeName'] ?? '';
     final storeName = user?.storeName ?? '';
-    //final versionCode = config['versionCode'] ?? '';
     final versionCode = user?.versionCode ?? '';
     return "https://$storeName.myshopify.com/admin/api/$versionCode";
   }
