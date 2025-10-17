@@ -80,6 +80,7 @@ Future<void> main() async {
   } catch (e, s) {
     debugPrint('🔥 Initialization error: $e\n$s');
   }
+
   runApp(
     MultiProvider(
       providers: providers,
