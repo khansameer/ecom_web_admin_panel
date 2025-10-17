@@ -40,6 +40,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
       listen: false,
     );
 
+    provider.clearOrders();
     provider.getAllOrder(storeRoom: widget.storeName);
   }
 
@@ -69,6 +70,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
           "status": status ? 1 : 0,
           "store_name": widget.storeName,
         };
+        Navigator.pop(context);
         final isSuccess = await provider.createOrder(
           params: params,
           storeRoom: widget.storeName,
@@ -79,7 +81,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Order created successfully!")),
           );
-          Navigator.pop(context);
+
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -153,7 +155,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
           "status": status ? 1 : 0,
           "store_name": widget.storeName,
         };
-
+        Navigator.pop(context);
         final isSuccess = await provider.updateOrder(
           params: params,
           orderID: item?.orderId ?? 0,
@@ -164,7 +166,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Order updated successfully!")),
           );
-          Navigator.pop(context);
+
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -241,6 +243,10 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
               /* if (provider.isLoading) {
                 return SizedBox.shrink();
               }*/
+              if (provider.isLoading) {
+                return Center(child: showLoaderList());
+              }
+
               if (provider.allOrderModel?.orders?.isEmpty == true) {
                 return commonErrorView();
               }
@@ -388,7 +394,7 @@ class _StoreCollectionTabState extends State<OrderFilterListPage> {
                       ],
                     ),
                   ),
-                  provider.isLoading ? showLoaderList() : SizedBox.shrink(),
+                  provider.isAdding  || provider.isUpdating  ? showLoaderList() : SizedBox.shrink(),
                 ],
               );
             },

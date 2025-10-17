@@ -30,6 +30,7 @@ class _CommonAdminListViewState extends State<CommonAdminListView> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<AdminDashboardProvider>();
+      provider.clearCountData();
       provider.countByAllStoreName(storeRoom: widget.storeName );
       //provider.fetchStoreCounts(storeName: widget.storeName);
     });

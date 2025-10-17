@@ -35,6 +35,7 @@ class _AdminProductListState extends State<AdminProductList> {
       listen: false,
     );
 
+    provider.clearProduct();
     provider.getAllProduct(storeRoom: widget.storeName);
   }
 
@@ -46,7 +47,13 @@ class _AdminProductListState extends State<AdminProductList> {
         /*if (provider.isLoading) {
           return SizedBox.shrink();
         }*/
+        if (provider.isLoading) {
+          return Center(child: showLoaderList());
+        }
 
+        if (provider.allProductModel?.products?.isEmpty == true) {
+          return commonErrorView();
+        }
         return Stack(
           children: [
             provider.allProductModel?.products?.isNotEmpty == true
@@ -60,9 +67,15 @@ class _AdminProductListState extends State<AdminProductList> {
                     itemBuilder: (context, index) {
                       var data = provider.allProductModel?.products?[index];
                       Uint8List? imageBytes;
-                      if (data?.imagePath != null &&
-                          data?.imagePath?.isNotEmpty == true) {
-                        imageBytes = base64Decode(data?.imagePath ?? '');
+
+                      if (data?.imagePath != null && data!.imagePath!.isNotEmpty) {
+                        // Remove prefix if present
+                        String base64String = data.imagePath!;
+                        if (base64String.contains(',')) {
+                          base64String = base64String.split(',').last;
+                        }
+
+                        imageBytes = base64Decode(base64String);
                       }
                       return Container(
                         margin: const EdgeInsets.all(8),

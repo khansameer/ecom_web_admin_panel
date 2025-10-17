@@ -41,9 +41,31 @@ class AdminDashboardProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  bool _isAdding = false;
 
+  bool get isAdding => _isAdding;
 
+  void _setAdding(bool val) {
+    _isUpdating = val;
+    notifyListeners();
+  }
 
+  bool _isUpdating = false;
+
+  bool get isUpdating => _isUpdating;
+
+  void _setUpdating(bool val) {
+    _isUpdating = val;
+    notifyListeners();
+  }
+  bool _isDeleting = false;
+
+  bool get isDeleting => _isDeleting;
+
+  void _setDeleting(bool val) {
+    _isDeleting = val;
+    notifyListeners();
+  }
   List<Map<String, dynamic>> _allPendingRequest = [];
 
   List<Map<String, dynamic>> get allPendingRequest => _allPendingRequest;
@@ -156,6 +178,11 @@ class AdminDashboardProvider with ChangeNotifier {
 
   AdminContactListModel? get adminContactModel => _adminContactModel;
 
+
+  void clearContact(){
+    _adminContactModel?.contacts = [];
+    notifyListeners();
+  }
   Future<void> getAllContact({required String storeName}) async {
     _setLoading(true);
     try {
@@ -171,10 +198,14 @@ class AdminDashboardProvider with ChangeNotifier {
         _adminContactModel = AdminContactListModel.fromJson(
           json.decode(response),
         );
+        notifyListeners();
       } else {
         _adminContactModel?.contacts = [];
+        notifyListeners();
       }
+      _setLoading(false);
       notifyListeners();
+
     } catch (e) {
       _setLoading(false);
       _adminContactModel?.contacts = [];
@@ -213,6 +244,14 @@ class AdminDashboardProvider with ChangeNotifier {
 
       rethrow;
     }
+  }
+
+ void clearCountData(){
+    productsCount = 0;
+    contactsCount = 0;
+    ordersCount = 0;
+    usersCount = 0;
+    notifyListeners();
   }
 
   Future<void> countByAllStoreName({required String storeRoom}) async {
@@ -263,7 +302,10 @@ class AdminDashboardProvider with ChangeNotifier {
   AllUserModel? _allUserModel;
 
   AllUserModel? get allUserModel => _allUserModel;
-
+  void clearUser() {
+    _allUserModel?.users = [];
+    notifyListeners();
+  }
   Future<void> getAllUser({required String storeRoom}) async {
     _setLoading(true);
     notifyListeners();
@@ -321,6 +363,12 @@ class AdminDashboardProvider with ChangeNotifier {
 
   AllProductModel? get allProductModel => _allProductModel;
 
+
+  void clearProduct()
+  {
+    _allProductModel?.products = [];
+    notifyListeners();
+  }
   Future<void> getAllProduct({required String storeRoom}) async {
     _setLoading(true);
     try {
@@ -348,8 +396,16 @@ class AdminDashboardProvider with ChangeNotifier {
 
   AllOrderModel? get allOrderModel => _allOrderModel;
 
+
+  void clearOrders() {
+    _allOrderModel?.orders = [];
+    notifyListeners();
+  }
   Future<void> getAllOrder({required String storeRoom}) async {
     _setLoading(true);
+
+    _allOrderModel?.orders = [];
+    notifyListeners();
     try {
       final response = await callApi(
         method: HttpMethod.GET,
@@ -392,7 +448,7 @@ class AdminDashboardProvider with ChangeNotifier {
     required Map<String, dynamic> params,
     required String storeRoom,
   }) async {
-    _setLoading(true);
+    _setAdding(true);
     try {
       await callApi(
         body: params,
@@ -403,7 +459,7 @@ class AdminDashboardProvider with ChangeNotifier {
 
       if (globalStatusCode == 200) {
         getAllOrder(storeRoom: storeRoom);
-        _setLoading(false);
+        _setAdding(false);
         notifyListeners();
         return true;
       } else {
@@ -413,7 +469,7 @@ class AdminDashboardProvider with ChangeNotifier {
     } catch (e) {
      // showCommonDialog(title: "$e", context: navigatorKey.currentContext!);
       notifyListeners();
-      _setLoading(false);
+      _setAdding(false);
 
       return false;
     }
@@ -424,7 +480,7 @@ class AdminDashboardProvider with ChangeNotifier {
     required String storeRoom,
     required int orderID,
   }) async {
-    _setLoading(true);
+    _setUpdating(true);
     try {
       await callApi(
         body: params,
@@ -435,17 +491,19 @@ class AdminDashboardProvider with ChangeNotifier {
       if (globalStatusCode == 200) {
         getAllOrder(storeRoom: storeRoom);
 
-        _setLoading(false);
+        _setUpdating(false);
         notifyListeners();
         return true;
       } else {
+        _setUpdating(false);
         notifyListeners();
         return false;
       }
     } catch (e) {
       //showCommonDialog(title: "${e}", context: navigatorKey.currentContext!);
+
+      _setUpdating(false);
       notifyListeners();
-      _setLoading(false);
 
       return false;
     }
@@ -455,7 +513,7 @@ class AdminDashboardProvider with ChangeNotifier {
     required String storeRoom,
     required int orderID,
   }) async {
-    _setLoading(true);
+    _setDeleting(true);
     try {
        await callApi(
          method: HttpMethod.DELETE,
@@ -464,12 +522,14 @@ class AdminDashboardProvider with ChangeNotifier {
 
       if (globalStatusCode == 200) {
         getAllOrder(storeRoom: storeRoom);
+        _setDeleting(false);
         notifyListeners();
       }
-       _setLoading(false);
+       _setDeleting(false);
        notifyListeners();
     } catch (e) {
-      _setLoading(false);
+      _setDeleting(false);
+      notifyListeners();
     }
   }
 

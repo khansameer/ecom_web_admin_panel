@@ -53,20 +53,25 @@ class _SettingPageState extends State<SettingPage> {
               padding: EdgeInsets.all(16),
               children: [
                 SizedBox(height: 50),
-                CachedNetworkImage(
-                  height: 150,
-                  fit: BoxFit.cover,
-                  width: size.width * 0.7,
-                  imageUrl: provider.userData?.logoUrl??'',
+                Container(
+                  decoration: commonBoxDecoration(
+                    borderColor: colorBorder
+                  ),
+                  child: CachedNetworkImage(
+                    height: 150,
+                    fit: BoxFit.cover,
+                    width: size.width * 0.7,
+                    imageUrl: provider.userData?.logoUrl??'',
 
-                  placeholder: (context, url) =>
-                      Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                  errorWidget: (context, url, error) => Center(
-                    child: Container(
-                      child: commonAssetImage(
-                        width: size.width * 0.7,
-                        fit: BoxFit.scaleDown,
-                        icAppLogo,
+                    placeholder: (context, url) =>
+                        Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                    errorWidget: (context, url, error) => Center(
+                      child: Container(
+                        child: commonAssetImage(
+                          width: size.width * 0.7,
+                          fit: BoxFit.scaleDown,
+                          icAppLogo,
+                        ),
                       ),
                     ),
                   ),

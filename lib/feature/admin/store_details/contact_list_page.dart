@@ -34,12 +34,13 @@ class _StoreCollectionTabState extends State<ContactListPage> {
   }
 
   void init() {
-    final customerProvider = Provider.of<AdminDashboardProvider>(
+    final contactProvider = Provider.of<AdminDashboardProvider>(
       context,
       listen: false,
     );
 
-    customerProvider.getAllContact(storeName: widget.storeName);
+    contactProvider.clearContact();
+    contactProvider.getAllContact(storeName: widget.storeName);
   }
 
   @override
@@ -47,6 +48,13 @@ class _StoreCollectionTabState extends State<ContactListPage> {
     var isMobile = Responsive.isMobile(context);
     return Consumer2<AdminDashboardProvider, ThemeProvider>(
       builder: (context, provider, themeProvider, child) {
+        if (provider.isLoading) {
+          return Center(child: showLoaderList());
+        }
+
+        if (provider.adminContactModel?.contacts?.isEmpty == true) {
+          return commonErrorView();
+        }
         return Stack(
           children: [
             Padding(

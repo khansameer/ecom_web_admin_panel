@@ -31,14 +31,16 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
   }
 
   void init() {
-    final customerProvider = Provider.of<AdminDashboardProvider>(
+    final userProvider = Provider.of<AdminDashboardProvider>(
       context,
       listen: false,
     );
 
-    setState(() {
-      customerProvider.getAllUser(storeRoom: widget.storeName);
-    });
+    userProvider.clearUser();
+    userProvider.getAllUser(storeRoom: widget.storeName);
+    /*setState(() {
+
+    });*/
   }
 
   @override
@@ -46,6 +48,14 @@ class _AdminAllUserlistState extends State<AdminAllUserlist> {
     var isMobile = Responsive.isMobile(context);
     return Consumer<AdminDashboardProvider>(
       builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return Center(child: showLoaderList());
+        }
+
+        if (provider.allUserModel?.users?.isEmpty == true) {
+          return commonErrorView();
+        }
+
         return Stack(
           children: [
             provider.allUserModel?.users?.isNotEmpty == true

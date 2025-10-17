@@ -130,14 +130,14 @@ class AdminLoginPage extends StatelessWidget {
                                   text: "Login",
                                   width: size.width,
                                   onPressed: () {
-                                    Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      RouteName.adminHomePage,
-                                          (Route<dynamic> route) => false,
-                                    );
+
                                     if (formLoginKey.currentState?.validate() ==
                                         true) {
-
+                                      Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        RouteName.adminHomePage,
+                                            (Route<dynamic> route) => false,
+                                      );
                                     }
                                   },
                                 ),

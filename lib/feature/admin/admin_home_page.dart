@@ -258,7 +258,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                                 ?.toString()
                                                 .toUpperCase() ??
                                             "")
-                                      : "${(provider.allStoreNameModel?.stores?[provider.selectedIndex].storeName?.toString().toCapitalize() ?? '')} / ${provider.selectedSection!}",
+                                      : "${(provider.allStoreNameModel?.stores?[provider.selectedIndex].storeName?.toString().toCapitalize() ?? '')} / ${provider.selectedSection.toString().toCapitalize()}",
                                   fontSize: isMobile ? 16 : 20,
                                   fontWeight: isMobile
                                       ? FontWeight.w500
