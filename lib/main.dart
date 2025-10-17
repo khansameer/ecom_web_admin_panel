@@ -19,7 +19,7 @@ import 'package:neeknots/routes/app_routes.dart';
 import 'package:neeknots/routes/route_generator.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/firebase/firebase_options.dart';
 import 'core/firebase/notification_service.dart';
 import 'core/string/string_utils.dart';
@@ -66,7 +66,7 @@ List<SingleChildWidget> providers = [
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await dotenv.load(fileName: ".env");
   try {
     await Hive.initFlutter();
     if (Firebase.apps.isEmpty) {

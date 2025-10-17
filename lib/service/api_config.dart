@@ -1,11 +1,10 @@
 import 'package:neeknots/models/user_model.dart';
 
 import '../core/hive/app_config_cache.dart';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 class ApiConfig {
- // static String apiBASEURL = "http://10.0.10.152:3000";
-    static String apiBASEURL = "https://ecom-manager-api-1.onrender.com";
 
+  static String get apiBASEURL => dotenv.env['API_BASE_URL'] ?? '';
   //=======================user and Login Api
   static String authAPi = "$apiBASEURL/user";
   static String loginAPi = "$apiBASEURL/login";
