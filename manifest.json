@@ -1,6 +1,6 @@
 {
-    "name": "doctor_app",
-    "short_name": "doctor_app",
+    "name": "ECom Manager",
+    "short_name": "ECom Manager",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#hexcode",
